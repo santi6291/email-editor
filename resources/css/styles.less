@@ -1,0 +1,131 @@
+*{
+	position: relative;
+}
+.wrapper{
+	max-width: 1200px;
+	margin: 0 auto;
+	
+	&-version, &-editor, &-feedback{
+		display: inline-block;
+		vertical-align: top;
+		margin-top: 70px;
+	}
+}
+// Template list styles
+.tempList, .trashTemp{
+	
+	ul{
+		padding: 0;
+	}
+
+	li{
+		display: table;
+		width: 100%;
+		// padding: 0px 2%;
+		height: 45px;
+
+		&:nth-child(odd){
+			background-color: #EFECEC;
+		}
+
+		&:nth-child(even){
+			background-color: #DDDCDC;
+		}
+
+		.template-title{
+			font-weight: bold;
+			display: table-cell;
+			vertical-align: middle;
+			width: 70%;
+			text-decoration: none;
+			padding-left: 2%;
+		}
+		
+		.template-control{
+			display: table-cell;
+			vertical-align: middle;
+			width: 1 0%;
+			text-decoration: none;
+			border-left: 1px solid #ccc;
+			text-align: center;
+			color: rgb(85, 26, 139);
+			cursor: pointer;
+		}
+	}
+} 
+
+.tooltip{
+	label{
+		display: block;
+		margin-bottom: 2%;
+	}
+}
+
+.titleField{
+	color: #000;
+	-webkit-appearance: textfield;
+	padding: 1px;
+	background-color: white;
+	border: 2px inset;
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	-webkit-rtl-ordering: logical;
+	-webkit-user-select: text;
+	cursor: auto;
+}
+
+.error{
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid;
+}
+
+.validCode{
+	textarea{
+		margin: 0px;
+		width: 300px;
+		height: 300px;
+	}
+}
+
+// add to indicate its contenteditable
+[contenteditable~=true]{
+	border: 1px solid #E7E7E7;
+}
+
+
+.editor{
+	display: table;
+	
+	>.components, >.content {
+		display: table-cell;
+	}
+}
+
+.editor{
+
+	.toolbar{
+		text-align: center;
+		&-row{
+			padding: 10px;
+			
+			&:nth-child(odd){
+				background-color: #999;
+			}
+			&:nth-child(even){
+				background-color: #ddd;
+			}
+		}
+	}
+
+	.edit{
+		overflow-y: scroll;
+		height: 80vh;
+		min-width: 650px;
+		box-sizing: border-box;
+		border: 1px solid #ddd;
+	}
+}

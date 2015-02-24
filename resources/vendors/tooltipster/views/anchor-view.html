@@ -1,0 +1,28 @@
+<div data-hook="tooltip" class="tooltip">
+	<button data-hook="tooltipClose">close</button>
+	<p>
+		<strong>
+			Add / Remove Link
+		</strong>
+	</p>
+	<select class="aType" name="aType">
+		<option value="link" class="link">Link</option>
+		<option value="email" class="email">Email</option>
+	</select>
+	<label for="hrefField">
+		Hyperlink:
+		<br>
+		<input type="url" class="hrefField" name="hrefField" placeholder="exp. http://site.com" />
+	</label>
+	Title:
+	<br>
+	<div class="titleField" contenteditable></div>
+	<select name="aTarget" class="aTarget">
+		<option value="_blank" class="_blank">New Tab</option>
+		<option value="_self" class="_self">Same Window</option>
+		<option value="_parent" class="_parent">New Window</option>
+	</select>
+	<br>
+	<button data-hook="tooltipAremove">remove</button>
+	<button data-hook="tooltipSave">save</button>
+</div>
