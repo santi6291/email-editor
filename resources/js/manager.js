@@ -71,7 +71,7 @@ Manager.renderTemplate = function (id) {
 	var listItem = $('<li/>').addClass('listItem').data('template', { 'ID': id });
 	
 	// link to editor with GET to template
-	var templateNode = $('<a/>').html(templateItem.title).addClass('template-title').attr('href', '/editor.php/?template=' + id).appendTo(listItem);
+	var templateNode = $('<a/>').html(templateItem.title).addClass('template-title').attr('href', '/editor/?template=' + id).appendTo(listItem);
 	
 	// update tempalte node
 	var updateNode = $('<p/>').html('Rename').addClass('template-control').appendTo(listItem).attr('data-manager', 'update');
@@ -90,7 +90,7 @@ Manager.renderTemplate = function (id) {
 	
 	// preview latest version of template
 	var previewNode = $('<a/>').html('preview').addClass('template-control').attr({
-		'href': window.location.origin + '/template.php?template=' + Manager.list[id].title + '&id=' + id + '&version=' + Manager.list[id].version,
+		'href': window.location.origin + '/template?template=' + Manager.list[id].title + '&id=' + id + '&version=' + Manager.list[id].version,
 		'target': '_blank',
 	}).appendTo(listItem);
 

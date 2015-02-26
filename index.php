@@ -1,48 +1,27 @@
-<?php 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-require_once('header.php') 
-?>
+<!DOCTYPE html>
+<?php require_once($_SERVER['DOCUMENT_ROOT'] . '/app/conf.php'); ?>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="<?=$paths['url']?><?=$paths['resources']['vendors']?>font-awesome-4.3.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="<?=$paths['url']?><?=$paths['resources']['css']?>normalize.css">
+	<link rel="stylesheet" href="<?=$paths['url']?><?=$paths['resources']['css']?>styles.min.css">
+</head>
 
-<div class="picker">
+<body>
 	
-	<h2>
-		Templates
-	</h2>
+	<div class="wrapper">
+		<?php include_once($paths['data']['views'] . $pageID . '.php') ?>
+	</div>
 	
-	<div class="install-table">
-		<h3>Install / Uninstall table</h3>
-
-		<input type="button" value="Install" data-hook="installer"/>
-		<input type="button" value="Uninstall" data-hook="installer"/>
-		
-		<div class="feedback"></div>
+	<div class="script">
+		<script src="<?=$paths['url']?><?=$paths['resources']['vendors']?>jquery/jquery.js"></script>
+		<script src="<?=$paths['url']?><?=$paths['resources']['vendors']?>jquery/jquery.extensions.js"></script>
+		<script src="<?=$paths['url']?><?=$paths['resources']['vendors']?>underscore/underscore.js"></script>
+		<script src="<?=$paths['url']?><?=$paths['resources']['js']?>manager.js"></script>
+		<script src="<?=$paths['url']?><?=$paths['resources']['js']?>functions.js"></script>
+		<script src="<?=$paths['url']?><?=$paths['resources']['js']?>script.js"></script>
 	</div>
-
-	<form class="createTemplate" data-manager="create">
-		<fieldset>
-			<h3>
-				New Template
-			</h3>
-			<input type="text" name="title" class="title" required/>
-			<br>
-			<input type="submit" value="New">
-			<br>
-			<div class="feedback"></div>
-		</fieldset>
-	</form>
-	
-	<div class="tempList" data-manager="active-list">
-		<h3>
-			Active
-		</h3>
-		<ul></ul>
-	</div>
-	<div class="trashTemp" data-manager="trash-list">
-		<h3>
-			Trash
-		</h3>
-		<ul></ul>
-	</div>
-</div>
-<?php require_once('footer.php') ?>
+</body>
+</html>

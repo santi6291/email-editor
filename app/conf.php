@@ -1,12 +1,18 @@
 <?php
-//debug mode
+//DEBUG MODE
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Timezone
+// SET PAGE ID
+$pageID = ( $_SERVER['REQUEST_URI'] === '/' )? 'manager' : $_SERVER['REQUEST_URI'];
+$pageID = preg_replace('/\?(.*$)/', '', $pageID);
+$pageID = preg_replace('/(\/)/', '', $pageID);
+
+
+// TIMEZONE
 date_default_timezone_set("America/New_York");
 
-// Database class
+// DATABASE CLASS
 class database{
 
 	// connect to DB
@@ -74,6 +80,7 @@ $paths = [
 			'stored' => $_SERVER['DOCUMENT_ROOT'] . 'data/templates/stored/',
 			'parts' => $_SERVER['DOCUMENT_ROOT'] . 'data/templates/parts/',
 		],
+		'views' => $_SERVER['DOCUMENT_ROOT'] . 'data/views/',
 	],
 	'resources' => [
 		'css' => 'resources/css/',
