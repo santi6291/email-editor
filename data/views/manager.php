@@ -1,19 +1,19 @@
-<div class="picker">
+<div class="manager">
 	
 	<h2>
 		Templates
 	</h2>
 	
-	<div class="install-table">
+	<!-- <div class="manager-installer">
 		<h3>Install / Uninstall table</h3>
 
 		<input type="button" value="Install" data-hook="installer"/>
 		<input type="button" value="Uninstall" data-hook="installer"/>
 		
 		<div class="feedback"></div>
-	</div>
+	</div> -->
 
-	<form class="createTemplate" data-manager="create">
+	<form class="manager-new" data-manager="create">
 		<fieldset>
 			<h3>
 				New Template
@@ -24,15 +24,16 @@
 			<br>
 			<div class="feedback"></div>
 		</fieldset>
-	</form>
-	
-	<div class="tempList" data-manager="active-list">
+	</form>	
+
+	<div class="manager-active" data-manager="active-list">
 		<h3>
 			Active
 		</h3>
 		<ul></ul>
 	</div>
-	<div class="trashTemp" data-manager="trash-list">
+
+	<div class="manager-trash" data-manager="trash-list">
 		<h3>
 			Trash
 		</h3>

@@ -1,6 +1,7 @@
 *{
 	position: relative;
 }
+
 .wrapper{
 	max-width: 1200px;
 	margin: 0 auto;
@@ -11,9 +12,17 @@
 		margin-top: 70px;
 	}
 }
-// Template list styles
-.tempList, .trashTemp{
-	
+
+
+/**********************************
+ * MANAGER STYLES
+ **********************************/
+.manager{
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.manager-active, .manager-trash {
 	ul{
 		padding: 0;
 	}
@@ -21,7 +30,6 @@
 	li{
 		display: table;
 		width: 100%;
-		// padding: 0px 2%;
 		height: 45px;
 
 		&:nth-child(odd){
@@ -36,15 +44,15 @@
 			font-weight: bold;
 			display: table-cell;
 			vertical-align: middle;
-			width: 70%;
+			width: 60%;
 			text-decoration: none;
 			padding-left: 2%;
 		}
-		
+
 		.template-control{
 			display: table-cell;
 			vertical-align: middle;
-			width: 1 0%;
+			width: 10%;
 			text-decoration: none;
 			border-left: 1px solid #ccc;
 			text-align: center;
@@ -52,29 +60,6 @@
 			cursor: pointer;
 		}
 	}
-} 
-
-.tooltip{
-	label{
-		display: block;
-		margin-bottom: 2%;
-	}
-}
-
-.titleField{
-	color: #000;
-	-webkit-appearance: textfield;
-	padding: 1px;
-	background-color: white;
-	border: 2px inset;
-	border-image-source: initial;
-	border-image-slice: initial;
-	border-image-width: initial;
-	border-image-outset: initial;
-	border-image-repeat: initial;
-	-webkit-rtl-ordering: logical;
-	-webkit-user-select: text;
-	cursor: auto;
 }
 
 .error{
@@ -128,4 +113,31 @@
 		box-sizing: border-box;
 		border: 1px solid #ddd;
 	}
+}
+
+/**********************************
+ * TOOLTIP STYLES
+ **********************************/
+
+.tooltip{
+	label{
+		display: block;
+		margin-bottom: 2%;
+	}
+}
+
+.titleField{
+	color: #000;
+	-webkit-appearance: textfield;
+	padding: 1px;
+	background-color: white;
+	border: 2px inset;
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	-webkit-rtl-ordering: logical;
+	-webkit-user-select: text;
+	cursor: auto;
 }
