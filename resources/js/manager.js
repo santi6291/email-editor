@@ -1,10 +1,24 @@
+/**
+ * [Handle template data CREATE/ DELETE / UPDATE / CLONE / RENDER]
+ * @type {[object]}
+ */
 var Manager = Manager || {};
 
+/**
+ * [list of all templates]
+ * @type {Object}
+ */
 Manager.list = {};
 
 /**
+ * [functions to bind]
+ * @type {Object}
+ */
+Manager.event = {};
+
+/**
  * [default event selectors]
- * @type {key: css selector}
+ * @type {Object}
  */
 Manager.selectors = {
 	create:		'[data-manager ~= create]',
@@ -14,7 +28,6 @@ Manager.selectors = {
 	update:		'[data-manager ~= update]',
 	activeList: '[data-manager ~= active-list]',
 	trashList:	'[data-manager ~= trash-list]',
-
 };
 
 /**
@@ -30,45 +43,18 @@ Manager.init = function(JSONlocation) {
 
 		Manager.listTemplates();
 		
-		// bind Events 
-		$(document).on('submit', Manager.selectors.create, function(e){
-			e.preventDefault();
+		_.each(Manager.selectors, function(selector, key){
+			if ( selector.indexOf('-list') == -1 ) {
+				eventType = ( $(selector).prop("tagName") == 'FORM')? 'submit' : 'click';
 
-			Manager.event.create($(this), Manager);
-		});
+				$(document).on(eventType, selector, function(e){
+					e.preventDefault();
 
-		$(document).on('click', Manager.selectors.clone, function(e){
-			e.preventDefault();
-
-			Manager.event.clone($(this), Manager);
-		});
-
-		$(document).on('click', Manager.selectors.destroy, function(e){
-			e.preventDefault();
-
-			Manager.event.destroy($(this), Manager);
-		});
-
-		$(document).on('click', Manager.selectors.trash, function(e){
-			e.preventDefault();
-
-			Manager.event.trash($(this), Manager);
-		});
-
-		$(document).on('click', Manager.selectors.update, function(e){
-			e.preventDefault();
-
-			Manager.event.update($(this), Manager);
+					Manager.event[key]($(this), Manager);
+				});
+			}
 		});
 	});
-};
-
-Manager.event = {
-	create:		function(target, object){},
-	clone:		function(target, object){},
-	destroy:	function(target, object){},
-	trash:		function(target, object){},
-	update:		function(target, object){},
 };
 
 /**
@@ -88,7 +74,7 @@ Manager.renderTemplate = function (id) {
 	var templateNode = $('<a/>').html(templateItem.title).addClass('template-title').attr('href', '/editor.php/?template=' + id).appendTo(listItem);
 	
 	// update tempalte node
-	var updateNode = $('<p/>').html('Update').addClass('template-control').appendTo(listItem).attr('data-manager', 'update');
+	var updateNode = $('<p/>').html('Rename').addClass('template-control').appendTo(listItem).attr('data-manager', 'update');
 
 	// clone node
 	var cloneNode = $('<p/>').html('Copy').addClass('template-control').appendTo(listItem).attr('data-manager', 'clone');
@@ -104,7 +90,7 @@ Manager.renderTemplate = function (id) {
 	
 	// preview latest version of template
 	var previewNode = $('<a/>').html('preview').addClass('template-control').attr({
-		'href': window.location.origin + '/template.php?template=' + Manager.list[id].title + '&ID=' + id + '&version=' + Manager.list[id].version,
+		'href': window.location.origin + '/template.php?template=' + Manager.list[id].title + '&id=' + id + '&version=' + Manager.list[id].version,
 		'target': '_blank',
 	}).appendTo(listItem);
 
@@ -117,6 +103,9 @@ Manager.renderTemplate = function (id) {
 	}
 };
 
+/**
+ * [Render exiting templates]
+ */
 Manager.listTemplates = function() {
 	// loop through existing templates
 	_.each(Manager.list, function (listValue, ListIndex){

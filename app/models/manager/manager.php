@@ -6,6 +6,7 @@ class manager extends database{
 	public $name;
 	public $version;
 	
+	// CREATE 'template' TABLE
 	public function install() {
 		global $paths;
 
@@ -39,7 +40,8 @@ class manager extends database{
 		];
 		die();
 	}
-
+	
+	// DROP 'template' TABLE
 	public function uninstall (){
 		global $paths;
 
@@ -73,6 +75,7 @@ class manager extends database{
 		die();
 	}
 
+	//INSERT NEW TEMPLATE DATA TO 'templates' TABLE
 	public function newTemp ($makeVerFile = true){
 		global $paths;
 		//check if template name taken 
@@ -105,7 +108,7 @@ class manager extends database{
 
 		$newTemplate->bind_param('ss', $this->name, $this->version);
 		
-		$this->name = $this->requestEscape($this->name);
+		$this->name = $this->requestEscape($this->name, $con);
 
 		$templateCreated = $newTemplate->execute();
 
@@ -157,10 +160,9 @@ class manager extends database{
 		}
 	}
 
+	// CLONE EXISTING TEMPLATE
 	public function cloneTemp ( $orgTemplateID ) {
 		global $paths;
-		
-		// $paths['data']['templates']['stored'] = $_SERVER['DOCUMENT_ROOT'] . 'app/templates/';
 
 		$createTemp = $this->newTemp(false);		
 		
@@ -181,54 +183,55 @@ class manager extends database{
 
 		// copy to new direcotry
 		if ( copy($paths['data']['templates']['stored'] . $orgTemplateID . $orgLatestVer, $paths['data']['templates']['stored'] . $this->ID . '/' . $this->version .'.html') == false) {
-			return array(
+			return [
 				'success' => false,
 				'message' => error_get_last(),
-			);
+			];
 			die();
 		}
 
-		return array(
+		return [
 			'success' => true,
 			'ID'      => $this->ID,
 			'title'   => $this->name,
 			'version' => $this->version,
 			'active'  => true,
-		);
+		];
 		die();
 	}
 	
+	// REMOVE TEMPLATE FROM ACTIVE LIST
 	public function moveToTrash () {
 		$con = $this->DBConnect();
 		
-		$updateRow = $con->prepare("UPDATE `templates` SET active = ? WHERE id = ?;");
+		$updateRow = $con->prepare("UPDATE `templates` SET active = 0 WHERE id = ?;");
 		if ( $updateRow == false) {
-			return array(
+			return [
 				'success' => false,
 				'message' => $con->error,
-			);
+			];
 			die();
 		}
 
-		$updateRow->bind_param('ii', 0, $this->ID);
+		$updateRow->bind_param('i', $this->ID);
 		$rowUpdated = $updateRow->execute();
 
-		return array(
+		return [
 			'success' => ( $rowUpdated === true )? true : false,
-			'message' => ( $rowUpdated === true )? '' : $con->error,
-			'function' => 'execute',
-		);
+			'message' => ( $rowUpdated === true )? 'moveToTrash' : $con->error,
+		];
 		die();
 	}
 
+	// DELETE ROW FROM DB, DESTORY TEMPLTE DIRECTORY
 	public function delete () {
 		global $paths;
 		
 		if ( $this->destroy_dir( $paths['data']['templates']['stored'] . $this->ID) == false) {
-			return array(
+			return [
 				'success' => false,
 				'message' => error_get_last(),
-			);
+			];
 		}
 
 		$con = $this->DBConnect();
@@ -237,23 +240,50 @@ class manager extends database{
 		$delTemplate = $con->prepare("DELETE FROM `templates` WHERE id = ?");
 		
 		if ( $delTemplate == false ) {
-			return array(
+			return [
 				'success' => false,
 				'message' => $con->error,
-			);
+			];
 			die();
 		}
 
 		$delTemplate->bind_param('i', $this->ID);
 		$delTemplate->execute();
 
-		return array(
+		return [
 			'success' => ( $delTemplate === true )? true : false,
 			'message' => ( $delTemplate === true )? '' : $con->error,
-		);
+		];
 		die();
 	}
 
+	// UPDATE TEMPLATE NAME
+	public function update ($newName) {
+		$con = $this->DBConnect();
+		
+		$updateRow = $con->prepare("UPDATE `templates` SET title = ? WHERE id = ?;");
+		if ( $updateRow == false) {
+			return [
+				'success' => false,
+				'message' => $con->error,
+			];
+			die();
+		}
+
+		$updateRow->bind_param('si', $newName, $this->ID);
+		
+		$newName = $this->requestEscape($newName, $con);
+		
+		$rowUpdated = $updateRow->execute();
+
+		return [
+			'success' => ( $rowUpdated === true )? true : false,
+			'message' => ( $rowUpdated === true )? '' : $con->error,
+		];
+		die();
+	}
+
+	// RETURN EXISTING TEMPLATES
 	public function listTemplates () {
 		$con = $this->DBConnect();
 
@@ -266,18 +296,19 @@ class manager extends database{
 			$templateList = array();
 			
 			while ( $listRows->fetch() ) {
-				$templateList[$ID] = array(
+				$templateList[$ID] = [
 					'ID'      => $ID,
 					'title'   => $title,
 					'version' => $version,
 					'active'  => ( $active == 1 )? true : false,
-				);
+				];
 			}
 
 			return $templateList;
 		}
 	}
 
+	// CHECK IF TEMPALTE NAME IS TAKEN
 	private function validate() {
 		
 		$templateExist = false;
@@ -296,11 +327,8 @@ class manager extends database{
 		}
 		return $templateExist;
 	}
-
-	/*private function folderID ($ID){
-		return str_pad($ID, 3 , '0', STR_PAD_LEFT);
-	}*/
 	
+	// RECURSIVELY DESTROY DIRECTORY AND FILES
 	private function destroy_dir($dir) { 
 	    
 		if ( !is_dir($dir) || is_link($dir) ) {
@@ -309,14 +337,20 @@ class manager extends database{
 	    
 	    foreach (scandir($dir) as $file) { 
 	        // skip . and .. in array
-	        if ($file == '.' || $file == '..') continue; 
+	        if ($file == '.' || $file == '..') {
+	        	continue;
+	        }; 
 	        
 	        if ( !$this->destroy_dir($dir . DIRECTORY_SEPARATOR . $file) ) { 
 	            chmod($dir . DIRECTORY_SEPARATOR . $file, 0777); 
 
-	            if ( !$this->destroy_dir($dir . DIRECTORY_SEPARATOR . $file) ) return false; 
+	            if ( !$this->destroy_dir($dir . DIRECTORY_SEPARATOR . $file) ) {
+	            	
+	            	return false;
+	            };
 	        }; 
-	    } 
+	    }
+	    
 	    return rmdir($dir); 
 	}
 }

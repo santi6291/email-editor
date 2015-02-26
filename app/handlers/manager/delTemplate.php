@@ -6,14 +6,15 @@ if ( isset($_GET) ) extract($_GET);
 /**
  * EXTRACTED VARIABLE
  * $templateID
- * $action
+ * $isActive
  */
 
 $removeTemplate = new manager();
 $removeTemplate->ID = intval($templateID);
+$isActiveBool = ( $isActive == 'true' )? true : false;
 
-if ( $isActive == true ) {
-	
+if ( $isActiveBool === true ) {
+
 	$templateRemoved = $removeTemplate->moveToTrash();
 } else {
 
