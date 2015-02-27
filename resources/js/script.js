@@ -192,6 +192,7 @@ $(document).ready(function(){
 		 * EDITOR EVENTS
 		 ***************************************/
 		case 'editor':
+			Editor.init();
 		break;
 	}
 });

@@ -65,13 +65,13 @@ Manager.init = function(JSONlocation) {
  * @param {[boolean]} activeTemp [deleted or active template]
  */
 Manager.renderTemplate = function (id) {
-	templateItem = Manager.list[id];
+	templateInfo = Manager.list[id];
 	
 	// template container
 	var listItem = $('<li/>').addClass('listItem').data('template', { 'ID': id });
 	
 	// link to editor with GET to template
-	var templateNode = $('<a/>').html(templateItem.title).addClass('template-title').attr('href', '/editor/?template=' + id).appendTo(listItem);
+	var templateNode = $('<a/>').html(templateInfo.title).addClass('template-title').attr('href', '/editor/?id=' + id + '&template=' + templateInfo.title).appendTo(listItem);
 	
 	// update tempalte node
 	var updateNode = $('<p/>').html('Rename').addClass('template-control').appendTo(listItem).attr('data-manager', 'update');
@@ -82,7 +82,7 @@ Manager.renderTemplate = function (id) {
 	// delete Node with TemplateID
 	var trashNode = $('<p/>').appendTo(listItem);
 	
-	if ( templateItem.active === true ) {
+	if ( templateInfo.active === true ) {
 		trashNode.html('Move to <br/> Trash').addClass('template-control').attr('data-manager', 'trash');
 	} else {
 		trashNode.html('Delete <br/> Permenetly').addClass('template-control').attr('data-manager', 'delete');
@@ -90,12 +90,12 @@ Manager.renderTemplate = function (id) {
 	
 	// preview latest version of template
 	var previewNode = $('<a/>').html('preview').addClass('template-control').attr({
-		'href': window.location.origin + '/template?template=' + Manager.list[id].title + '&id=' + id + '&version=' + Manager.list[id].version,
+		'href': window.location.origin + '/template?template=' + templateInfo.title + '&id=' + id + '&version=' + templateInfo.version,
 		'target': '_blank',
 	}).appendTo(listItem);
 
 	// append to document
-	if ( templateItem.active === true ) {
+	if ( templateInfo.active === true ) {
 		$(Manager.selectors.activeList).find('ul').append(listItem);
 	} else {
 		

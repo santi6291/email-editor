@@ -6,7 +6,7 @@ var textFormat = {
 	getSelected:function(formatType){
 		this.formatType = formatType;//node type
 		
-		if (window.getSelection) {
+		if ( window.getSelection) {
 			this.sel = window.getSelection();// get selection
 
 			if (this.sel.rangeCount) {
@@ -18,9 +18,9 @@ var textFormat = {
 				} else {//add format node
 					
 					this.addFormat();
-				};
-			};
-		};
+				}
+			}
+		}
 	},
 
 	addFormat: function(){
@@ -31,14 +31,14 @@ var textFormat = {
 		this.range.insertNode(replacementText);//append format node to removed text position
 		
 		if ( this.formatType == 'a' ) {
-			aNode = $(replacementText)
+			aNode = $(replacementText);
 			aNode.attr({
 				href: '',
 				target: '_blank',
 				'class': 'green'
 			})
 			// call tooltip
-		};
+		}
 	},
 
 	removeFormat: function(){
@@ -55,4 +55,4 @@ var textFormat = {
 		var newContent = parentNode[0].outerHTML.replace(removeNode[0].outerHTML, removeNode[0].innerHTML);
 		parentNode.html(newContent);
 	}
-}
+};
