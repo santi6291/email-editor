@@ -1,5 +1,5 @@
 // SET PAGE ID 
-(function setPageID (){
+function setPageID (){
 	var pagePath = location.pathname;
 	var pageIDarray;
 
@@ -19,7 +19,19 @@
 		// join path without pageID
 		window.pageParent = pageIDarray.join('/');
 	}
-})();
+
+	if ( window.location.search !== '' ){
+		window.GET = window.GET || {};
+		
+		var querys = window.location.search.replace('?', '');
+		querys = querys.split('&');
+		
+		for( var i = 0; i < querys.length; i++ ){
+			var query = querys[i].split('=');
+			window.GET[query[0]] = query[1];
+		}
+	}
+}
 
 // RENDER TEMPLARE VERSIONS
 function renderVer ( filename, title, append ) {
@@ -38,23 +50,6 @@ function objectToText (theObject) {
 	return "<pre>" + JSON.stringify(theObject, null, 4) + "</pre>";
 }
 
-// ADD LEFT PADDING TO STRING
-String.prototype.lpad = function(padString, length) {
-	var str = this;
-	while (str.length < length)
-		str = padString + str;
-	return str;
-};
-
-// 
-function prepTemplate (content){
-
-	var template = $(content);
-	template.find('.editMe').attr('contenteditable', 'true');
-	return template;
-	// $('.blast').find('.template').html(template);
-}
-
 function getUrlVars() {
 	var vars = [];
 	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -65,4 +60,13 @@ function getUrlVars() {
 		vars[hash[0]] = hash[1];
 	}
 	return vars;
+}
+
+// 
+function prepTemplate (content){
+
+	var template = $(content);
+	template.find('.editMe').attr('contenteditable', 'true');
+	return template;
+	// $('.blast').find('.template').html(template);
 }

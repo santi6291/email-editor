@@ -1,5 +1,18 @@
+.scrollBar{
+	::-webkit-scrollbar{
+		background-color: #999;
+		border-left: 1px solid #888;
+	}
+
+	::-webkit-scrollbar-thumb{
+		background-color: #ddd;
+	}
+}
+
 *{
 	position: relative;
+	margin: 0px;
+	padding: 0px;
 }
 
 .wrapper{
@@ -82,27 +95,136 @@
 }
 
 
-.editor{
-	display: table;
+/**********************************
+ * EDITOR STYLES
+ **********************************/
+ .editor-wrapper{
+ 	display: table;
+ 	width: 100%;
+ 	margin-top: 3%;
+ }
+
+// COMPONENTS STYLES
+.editor-components{
+	display: table-cell;
+	width: 190px;
+	height: 80vh;
+	margin: 0 auto;
+	background-color: #999;
+	text-align: center;
+	overflow: hidden;
+	vertical-align: top;
+	.scrollBar;
 	
-	>.components, >.content {
-		display: table-cell;
+	h3{
+		color: #fff;
+		background-color: #666;
+		padding: 15px 0px;
+	}
+
+	h4{
+		padding: 15px 0px;
+		background-color: #f2f2f2;
+		margin-bottom: 5px;
+		color: #666;
+	}
+
+	nav{
+		width: 100%;
+		height: 100%;
+		
+		// padding: 10px 20px;
+		padding: 10px 0px;
+
+		overflow-y: scroll;
+		box-sizing: border-box;
+		text-align: center;
+	}
+
+	img{
+		width: auto;
+		max-width: 100%;
+	}
+
+	.component{
+		display: table;
+		width: 100%;
+		min-height: 175px;
+		background-color: #ccc;
+		margin: 15px auto;
+		padding: 5px;
+		text-align: center;
+
+		&-thumb{
+			display: table-cell;
+			vertical-align: middle;
+		}
+	}
+
+	[data-hook ~= component-list]{
+		display: none;
+		padding: 0px 20px;
 	}
 }
 
-.editor{
+// TEXT EDITOR STYLES
+.editor-content{
+	display: table-cell;
+	width: 805px;
+	padding: 0px 10px;
+	box-sizing: border-box;
 
 	.toolbar{
-		text-align: center;
-		&-row{
-			padding: 10px;
+		text-align: left;
+		padding: 10px;
+		border-radius: 10px 10px 0px 0px;
+		overflow: hidden;
+		background-color: rgb(242, 242, 242);
+		border-top: 1px solid #ddd;
+		border-left: 1px solid #ddd;
+		border-right: 1px solid #ddd;
+
+
+		.group{
+			display: inline-block;
+			margin: 10px 5px;
+			border-radius: 5px;
+			border: 1px solid #999;
+			overflow: hidden;
+			background-color: #fff;
 			
-			&:nth-child(odd){
-				background-color: #999;
+			button{
+				border-left: 1px solid #999;
+				
+				&:first-child{
+					border-left: none;
+				}
+
+				&:last-child{
+					margin-right: 0px;
+				}
 			}
-			&:nth-child(even){
-				background-color: #ddd;
+		}
+
+		button{
+			border: none;
+			background-color: #fff;
+			color: #999;
+			padding: 5px 10px;
+			margin-right: -5px;
+
+
+			&:hover{
+				background-color: #ccc;
+				color: #000;
 			}
+		}
+
+		>button{
+			margin: 10px 5px;
+			border: 1px solid #999;
+			border-radius: 5px;
+			vertical-align: top;
 		}
 	}
 
@@ -113,6 +235,20 @@
 		box-sizing: border-box;
 		border: 1px solid #ddd;
 	}
+}
+
+.editor-versions{
+	display: table-cell;
+	width: 190px;
+	
+	a{
+		display: block;
+	}
+}
+
+[data ~= components-list]{
+	display: table;
+	width: 100%;
 }
 
 /**********************************

@@ -71,7 +71,7 @@ Manager.renderTemplate = function (id) {
 	var listItem = $('<li/>').addClass('listItem').data('template', { 'ID': id });
 	
 	// link to editor with GET to template
-	var templateNode = $('<a/>').html(templateInfo.title).addClass('template-title').attr('href', '/editor/?id=' + id + '&template=' + templateInfo.title).appendTo(listItem);
+	var templateNode = $('<a/>').html(templateInfo.title).addClass('template-title').attr('href', '/editor/?id=' + id + '&template=' + encodeURI(templateInfo.title)).appendTo(listItem);
 	
 	// update tempalte node
 	var updateNode = $('<p/>').html('Rename').addClass('template-control').appendTo(listItem).attr('data-manager', 'update');
