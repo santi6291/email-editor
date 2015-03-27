@@ -1,0 +1,22 @@
+{
+  "name": "email-editor",
+  "version": "0.0.1",
+  "homepage": "https://github.com/santi6291/email-editor",
+  "authors": [
+    "Santiago J Sosa <ssosa@santiagojsosa.com>"
+  ],
+  "description": "create email tempaltes compatible throught",
+  "keywords": [
+    "email",
+    "templates",
+    "generated",
+    "wysiwyg"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "font-awesome": "~4.3.0",
+    "jquery": "1.11.2",
+    "underscore": "~1.8.2"
+  }
+}
