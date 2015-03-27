@@ -24,10 +24,11 @@ Editor.init = function(){
 
 		Editor.template.versions = versionsJson;
 
+		$.get('/data/templates/stored/' + Editor.template.id + '/' + Editor.template.versions[0].fileName, function(latestVer) {
+			// console.log(latestVer);
+			// var editableTemplate = Editor.render.template();
+			$('.editor').find('.edit').html(latestVer)
 
-		$.get('/app/data/templates/stored/' + Editor.template.id + '/' + Editor.template.versions[0].fileName, function(latestVer) {
-
-			console.log(latestVer);
 		});
 		
 		_.each(Editor.template.versions, function(ver, index){
@@ -50,6 +51,13 @@ Editor.init = function(){
 };
 
 Editor.render = {
+	template: function(content){
+		var template = $(content);
+		template.find('.editMe').attr('contenteditable', 'true');
+		return template;
+		// $('.blast').find('.template').html(template);
+	},
+
 	versions: function( filename, title, append ){
 		var fileLoc = ( filename.indexOf('.html') == -1 )? filename + '.html': filename;
 

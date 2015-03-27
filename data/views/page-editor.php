@@ -6,9 +6,11 @@
 	<div class="editor-wrapper">
 		
 		<div class="editor-components" data-editor="components">
-			<h3>
-				Components
-			</h3>
+			<div class="components-title">
+				<h3>
+					Components
+				</h3>
+			</div>
 			<nav data-editor="components-list">
 				<h4 data-hook="componentToggle">
 					Headers
@@ -29,22 +31,14 @@
 
 		<div class="editor-content">
 			<div class="toolbar">
-				<div class="group">
-					<button data-hook="formatText" data-format="strong">Bold</button>
-					<button data-hook="formatText" data-format="em">Italic</button>
-				</div>
-				<div class="group">
-					<button data-hook="formatText" data-format="del">Strikethrough</button>
-					<button data-hook="formatText" data-format="u">Underline</button>
-				</div>
-				<div class="group">
-					<button data-hook="formatText" data-format="sub">Subscript</button>
-					<button data-hook="formatText" data-format="sup">Superscript</button>
-					
-				</div>
-
-				<button data-hook="formatText" data-format="small">small</button>
-				<button data-hook="formatText" data-format="a">Link</button>
+				<button class="Bold" data-hook="formatText" data-format="strong"></button>
+				<button class="Italic" data-hook="formatText" data-format="em">Italic</button>
+				<button class="Strikethrough" data-hook="formatText" data-format="del">Strikethrough</button>
+				<button class="Underline" data-hook="formatText" data-format="u">Underline</button>
+				<button class="Subscript" data-hook="formatText" data-format="sub">Subscript</button>
+				<button class="Superscript" data-hook="formatText" data-format="sup">Superscript</button>
+				<button class="small" data-hook="formatText" data-format="small">small</button>
+				<button class="Link" data-hook="formatText" data-format="a">Link</button>
 
 				<!-- <div class="group">
 					<button data-hook="formatText" data-format="strong">Bold</button>

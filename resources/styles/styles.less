@@ -1,3 +1,5 @@
+@import '../vendors/font-awesome-4.3.0/less/font-awesome.less';
+
 .scrollBar{
 	::-webkit-scrollbar{
 		background-color: #999;
@@ -17,7 +19,7 @@
 
 .wrapper{
 	max-width: 1200px;
-	margin: 0 auto;
+	margin: 0 auto;	
 	
 	&-version, &-editor, &-feedback{
 		display: inline-block;
@@ -27,9 +29,10 @@
 }
 
 
-/**********************************
- * MANAGER STYLES
- **********************************/
+////////////////////
+// MANAGER STYLES //
+////////////////////
+
 .manager{
 	max-width: 900px;
 	margin: 0 auto;
@@ -89,15 +92,10 @@
 	}
 }
 
-// add to indicate its contenteditable
-[contenteditable~=true]{
-	border: 1px solid #E7E7E7;
-}
 
-
-/**********************************
- * EDITOR STYLES
- **********************************/
+///////////////////
+// EDITOR STYLES //
+///////////////////
  .editor-wrapper{
  	display: table;
  	width: 100%;
@@ -116,20 +114,32 @@
 	vertical-align: top;
 	.scrollBar;
 	
-	h3{
+	.components-title{
+		margin: 0px;
 		color: #fff;
 		background-color: #666;
 		padding: 15px 0px;
+		
+		h3{
+			// .panel-title;
+			/*font-size: 24px;
+			padding: 5px;*/
+		}
+		// .panel-primary;
+		
 	}
 
 	h4{
+		 
 		padding: 15px 0px;
 		background-color: #f2f2f2;
 		margin-bottom: 5px;
-		color: #666;
+		color: #666; 
+		
 	}
 
 	nav{
+		// .table;
 		width: 100%;
 		height: 100%;
 		
@@ -167,7 +177,9 @@
 	}
 }
 
-// TEXT EDITOR STYLES
+////////////////////////
+// TEXT EDITOR STYLES //
+////////////////////////
 .editor-content{
 	display: table-cell;
 	width: 805px;
@@ -175,57 +187,58 @@
 	box-sizing: border-box;
 
 	.toolbar{
-		text-align: left;
-		padding: 10px;
-		border-radius: 10px 10px 0px 0px;
-		overflow: hidden;
-		background-color: rgb(242, 242, 242);
-		border-top: 1px solid #ddd;
-		border-left: 1px solid #ddd;
-		border-right: 1px solid #ddd;
-
-
-		.group{
-			display: inline-block;
-			margin: 10px 5px;
-			border-radius: 5px;
-			border: 1px solid #999;
-			overflow: hidden;
-			background-color: #fff;
-			
-			button{
-				border-left: 1px solid #999;
-				
-				&:first-child{
-					border-left: none;
-				}
-
-				&:last-child{
-					margin-right: 0px;
-				}
-			}
-		}
+		/*.navbar;
+		.navbar-default;*/
+		padding-left: 10px;
+		border-radius: 4px 4px 0px 0px !important;
+		margin-bottom: 0px;
+		border-bottom: none;
 
 		button{
-			border: none;
-			background-color: #fff;
-			color: #999;
-			padding: 5px 10px;
-			margin-right: -5px;
-
-
+			/*.btn;
+			.btn-default;
+			.navbar-btn;*/
+		}
+		
+		.Bold{
+			&::before{
+				content: @fa-var-bold ;
+			}
 			&:hover{
-				background-color: #ccc;
-				color: #000;
+				&::before{
+					content: 'Bold';
+				}
 			}
 		}
 
-		>button{
-			margin: 10px 5px;
-			border: 1px solid #999;
-			border-radius: 5px;
-			vertical-align: top;
+		.Italic{
+
 		}
+
+		.Strikethrough{
+
+		}
+
+		.Underline{
+
+		}
+
+		.Subscript{
+
+		}
+
+		.Superscript{
+
+		}
+
+		.small{
+
+		}
+
+		.Link{
+
+		}
+
 	}
 
 	.edit{
@@ -251,9 +264,9 @@
 	width: 100%;
 }
 
-/**********************************
- * TOOLTIP STYLES
- **********************************/
+////////////////////
+// TOOLTIP STYLES //
+////////////////////
 
 .tooltip{
 	label{
@@ -276,4 +289,30 @@
 	-webkit-rtl-ordering: logical;
 	-webkit-user-select: text;
 	cursor: auto;
+}
+
+//////////////////////////
+// TEMPLATE TEMP STYLES //
+//////////////////////////
+
+.editor .new{
+	// add to indicate its contenteditable
+	[contenteditable~=true]{
+		border: 1px solid #E7E7E7;
+	}
+	
+	.templateHeader{
+		height: 150px;
+		border-bottom: 1px solid #000;
+	}
+
+	#templateContainer{
+		height: 500px;
+	}
+
+	#templateSidebar{
+		width: 200px;
+		height: 350px;
+		border-right: 1px solid #000;
+	}
 }

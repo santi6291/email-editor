@@ -34,7 +34,7 @@ function setPageID (){
 }
 
 // RENDER TEMPLARE VERSIONS
-function renderVer ( filename, title, append ) {
+/*function renderVer ( filename, title, append ) {
 	var fileLoc = ( filename.indexOf('.php') == -1 )? filename + '.php': filename;
 	var aNode = $('<a/>').attr('href', 'blast/revisions/' + fileLoc).append(title);
 	
@@ -43,7 +43,7 @@ function renderVer ( filename, title, append ) {
 	} else {
 		$('.version').prepend(aNode);
 	}
-}
+}*/
 
 // CONVERT OBJECT TO TEXT
 function objectToText (theObject) {

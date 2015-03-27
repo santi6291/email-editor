@@ -83,7 +83,7 @@ $paths = [
 		'views' => $_SERVER['DOCUMENT_ROOT'] . 'data/views/',
 	],
 	'resources' => [
-		'css' => 'resources/css/',
+		'styles' => 'resources/styles/',
 		'images' => 'resources/images/',
 		'js' => 'resources/js/',
 		'vendors' => 'resources/vendors/',
