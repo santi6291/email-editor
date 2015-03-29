@@ -13,7 +13,8 @@ pageEvent.index = function(){
 	Manager.init('/app/handlers/manager/templateList.php');
 
 	// INSTALL / UNINSTALL TABLE
-	$.hook('installer').on('click', function (e){
+	
+	$('[data-hook~=installer]').on('click', function (e){
 		e.preventDefault();
 
 		var installerNode = $(this);

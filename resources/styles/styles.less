@@ -1,14 +1,33 @@
-@import '../vendors/font-awesome-4.3.0/less/font-awesome.less';
+@import "../vendors/font-awesome/less/font-awesome";
+// mixins
+.transition(@transition) {
+	-webkit-transition: @transition;
+	-moz-transition: @transition;
+	-o-transition: @transition;
+	transition: @transition;
+}
+
+.fa(@icon){
+	@faPrefix: "fa-var-@{icon}";
+	.fa-icon();
+	content: @@faPrefix;
+};
+
+.editor-button(@type){
+	&::before{
+		.fa(@type);
+	}
+	&:hover{
+		&::before{
+			content: '@{type}';
+		}
+	}
+}
 
 .scrollBar{
-	::-webkit-scrollbar{
-		background-color: #999;
-		border-left: 1px solid #888;
-	}
+	::-webkit-scrollbar{}
 
-	::-webkit-scrollbar-thumb{
-		background-color: #ddd;
-	}
+	::-webkit-scrollbar-thumb{}
 }
 
 *{
@@ -18,8 +37,7 @@
 }
 
 .wrapper{
-	max-width: 1200px;
-	margin: 0 auto;	
+	margin: 20px 50px;	
 	
 	&-version, &-editor, &-feedback{
 		display: inline-block;
@@ -48,28 +66,17 @@
 		width: 100%;
 		height: 45px;
 
-		&:nth-child(odd){
-			background-color: #EFECEC;
-		}
-
-		&:nth-child(even){
-			background-color: #DDDCDC;
-		}
-
 		.template-title{
 			font-weight: bold;
 			display: table-cell;
 			vertical-align: middle;
 			width: 60%;
-			text-decoration: none;
-			padding-left: 2%;
 		}
 
 		.template-control{
 			display: table-cell;
 			vertical-align: middle;
 			width: 10%;
-			text-decoration: none;
 			border-left: 1px solid #ccc;
 			text-align: center;
 			color: rgb(85, 26, 139);
@@ -77,21 +84,6 @@
 		}
 	}
 }
-
-.error{
-	margin-bottom: 5px;
-	padding-bottom: 5px;
-	border-bottom: 1px solid;
-}
-
-.validCode{
-	textarea{
-		margin: 0px;
-		width: 300px;
-		height: 300px;
-	}
-}
-
 
 ///////////////////
 // EDITOR STYLES //
@@ -105,50 +97,16 @@
 // COMPONENTS STYLES
 .editor-components{
 	display: table-cell;
-	width: 190px;
-	height: 80vh;
-	margin: 0 auto;
-	background-color: #999;
-	text-align: center;
 	overflow: hidden;
 	vertical-align: top;
 	.scrollBar;
-	
-	.components-title{
-		margin: 0px;
-		color: #fff;
-		background-color: #666;
-		padding: 15px 0px;
-		
-		h3{
-			// .panel-title;
-			/*font-size: 24px;
-			padding: 5px;*/
-		}
-		// .panel-primary;
-		
-	}
 
 	h4{
-		 
 		padding: 15px 0px;
-		background-color: #f2f2f2;
-		margin-bottom: 5px;
-		color: #666; 
-		
 	}
 
 	nav{
-		// .table;
-		width: 100%;
-		height: 100%;
-		
-		// padding: 10px 20px;
 		padding: 10px 0px;
-
-		overflow-y: scroll;
-		box-sizing: border-box;
-		text-align: center;
 	}
 
 	img{
@@ -157,18 +115,8 @@
 	}
 
 	.component{
-		display: table;
-		width: 100%;
-		min-height: 175px;
-		background-color: #ccc;
 		margin: 15px auto;
 		padding: 5px;
-		text-align: center;
-
-		&-thumb{
-			display: table-cell;
-			vertical-align: middle;
-		}
 	}
 
 	[data-hook ~= component-list]{
@@ -182,61 +130,52 @@
 ////////////////////////
 .editor-content{
 	display: table-cell;
-	width: 805px;
+	width: 80%;
+	max-width: 850px;
+	min-width: 650px;
 	padding: 0px 10px;
+	text-align: center;
 	box-sizing: border-box;
 
 	.toolbar{
-		/*.navbar;
-		.navbar-default;*/
-		padding-left: 10px;
-		border-radius: 4px 4px 0px 0px !important;
-		margin-bottom: 0px;
-		border-bottom: none;
 
 		button{
-			/*.btn;
-			.btn-default;
-			.navbar-btn;*/
+			font-size: 13px;
+			width: 90px;
+			padding: 10px 0px;
 		}
 		
+		
 		.Bold{
-			&::before{
-				content: @fa-var-bold ;
-			}
-			&:hover{
-				&::before{
-					content: 'Bold';
-				}
-			}
+			.editor-button(bold);
 		}
 
 		.Italic{
-
+			.editor-button(italic);
 		}
 
 		.Strikethrough{
-
+			.editor-button(strikethrough);
 		}
 
 		.Underline{
-
+			.editor-button(underline);
 		}
 
 		.Subscript{
-
+			.editor-button(subscript);
 		}
 
 		.Superscript{
-
+			.editor-button(superscript);
 		}
 
 		.small{
-
+			.editor-button(subscript);
 		}
 
 		.Link{
-
+			.editor-button(link);
 		}
 
 	}
@@ -244,6 +183,9 @@
 	.edit{
 		overflow-y: scroll;
 		height: 80vh;
+		margin: 0 auto;
+		width: 100%;
+		max-width: 840px;
 		min-width: 650px;
 		box-sizing: border-box;
 		border: 1px solid #ddd;
@@ -262,33 +204,6 @@
 [data ~= components-list]{
 	display: table;
 	width: 100%;
-}
-
-////////////////////
-// TOOLTIP STYLES //
-////////////////////
-
-.tooltip{
-	label{
-		display: block;
-		margin-bottom: 2%;
-	}
-}
-
-.titleField{
-	color: #000;
-	-webkit-appearance: textfield;
-	padding: 1px;
-	background-color: white;
-	border: 2px inset;
-	border-image-source: initial;
-	border-image-slice: initial;
-	border-image-width: initial;
-	border-image-outset: initial;
-	border-image-repeat: initial;
-	-webkit-rtl-ordering: logical;
-	-webkit-user-select: text;
-	cursor: auto;
 }
 
 //////////////////////////

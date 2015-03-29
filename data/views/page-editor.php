@@ -32,13 +32,13 @@
 		<div class="editor-content">
 			<div class="toolbar">
 				<button class="Bold" data-hook="formatText" data-format="strong"></button>
-				<button class="Italic" data-hook="formatText" data-format="em">Italic</button>
-				<button class="Strikethrough" data-hook="formatText" data-format="del">Strikethrough</button>
-				<button class="Underline" data-hook="formatText" data-format="u">Underline</button>
-				<button class="Subscript" data-hook="formatText" data-format="sub">Subscript</button>
-				<button class="Superscript" data-hook="formatText" data-format="sup">Superscript</button>
-				<button class="small" data-hook="formatText" data-format="small">small</button>
-				<button class="Link" data-hook="formatText" data-format="a">Link</button>
+				<button class="Italic" data-hook="formatText" data-format="em"></button>
+				<button class="Strikethrough" data-hook="formatText" data-format="del"></button>
+				<button class="Underline" data-hook="formatText" data-format="u"></button>
+				<button class="Subscript" data-hook="formatText" data-format="sub"></button>
+				<button class="Superscript" data-hook="formatText" data-format="sup"></button>
+				<button class="small" data-hook="formatText" data-format="small"></button>
+				<button class="Link" data-hook="formatText" data-format="a"></button>
 
 				<!-- <div class="group">
 					<button data-hook="formatText" data-format="strong">Bold</button>
