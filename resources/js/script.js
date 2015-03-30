@@ -1,25 +1,18 @@
 $(document).ready(function(){
-	setPageID();
-	pageEvent[pageID]();
+	App.init();
 });
 
-var pageEvent = pageEvent || {};
+// INDEX EVENT
+App.pageEvent.index = function(){
 
-/////////////////
-// INDEX EVENT //
-/////////////////
-pageEvent.index = function(){
-
-	Manager.init('/app/handlers/manager/templateList.php');
+	App.manager.init();
 
 	// INSTALL / UNINSTALL TABLE
-	
 	$('[data-hook~=installer]').on('click', function (e){
 		e.preventDefault();
-
 		var installerNode = $(this);
 
-		$.post('/app/handlers/manager/installer.php', {
+		$.post(App.handlers.manager.installer, {
 			//function type install : uninstall
 			action: $(this).val().toLowerCase()
 		}, function (response){
@@ -27,14 +20,12 @@ pageEvent.index = function(){
 			if ( response.success === true ) {
 				$('.listItem').remove();
 			}
-
-			installerNode.parent('.install-table').find('.feedback').html(response.message);
-		}, 'json');
-		//post end
-	});
-	// on: submit
+			
+			installerNode.parent('.manager-installer').find('.feedback').html(response.message);
+		}, 'json');//post end
+	});// on: submit
 	
-	Manager.event = {
+	App.manager.events = {
 		// CREATE NEW TEMPALTE
 		create: function(target){
 			
@@ -43,20 +34,20 @@ pageEvent.index = function(){
 				return false;
 			}
 
-			$.post('/app/handlers/manager/newTemplate.php', {
+			$.post(App.handlers.manager.create, {
 				// template title
 				templateName : target.find('.title').val()
 			}, function(response){
 				if ( response.success === true) {
 					// add to template list
-					Manager.list[response.ID] = {
+					App.manager.list[response.ID] = {
 						ID: response.ID,
 						title: response.title,
 						version:response.version,
 						active: response.active
 					};
 					//render template
-					Manager.renderTemplate(response.ID);
+					App.manager.render.template(response.ID);
 				} else {
 					// parse response
 					errMsg = objectToText(response.message);
@@ -80,7 +71,7 @@ pageEvent.index = function(){
 				return false;
 			}
 
-			$.post('/app/handlers/manager/cloneTemplete.php', {
+			$.post(App.handlers.manager.clone, {
 				//template to be cloned ID
 				cloneID: target.parent('li').data('template').ID,
 				// new template name
@@ -89,14 +80,14 @@ pageEvent.index = function(){
 
 				if ( response.success === true ) {
 					// add to template list
-					Manager.list[response.ID] = {
+					App.manager.list[response.ID] = {
 						ID: response.ID,
 						title: response.title,
 						version:response.version.toString(),
 						active: response.active
 					};
 					// render template
-					Manager.renderTemplate(response.ID);
+					App.manager.render.template(response.ID);
 				} else {
 					// parse error response
 					errMsg = objectToText(response.message);
@@ -112,8 +103,8 @@ pageEvent.index = function(){
 			var template = target.parent('li');
 			// tempalte id
 			var templateID = template.data('template').ID;
-			// Manager.list instance
-			var templateInfo = Manager.list[templateID];
+			// App.manager.list instance
+			var templateInfo = App.manager.list[templateID];
 
 			// prompt for new title
 			var newTitle  = window.prompt('Rename Template:', templateInfo.title);
@@ -127,7 +118,7 @@ pageEvent.index = function(){
 				return false;
 			}
 			
-			$.post('/app/handlers/manager/updateTemplate.php', {
+			$.post(App.handlers.manager.update, {
 				// template id
 				templateID: templateID,
 				//new template name
@@ -152,8 +143,8 @@ pageEvent.index = function(){
 			var template = target.parent('li');
 			// template id
 			var templateID = template.data('template').ID;
-			// Manager.list instance
-			var templateInfo = Manager.list[templateID];
+			// App.manager.list instance
+			var templateInfo = App.manager.list[templateID];
 			
 			// alter message if template is active or inactive
 			var confirmMsg = ( templateInfo.active === true )? 'Press OK Move ' + templateInfo.title + ' Template to Trash' : 'Press OK to Permenetly Delete  ' + templateInfo.title;
@@ -164,7 +155,7 @@ pageEvent.index = function(){
 				return;
 			}
 			
-			$.post('/app/handlers/manager/delTemplate.php', {
+			$.post(App.handlers.manager.destroy, {
 				// temple id
 				templateID: templateID,
 				// template status
@@ -178,7 +169,7 @@ pageEvent.index = function(){
 					if ( templateInfo.active === true ) {
 						
 						templateInfo.active = false;
-						Manager.renderTemplate(templateID);
+						App.manager.render.template(templateID);
 					}
 				} else {
 					window.alert('error deleting template');
@@ -188,14 +179,12 @@ pageEvent.index = function(){
 
 		// DELETE TEMPLTE DIRECTORY AND FROM DB
 		destroy: function(target) {
-			Manager.event.trash(target);
+			App.manager.event.trash(target);
 		}
 	};
 };
 
-///////////////////
-// EDITOR EVENTS //
-///////////////////
-pageEvent.editor = function() {
-	Editor.init();
+// EDITOR EVENTS
+App.pageEvent.editor = function() {
+	App.editor.init();
 };

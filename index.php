@@ -14,7 +14,6 @@
 	<div class="wrapper">
 		<?php include_once($paths['data']['views'] . 'page-' . $pageID . '.php') ?>
 	</div>
-	
-	<script src="/scripts.js"></script>	
+	<script src="/<?=$paths['scripts']?>"></script>	
 </body>
 </html>

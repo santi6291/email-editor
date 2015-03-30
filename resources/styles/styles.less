@@ -13,13 +13,26 @@
 	content: @@faPrefix;
 };
 
-.editor-button(@type){
+.inlineBlocker(@vAlign: top){
+	display: inline-block;
+	*display: inline;
+	vertical-align: @vAlign;
+	*vertical-align: @vAlign;
+}
+
+.box-sizing(@property: border-box){
+	-webkit-box-sizing: @property;
+	-moz-box-sizing: @property;
+	box-sizing: @property; 
+}
+
+.editor-button(@type, @text: '@{type}'){
 	&::before{
 		.fa(@type);
 	}
 	&:hover{
 		&::before{
-			content: '@{type}';
+			content: '@{text}';
 		}
 	}
 }
@@ -97,7 +110,7 @@
 // COMPONENTS STYLES
 .editor-components{
 	display: table-cell;
-	overflow: hidden;
+	// overflow: hidden;
 	vertical-align: top;
 	.scrollBar;
 
@@ -112,6 +125,7 @@
 	img{
 		width: auto;
 		max-width: 100%;
+		z-index: 9999;
 	}
 
 	.component{
@@ -120,7 +134,7 @@
 	}
 
 	[data-hook ~= component-list]{
-		display: none;
+		// display: none;
 		padding: 0px 20px;
 	}
 }
@@ -135,7 +149,7 @@
 	min-width: 650px;
 	padding: 0px 10px;
 	text-align: center;
-	box-sizing: border-box;
+	.box-sizing();
 
 	.toolbar{
 
@@ -170,12 +184,11 @@
 			.editor-button(superscript);
 		}
 
-		.small{
-			.editor-button(subscript);
-		}
-
 		.Link{
 			.editor-button(link);
+		}
+		.image{
+			.editor-button(file-image-o, Insert Image);
 		}
 
 	}
@@ -187,7 +200,7 @@
 		width: 100%;
 		max-width: 840px;
 		min-width: 650px;
-		box-sizing: border-box;
+		.box-sizing();
 		border: 1px solid #ddd;
 	}
 }
@@ -216,18 +229,35 @@
 		border: 1px solid #E7E7E7;
 	}
 	
-	.templateHeader{
+	.noheader{
 		height: 150px;
 		border-bottom: 1px solid #000;
+		border-left: 1px solid #000;
+		border-right: 1px solid #000;
 	}
 
-	#templateContainer{
+	.noContent{
+		width: 400px;
 		height: 500px;
 	}
 
-	#templateSidebar{
-		width: 200px;
-		height: 350px;
+	.noSidebar{
+		width: 1px;
+		/*height: 350px;
 		border-right: 1px solid #000;
+		border-left: 1px solid #000;*/
+	}
+	.noBottom{
+		height: 150px;
+		border: 1px solid #000;	
+	}
+	
+	.canDrop{
+		background-color: aquamarine !important;
+		border: 4px dashed #000;
+		box-sizing: border-box;
+	}
+	.activeSidebar{
+		width: auto;
 	}
 }

@@ -10,9 +10,9 @@ class manager extends database{
 	public function install() {
 		global $paths;
 
-		if ( file_exists($paths['data']['templates']['stored']) === false ) {
+		if ( file_exists($paths['data']['templates']) === false ) {
 			
-			if ( mkdir($paths['data']['templates']['stored']) === false ) {
+			if ( mkdir($paths['data']['templates']) === false ) {
 				return [
 					'success' => false,
 					'message' => error_get_last(),
@@ -23,9 +23,10 @@ class manager extends database{
 
 		$con = $this->DBConnect(); 
 		
-		$templateQuery = $con->prepare("CREATE TABLE `templates` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, title TINYTEXT NOT NULL, version TINYTEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT 1);");
+		$templateQuery = $con->prepare("CREATE TABLE `templates` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, title TINYTEXT NOT NULL, version TINYTEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT 1, user Int, colorPallet MEDIUMBLOB);");
+		$usersQuery    = $con->prepare("CREATE TABLE `users` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, username TEXT NOT NULL, displayname TEXT NOT NULL, password TEXT NOT NULL);");
 		
-		if ( $templateQuery == false ) {
+		if ( $templateQuery == false || $usersQuery == false) {
 			return [
 				'success' => false,
 				'message' => $con->error,
@@ -33,10 +34,11 @@ class manager extends database{
 		}
 
 		$templateSuccess = $templateQuery->execute();
+		$userSuccess = $usersQuery->execute();
 		
 		return [
-			'success' => ( $templateSuccess === true )? true : false,
-			'message' => ( $templateSuccess === true )? 'Table \'templates\' Created' : $con->error,
+			'success' => ( $templateSuccess === true || $userSuccess === true )? true : false,
+			'message' => ( $templateSuccess === true || $userSuccess === true )? 'Table \'templates\' and  \'users\' Created' : $con->error,
 		];
 		die();
 	}
@@ -45,8 +47,8 @@ class manager extends database{
 	public function uninstall (){
 		global $paths;
 
-		if ( count(scandir($paths['data']['templates']['stored'])) > 2) {
-			if ( $this->destroy_dir($paths['data']['templates']['stored']) === false) {
+		if ( count(scandir($paths['data']['templates'])) > 2) {
+			if ( $this->destroy_dir($paths['data']['templates']) === false) {
 				return [
 					'success' => false,
 					'message' => error_get_last(),
@@ -57,7 +59,7 @@ class manager extends database{
 
 		$con = $this->DBConnect();
 		
-		$dropTables = $con->prepare("DROP TABLE `templates`;");
+		$dropTables = $con->prepare("DROP TABLE `templates`, `users`;");
 
 		if ( $dropTables == false ) {
 			return [
@@ -70,7 +72,7 @@ class manager extends database{
 
 		return [
 			'success' => ( $tableDeleted === true )? true : false,
-			'message' => ( $tableDeleted === true )? 'Table \'templates\' Dropped' : $con->error,
+			'message' => ( $tableDeleted === true )? 'Table \'templates\' and \'users\' Dropped' : $con->error,
 		];
 		die();
 	}
@@ -123,7 +125,7 @@ class manager extends database{
 		$this->ID = $con->insert_id;
 
 		// check if folder name taken
-		if ( file_exists($paths['data']['templates']['stored'] . $this->ID) == true ){
+		if ( file_exists($paths['data']['templates'] . $this->ID) == true ){
 			return [
 				'success' => false,
 				'message' => error_get_last(),
@@ -132,7 +134,7 @@ class manager extends database{
 		}
 
 		// make dir with provide name
-		if ( mkdir($paths['data']['templates']['stored'] . $this->ID) == false ) {
+		if ( mkdir($paths['data']['templates'] . $this->ID) == false ) {
 			return[
 				'success' => false,
 				'message' => error_get_last(),
@@ -147,7 +149,7 @@ class manager extends database{
 		}
 
 		// copy template body, to template folder, with timestamp
-		if ( copy($paths['data']['templates']['parts'] . 'new.html', $paths['data']['templates']['stored'] . $this->ID . '/' . $this->version . '.html') ) {
+		if ( copy($paths['data']['views'] . 'template-new.html', $paths['data']['templates'] . $this->ID . '/' . $this->version . '.html') ) {
 			
 			return [
 				'success' => true,
@@ -248,11 +250,11 @@ class manager extends database{
 		}
 
 		$delTemplate->bind_param('i', $this->ID);
-		$delTemplate->execute();
+		$templateDeleted = $delTemplate->execute();
 
 		return [
-			'success' => ( $delTemplate === true )? true : false,
-			'message' => ( $delTemplate === true )? '' : $con->error,
+			'success' => ( $templateDeleted === true )? true : false,
+			'message' => ( $templateDeleted === true )? '' : $con->error,
 		];
 		die();
 	}
@@ -291,19 +293,20 @@ class manager extends database{
 
 		if ( $listRows !== false) {
 			$listRows->execute();
-			$listRows->bind_result($ID, $title, $version, $active);
+			$listRows->bind_result($ID, $title, $version, $active, $user, $colorPallet);
 			
-			$templateList = array();
+			$templateList = [];
 			
 			while ( $listRows->fetch() ) {
 				$templateList[$ID] = [
-					'ID'      => $ID,
-					'title'   => $title,
-					'version' => $version,
-					'active'  => ( $active == 1 )? true : false,
+					'ID'          => $ID,
+					'title'       => $title,
+					'version'     => $version,
+					'active'      => ( $active == 1 )? true : false,
+					"user"        => $user,
+					"colorPallet" => $colorPallet,
 				];
 			}
-
 			return $templateList;
 		}
 	}

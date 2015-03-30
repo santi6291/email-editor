@@ -7,7 +7,7 @@ class editor extends database{
 	public function listVer () {
 		global $paths;
 
-		$revisions = scandir($paths['data']['templates']['stored'] . $this->id, 1);
+		$revisions = scandir($paths['data']['templates'] . $this->id, 1);
 
 		$response = [];
 
@@ -26,29 +26,5 @@ class editor extends database{
 		}
 
 		return $response;
-	}
-
-	public function components (){
-		global $paths;
-
-		$componentsDir = scandir($paths['data']['templates']['parts'] . 'components/');
-		$componets = array_filter($componentsDir, function($value){
-			return strpos($value, '.html') !== false;
-		});
-
-		$componetsArr = [];
-
-		foreach ($componets as $key => $component) {
-			$componentTitle = preg_replace('/(\.)\w+$/', '', $component);
-			$componentContent = file_get_contents($paths['data']['templates']['parts'] . 'components/' . $component);
-			
-			$componetsArr[$componentTitle] = [
-				'title'    => $componentTitle,
-				'fileName' => $component,
-				'content'  => $componentContent,
-			];
-		}
-
-		return $componetsArr;
 	}
 }

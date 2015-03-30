@@ -67,6 +67,7 @@ resources/
 global $paths;
 $paths = [
 	'url' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/',
+	'scripts' => 'scripts.js',
 	'app' => [
 		'handlers' => [
 			'template' => $_SERVER['DOCUMENT_ROOT'] . 'app/handlers/manager/',
@@ -76,10 +77,7 @@ $paths = [
 		],
 	],
 	'data' => [
-		'templates' => [
-			'stored' => $_SERVER['DOCUMENT_ROOT'] . 'data/templates/stored/',
-			'parts' => $_SERVER['DOCUMENT_ROOT'] . 'data/templates/parts/',
-		],
+		'templates' => $_SERVER['DOCUMENT_ROOT'] . 'data/templates/',
 		'views' => $_SERVER['DOCUMENT_ROOT'] . 'data/views/',
 	],
 	'resources' => [
