@@ -7,7 +7,7 @@ App.editor = {
 App.editor.views = {};
 
 App.editor.init = function(){
-
+	
 	App.editor.template.title = App.GET.template;
 	App.editor.template.id = App.GET.id;
 
@@ -27,7 +27,8 @@ App.editor.init = function(){
 		$.get(App.handlers.editor.stored + App.editor.template.id + '/' + App.editor.template.versions[0].fileName, function(latestVer) {
 			template = $(latestVer);
 			
-			App.editor.template.size = template.find('#templateBody').attr('width');
+			App.editor.template.width = template.find('#templateContainer').attr('width');
+			$('.widthSelect').find('[value~=' + App.editor.template.width + ']').attr('selected', 'true');
 			
 			template.find('.templateHeader').droppable({
 				addClasses: false,
@@ -43,12 +44,19 @@ App.editor.init = function(){
 				drop: App.editor.events.drop
 			});
 
-			template.find('.templateContent').droppable({
+			template.find('.templateContent, .templateBottom').droppable({
 				addClasses: false,
 				activeClass: 'canDrop activeContent',
 				accept: '[data-component*=body-content]',
 				drop: App.editor.events.drop
 			});
+
+			/*template.find('.templateBottom').droppable({
+				addClasses: false,
+				activeClass: 'canDrop activeBottom',
+				accept: '[data-component*=body-content]',
+				drop: App.editor.events.drop
+			});*/
 			
 
 			$('.editor').find('.edit').html(template)
@@ -58,6 +66,10 @@ App.editor.init = function(){
 		_.each(App.editor.template.versions, function(ver, index){
 			App.editor.render.versions(ver.fileName, ver.title, true);
 		});
+
+		$('.widthSelect').on('change', function(e){
+			App.editor.events.widthChange($(this));
+		})
 	});
 
 	$('[data-hook~=componentToggle]').on('click', function(){
@@ -105,13 +117,7 @@ App.editor.render = {
 	component: function (componentName){
 		var componentDom = $(App.views['editor-component'].contents);
 		
-		componentDom.find('img').attr({
-			'src': '/resources/images/' + componentName + '.png',
-			'data-component': componentName
-		}).draggable({
-			addClasses: false,
-			revert: true
-		});
+		var componentType, activeClass;
 		
 		if ( componentName.indexOf('header') > -1 ) {
 			
@@ -120,11 +126,22 @@ App.editor.render = {
 
 			componentType = '.siderbar-components';
 		} else {
+			
 			componentType = '.body-components';
 		}
 
-		$('[data-editor ~= components-list]').find(componentType).append(componentDom);
+		componentDom.find('img').attr({
+			'src': '/resources/images/' + componentName + '.png',
+			'data-component': componentName
+		}).draggable({
+			addClasses: false,
+			revert: true,
+			start: App.editor.events.dragStart, 
+			stop: App.editor.events.dragStop
+		});
+		
 
+		$('[data-editor ~= components-list]').find(componentType).append(componentDom);
 	}
 };
 
@@ -145,13 +162,13 @@ App.editor.events = {
 		var componentName = $(ui.draggable).data('component');
 		var componentContent = $(App.views[componentName].contents);
 		
+		$(this).height( $(this).height()+100 );
+		
 		$(this)
 		.removeClass('noheader')
 		.removeClass('noContent')
 		.removeClass('noSidebar')
 		.removeClass('noBottom')
-
-		console.log(componentName)
 
 		if( componentName.indexOf('body-content') > -1 ){
 
@@ -167,25 +184,68 @@ App.editor.events = {
 			$(this).html($(componentContent));
 		}
 
-		App.editor.events.resize(componentContent, $(this).width()+2);
+		App.editor.events.resize();
+	},
+
+	dragStart: function (){
+		var sidebarWidth = ( Math.round( App.editor.template.width / 30 ) * 10 );
+		var contentSize = ( App.editor.template.width - (sidebarWidth * 2) );
+
+		$('.templateContent').attr('width', contentSize );
+		$('.templateContent').find('.templateBody').attr('width', contentSize );
+	},
+
+	dragStop: function() {
+		var sidebarWidth = ( Math.round( App.editor.template.width / 30 ) * 10 );
+		var contentSize = ( $('[sidebar-width]').children().size() > 0 )? (App.editor.template.width - sidebarWidth) : App.editor.template.width;
+		
+		$('.templateContent').attr('width', contentSize );
+		$('.templateContent').find('.templateBody').attr('width', contentSize );
 	},
 	
 	resize: function (){
+		var sidebarWidth = ( Math.round( App.editor.template.width / 30 ) * 10 );
 		
-		columns = $(document).find('.innerColum');
-		var parentWidth = columns.parents('td').first().attr('width');
+		for (var i = 2; i <= 4; i++) {
+				var componentCols = $('[component-columns-' + i + ']').find('[column-width]')
+				$('[component-columns-' + i + ']').attr('width', App.editor.template.width)	
+				
+				componentCols.each(function(index, el) {
+					var colCount = componentCols.size();
+					var newWidth = Math.floor( App.editor.template.width / 2 );
+					$(el).attr('width', newWidth);
+				});
+			};
+			return
+		// no sidebar present
+		if( $('[sidebar-width]').children().size() == 0 && $('[sidebar-width]').width() < 200 ){
+			for (var i = 2; i <= 4; i++) {
+				var componentCols = $('[component-columns-' + i + ']').find('[column-width]')
+				$('[component-columns-' + i + ']').attr('width', App.editor.template.width)	
+				
+				componentCols.each(function(index, el) {
+					var colCount = componentCols.size();
+					var newWidth = Math.floor( App.editor.template.width / 2 );
+					$(el).attr('width', newWidth);
+				});
+			};
+		} else {
+
+			// $('[sidebar-width]').attr('width', sidebarWidth);
+			// console.log($('[component-columns-2]'))
+			// $('[component-columns-2]').attr('width', 400)
+			// contentWidth = ()
+
+			/*
+			$('[content-width]')*/
+		}
+	},
+	
+	widthChange: function(target){
+		App.editor.template.width = $(target).find(':selected').val();
 		
-		console.dirxml(parentWidth)
-
-		var columnWidth = Math.floor(parentWidth / columns.size());
-
-		columns.attr('width', columnWidth);
-
-		return
-		columSize = (Math.floor( containerWidth / $(content).find('.innerColum').size() ) - 20);
-		$(content).find('.innerColum').each(function(index, el) {	
-
-			// $(this).attr('width', App.template.)
-		});
+		$('[template-width]').attr('width', App.editor.template.width);
+		App.editor.events.resize();
 	}
+	
 };

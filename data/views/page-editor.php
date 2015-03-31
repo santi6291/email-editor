@@ -38,10 +38,14 @@
 		<div class="editor-content">
 			<div class="toolbar">
 				<div class="templateWidth">
-					<span class="widthTitle">
-						Template Width	
-					</span>
-					<input type="number" class="widthInput" max="800" min="600" value="600"/>
+					<select class="widthSelect">
+						<option value="" disabled selected>Template Width</option>
+						<option value="600">600</option>
+						<option value="650">650</option>
+						<option value="700">700</option>
+						<option value="750">750</option>
+						<option value="800">800</option>
+					</select>
 					<button>color Picker</button>
 				</div>
 				<div class="insertBtn">

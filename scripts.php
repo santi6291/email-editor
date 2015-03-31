@@ -7,7 +7,6 @@ $script = [
 	file_get_contents($vendors . 'jquery/dist/jquery.min.js'),
 	// full jQuery UI
 	// file_get_contents($vendors . 'jqueryui/jquery-ui.min.js'),
-	
 	// jquery Draggable, Drappable
 	file_get_contents($vendors . 'jqueryui/ui/minified/core.min.js'),
 	file_get_contents($vendors . 'jqueryui/ui/minified/widget.min.js'),
@@ -15,7 +14,6 @@ $script = [
 	file_get_contents($vendors . 'jqueryui/ui/minified/position.min.js'),
 	file_get_contents($vendors . 'jqueryui/ui/minified/draggable.min.js'),
 	file_get_contents($vendors . 'jqueryui/ui/minified/droppable.min.js'),
-
 	file_get_contents($vendors . 'underscore/underscore-min.js'),
 	file_get_contents($vendors . 'tooltipster/js/jquery.tooltipster.min.js'),
 	file_get_contents($resources . 'jquery.extensions.js'),
