@@ -1,8 +1,8 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	<FilesMatch "scripts\.(js)$">
-		RewriteRule . /scripts.php [L]
-	</FilesMatch>
+	# <FilesMatch "scripts\.(js)$">
+	# 	RewriteRule . /scripts.php [L]
+	# </FilesMatch>
 	RewriteBase /
 	RewriteRule ^index\.php$ - [L]
 	RewriteCond %{REQUEST_FILENAME} !-f

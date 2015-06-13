@@ -7,8 +7,8 @@
 	<div class="manager-installer">
 		<h3>Install / Uninstall table</h3>
 
-		<input type="button" value="Install" data-hook="installer"/>
-		<input type="button" value="Uninstall" data-hook="installer"/>
+		<input type="button" value="Install" data-manager="installer"/>
+		<input type="button" value="Uninstall" data-manager="installer"/>
 		
 		<div class="feedback"></div>
 	</div>

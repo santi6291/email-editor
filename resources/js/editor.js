@@ -49,15 +49,7 @@ App.editor.init = function(){
 				activeClass: 'canDrop activeContent',
 				accept: '[data-component*=body-content]',
 				drop: App.editor.events.drop
-			});
-
-			/*template.find('.templateBottom').droppable({
-				addClasses: false,
-				activeClass: 'canDrop activeBottom',
-				accept: '[data-component*=body-content]',
-				drop: App.editor.events.drop
-			});*/
-			
+			});			
 
 			$('.editor').find('.edit').html(template)
 		});

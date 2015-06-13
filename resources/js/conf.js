@@ -3,9 +3,7 @@ var App = App || {};
 App.helpers   = App.helpers || {};
 App.pageEvent = App.pageEvent || {};
 App.editor    = App.editor || {};
-App.manager   = App.manager || {};
 App.views     = App.views || {};
-App.views     = App.handlers || {};
 App.handlers  = App.handlers || {};
 
 App.init = function(){
@@ -51,15 +49,6 @@ App.views = {
 };
 
 App.handlers = {
-	manager:{
-		create: '/app/handlers/manager/newTemplate.php',
-		templateList: '/app/handlers/manager/templateList.php',
-		installer: '/app/handlers/manager/installer.php',
-		clone: '/app/handlers/manager/cloneTemplete.php',
-		update: '/app/handlers/manager/updateTemplate.php',
-		destroy: '/app/handlers/manager/delTemplate.php',
-	},
-
 	editor:{
 		list: '/app/handlers/editor/listVer.php',
 		stored:'/data/templates/'

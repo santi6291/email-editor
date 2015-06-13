@@ -19,8 +19,8 @@ class database{
 	public function DBConnect(){
 
 		$db_host 	 = 'localhost';
-		$db_user 	 = 'root';
-		$db_password = 'sjsm1991';
+		$db_user 	 = 'editor';
+		$db_password = 'EpXpxKtVHwJ3A4rj';
 		$db_name 	 = 'editor';
 
 		$connection = new mysqli($db_host, $db_user, $db_password, $db_name);
@@ -67,7 +67,6 @@ resources/
 global $paths;
 $paths = [
 	'url' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/',
-	'scripts' => 'scripts.js',
 	'app' => [
 		'handlers' => [
 			'template' => $_SERVER['DOCUMENT_ROOT'] . 'app/handlers/manager/',

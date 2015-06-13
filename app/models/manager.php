@@ -173,10 +173,14 @@ class manager extends database{
 			die();
 		}
 		//get all version of template to be copied
-		$orgTempVer = scandir($paths['data']['templates']['stored'] . $orgTemplateID, 1);
+		$orgTempVer = scandir($paths['data']['templates'] . $orgTemplateID, 1);
 		
 		if ( $orgTempVer == false) {
-			return false;
+			return [
+				'folderID' => $paths['data']['templates'] . $orgTemplateID,
+				'success' => false,
+				'message' => error_get_last(),
+			];
 			die();
 		}
 		
@@ -184,7 +188,7 @@ class manager extends database{
 		$orgLatestVer = '/' . $orgTempVer[0];
 
 		// copy to new direcotry
-		if ( copy($paths['data']['templates']['stored'] . $orgTemplateID . $orgLatestVer, $paths['data']['templates']['stored'] . $this->ID . '/' . $this->version .'.html') == false) {
+		if ( copy($paths['data']['templates'] . $orgTemplateID . $orgLatestVer, $paths['data']['templates'] . $this->ID . '/' . $this->version .'.html') == false) {
 			return [
 				'success' => false,
 				'message' => error_get_last(),
@@ -229,7 +233,7 @@ class manager extends database{
 	public function delete () {
 		global $paths;
 		
-		if ( $this->destroy_dir( $paths['data']['templates']['stored'] . $this->ID) == false) {
+		if ( $this->destroy_dir( $paths['data']['templates'] . $this->ID) == false) {
 			return [
 				'success' => false,
 				'message' => error_get_last(),
