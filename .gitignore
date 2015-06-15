@@ -1,3 +1,4 @@
 #ignore
 *sftp-config.json
 *data/templates
+*resources/vendors

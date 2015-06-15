@@ -37,6 +37,10 @@
 	}
 }
 
+.displayNone{
+	display: none !important;
+}
+
 .scrollBar{
 	::-webkit-scrollbar{}
 
@@ -50,11 +54,10 @@
 }
 
 .wrapper{
-	margin: 20px 50px;	
+	// margin: 20px 50px;
+	margin: 20px 0px;
 	
-	&-version, &-editor, &-feedback{
-		display: inline-block;
-		vertical-align: top;
+	&-editor{
 		margin-top: 70px;
 	}
 }
@@ -101,62 +104,97 @@
 ///////////////////
 // EDITOR STYLES //
 ///////////////////
- .editor-wrapper{
- 	display: table;
- 	width: 100%;
- 	margin-top: 3%;
- }
 
-// COMPONENTS STYLES
-.editor-components{
-	display: table-cell;
-	// overflow: hidden;
-	vertical-align: top;
-	.scrollBar;
-
-	h4{
-		padding: 15px 0px;
+.editor{
+	&-wrapper{
+		display: table;
+		width: 100%;
+		min-width: 1200px;
+		margin-top: 3%;
+	}
+	
+	&-tools{
+		display: table-cell;
+		width: 35%;
+		padding: 0px 10px;
+		vertical-align: top;
+	}
+	
+	&-toolsBtn{
+		button{
+			width: 100%;
+			font-size: 2em;
+			margin-bottom: 2%
+		}
+	}
+	
+	&-modeView{
+		background-color: #666;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: 999;
+		overflow-x: hidden;
+		
+		header{
+			display: table;
+			width: 100%;
+			font-size: 2em;
+			height: 55px;
+			padding: 0px 20px;
+			box-sizing: border-box;
+			
+			h3{
+				display: table-cell;
+				vertical-align: middle;
+				text-align: left;
+			}
+			div{
+				display: table-cell;
+				vertical-align: middle;
+				text-align: right;
+			}
+		}
 	}
 
-	nav{
-		padding: 10px 0px;
+	&-modelExit{
+		margin: 15px 0px;
+		text-align: right;
+		padding-right: 20px;
+		font-size: 2em;
+		color: white;
 	}
 
-	img{
-		width: auto;
-		max-width: 100%;
-		z-index: 9999;
+	&-content{
+		display: table-cell;
+		vertical-align: top;
+		width: 65%;
+		min-width: 650px;
+		padding: 0px 10px;
+		text-align: center;
+		.box-sizing();
+	}
+	
+	&-template{
+		overflow-y: scroll;
+		width: 100%;
+		height: 80vh;
+		margin: 0 auto;
+		min-width: 650px;
+		border: 1px solid #ddd;
+		.box-sizing();
 	}
 
-	.component{
-		margin: 15px auto;
-		padding: 5px;
-	}
-
-	[data-hook ~= component-list]{
-		// display: none;
-		padding: 0px 20px;
-	}
-}
-
-////////////////////////
-// TEXT EDITOR STYLES //
-////////////////////////
-.editor-content{
-	display: table-cell;
-	width: 80%;
-	max-width: 850px;
-	min-width: 650px;
-	padding: 0px 10px;
-	text-align: center;
-	.box-sizing();
-
-	.toolbar{
+	&-toolbarBtn{
+		text-align: left;
+		display: block;
+		margin-bottom: 1%;
 
 		button{
 			font-size: 13px;
 			width: 90px;
 			padding: 10px 0px;
+			margin-right: 1%;
 		}
 		
 		
@@ -190,33 +228,33 @@
 		.image{
 			.editor-button(file-image-o, Insert Image);
 		}
-
 	}
+}
 
-	.edit{
-		overflow-y: scroll;
-		height: 80vh;
-		margin: 0 auto;
+.modify{
+
+	.tabs{
+		display: table;
 		width: 100%;
-		max-width: 840px;
-		min-width: 650px;
-		.box-sizing();
-		border: 1px solid #ddd;
-	}
-}
+		height: 50px;
 
-.editor-versions{
-	display: table-cell;
-	width: 190px;
-	
-	a{
-		display: block;
-	}
-}
+		li{
+			width: 50%;
+			display: table-cell;
+			vertical-align: middle;
+			background-color: #999;
+			text-align: center;
+			color: white;
 
-[data ~= components-list]{
-	display: table;
-	width: 100%;
+			&:first-child{
+				border-right: 1px solid #666;
+			}
+			
+			&.active{
+				background-color: #666;
+			}
+		}
+	}
 }
 
 //////////////////////////
@@ -249,11 +287,68 @@
 		border: 1px solid #000;	
 	}
 	
-	.canDrop{
+	.addComponent{
 		width: 0px;
 		background-color: aquamarine !important;
-		border: 4px dashed #000;
+		border: 3px solid #333;
 		box-sizing: border-box;
+		vertical-align: middle;
+		cursor: pointer;
+		
+		&:before{
+			display: block !important;
+			text-align: center;
+			font-size: 3em !important;
+			vertical-align: top;
+			color: darken(aquamarine, 50%);
+			.fa(plus-circle);
+		}
+	}
+	
+	.activeSection{
+		width: 0px;
+		background-color: aquamarine !important;
+		border: 3px solid #333;
+		box-sizing: border-box;
+		vertical-align: middle;
+		cursor: pointer;
+
+		&:before{
+			display: block !important;
+			text-align: center;
+			font-size: 3em !important;
+			vertical-align: top;
+			color: darken(aquamarine, 50%);
+			.fa(minus-circle);
+		}
+	}
+	.removeComponent{
+		vertical-align: middle;
+		&:before{
+			content: '';
+			position: absolute;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(255, 0, 0, 0.5);
+			top: 0;
+			left: 0;
+			z-index: 999
+		}
+		
+		&:after{
+			.fa(times-circle);
+			font-size: 3em;
+			position: absolute;
+			z-index: 1000;
+			margin: auto;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			width: 1em;
+			height: 1em;
+		}
 	}
 	.activeSidebar{
 		width: auto;

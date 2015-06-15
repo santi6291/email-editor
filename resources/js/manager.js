@@ -1,6 +1,6 @@
 var Manager = function(){
 	var Manager = this;
-	Manager.handler = '/app/handlers/manger.php';
+	Manager.handler = '/app/handlers/manager.php';
 	Manager.list;
 	Manager.init();
 };
@@ -20,7 +20,6 @@ Manager.prototype.init = function() {
 
 Manager.prototype.events = function() {
 	var Manager = this;
-	
 	// INSTALL / UNINSTALL TABLE
 	$('[data-manager ~= installer]').on('click', function(e){
 		e.preventDefault();
@@ -66,7 +65,7 @@ Manager.prototype.events = function() {
 				Manager.renderTemplate(response.ID);
 			} else {
 				// parse response
-				var errMsg = App.helpers.objectToText(response.message);
+				var errMsg = objectToText(response.message);
 				// append response
 				target.find('.feedback').html(errMsg);
 			}
@@ -152,7 +151,7 @@ Manager.prototype.events = function() {
 				Manager.renderTemplate(response.ID);
 			} else {
 				// parse error response
-				var errMsg = App.helpers.objectToText(response.message);
+				var errMsg = objectToText(response.message);
 				alert(errMsg);
 			}
 		}, 'json');

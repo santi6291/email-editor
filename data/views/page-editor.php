@@ -1,90 +1,41 @@
 <div class="backBtn">
 	<a href="/">Back</a>
+	<h2><?=$_GET['template']?></h2>
 </div>
+
 <div class="editor">
 	
 	<div class="editor-wrapper">
 		
-		<div class="editor-components" data-editor="components">
-			<div class="components-title">
-				<h3>
-					Components
-				</h3>
+		<div class="editor-tools">
+			<div class="editor-modeView displayNone"></div>
+			<div class="editor-toolsBtn">
+				<button data-editor-mode="revisions">Revisions</button>
+				<button data-editor-mode="modify">Modify Template</button>
+				<button data-editor-mode="defaults">Set Defaults</button>
+				<button data-editor-mode="save">Save</button>
 			</div>
-			<nav data-editor="components-list">
-				<div class="componentSection templateHears">
-					<h4 data-hook="componentToggle">
-						Headers
-					</h4>
-					<div class="header-components" data-hook="component-list"></div>
+		</div>
+		
+		<div class="editor-content">
+			<div class="editor-toolbar">
+				
+				<div class="editor-toolbarBtn">
+					<button class="Link" data-editor-insert"a" />
+					<button class="image" data-editor-insert="img"/>
 				</div>
 				
-				<div class="componentSection templateBody">
-					<h4 data-hook="componentToggle">
-						Body
-					</h4>
-					<div class="body-components" data-hook="component-list"></div>
-				</div>
-
-				<div class="componentSection templateSidebar">
-					<h4 data-hook="componentToggle">
-						Sidebar
-					</h4>
-					<div class="siderbar-components" data-hook="component-list"></div>
-				</div>
-			</nav>
-		</div>
-
-		<div class="editor-content">
-			<div class="toolbar">
-				<div class="templateWidth">
-					<select class="widthSelect">
-						<option value="" disabled selected>Template Width</option>
-						<option value="600">600</option>
-						<option value="650">650</option>
-						<option value="700">700</option>
-						<option value="750">750</option>
-						<option value="800">800</option>
-					</select>
-					<button>color Picker</button>
-				</div>
-				<div class="insertBtn">
-					<button class="Link" data-inser"a" />
-					<button class="image" data-insert="img"/>
-				</div>
-				<div class="textFormatters">
-					<button class="Bold" data-hook="formatText" data-format="strong" />
-					<button class="Italic" data-hook="formatText" data-format="em" />
-					<button class="Strikethrough" data-hook="formatText" data-format="del" />
-					<button class="Underline" data-hook="formatText" data-format="u" />
-					<button class="Subscript" data-hook="formatText" data-format="sub" />
-					<button class="Superscript" data-hook="formatText" data-format="sup" />
+				<div class="editor-toolbarBtn">
+					<button class="Bold" data-editor-format="strong" />
+					<button class="Italic" data-editor-format="em" />
+					<button class="Strikethrough" data-editor-format="del" />
+					<button class="Underline" data-editor-format="u" />
+					<button class="Subscript" data-editor-format="sub" />
+					<button class="Superscript" data-editor-format="sup" />
 				</div>
 			</div>
 
-			<div class="edit"></div>
-		</div>
-
-		<div class="editor-versions">
-			<h3>
-				Versions
-			</h3>
-			<nav data-editor="version-list"></nav>
+			<div class="editor-template"></div>
 		</div>
 	</div>
 </div>
-
-<!-- <div class="wrapper-feedback">
-	<h2>
-		Feedback
-	</h2>
-
-	<button data-hook="validate">Validate</button>
-	<button data-hook="save">Save</button>
-	
-	<div class="msg"></div>
-	
-	<div class="validCode">
-		<textarea></textarea>
-	</div>
-</div> -->

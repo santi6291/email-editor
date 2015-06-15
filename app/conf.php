@@ -50,20 +50,7 @@ class database{
 		return $connection->error;
 	}
 }
-/*
-app/
-	handlers/
-		template/
- 	models/
- 		template/
-data/
-	templates/	
-resources/
-	css/
-	images/
-	js/
-	vendors/
-*/
+
 global $paths;
 $paths = [
 	'url' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/',
