@@ -1,6 +1,8 @@
 $(document).ready(function(){
 	App.setPageID();
-	App.pageEvent[App.pageID]();
+	if( typeof App.pageEvent[App.pageID] == 'function' ){
+		App.pageEvent[App.pageID]();
+	}
 });
 
 var App = {};
@@ -25,8 +27,8 @@ App.setPageID = function() {
 		App.pageID = 'index';
 	} else {
 		
-		// remove forward slash at start and end
-		pagePath = pagePath.substr(1, pagePath.length-2);
+		// remove extra foward slashes
+		pagePath = pagePath.replace(/^\/|\/$/g, '');
 		// split path to array
 		pageIDarray = pagePath.split('/');
 		// get current page
@@ -58,17 +60,15 @@ String.prototype.capFirst = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
-
-
-
-
-
-
-
-function prepTemplate (content){
-
-	var template = $(content);
-	template.find('.editMe').attr('contenteditable', 'true');
-	return template;
-	// $('.blast').find('.template').html(template);
-};
+function registerPartial (view){
+	var partials = $(view).filter(function(){
+		return /TEMPLATE/g.test( $(this).prop("tagName") );
+	});
+	
+	partials.each(function(){
+		var partialName = $(this).attr('id');
+		var partialContent = $(this).html();
+		// register partial
+		Handlebars.registerPartial(partialName, partialContent);
+	});
+}

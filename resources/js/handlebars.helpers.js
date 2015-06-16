@@ -17,3 +17,9 @@ Handlebars.registerHelper('modelHeader', function(title){
 				'</header>';
 	return new Handlebars.SafeString(header);
 });
+
+Handlebars.registerHelper('tempFlag', function(active){
+	var activeClass = (active)? 'activeSection' : 'addComponent';
+	var tempFlag = '<table class="tempFlag ' + activeClass + '"></table>';
+	return new Handlebars.SafeString(tempFlag);
+});

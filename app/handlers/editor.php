@@ -6,15 +6,25 @@ if ( isset($_GET) ) extract($_GET);
 /**
  * $action
  * $templateID
+ * $fragment
  */
 
 $editor = new editor();
-$editor->id = $templateID;
 $response;
 
 switch ($action) {	
 	case 'versions':
+		$editor->id = $templateID;
 		$response = $editor->listVer();
+	break;
+
+	case 'validate':
+		$response = $editor->validateFragment($fragment);
+	break;
+
+	case 'save':
+		$editor->id = $templateID;
+		$response = $editor->saveFragment($fragment);
 	break;
 }
 

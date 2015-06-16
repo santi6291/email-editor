@@ -5,13 +5,6 @@
 	<div class="layout-content">
 		
 		{{#if layoutMode}}
-			
-			<div class="layout-widthContainer">
-				<strong>Change Width</strong>
-				<select class="templateWidth">
-					{{templateSizes}}
-				</select>
-			</div>
 
 			<div class="modify-componentsList">
 				{{#each layoutsComponents}}
@@ -62,4 +55,3 @@
 		</div>
 	</div>
 </template>
-
