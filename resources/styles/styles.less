@@ -41,7 +41,6 @@
 	font-size: 3em !important;
 	display: block !important;
 	padding: 20px;
-	border: 3px solid #333;
 	box-sizing: border-box;
 	cursor: pointer;
 	margin: 0 auto;
@@ -242,32 +241,6 @@
 	}
 }
 
-.modify{
-
-	.tabs{
-		display: table;
-		width: 100%;
-		height: 50px;
-
-		li{
-			width: 50%;
-			display: table-cell;
-			vertical-align: middle;
-			background-color: #999;
-			text-align: center;
-			color: white;
-
-			&:first-child{
-				border-right: 1px solid #666;
-			}
-			
-			&.active{
-				background-color: #666;
-			}
-		}
-	}
-}
-
 //////////////////////////
 // TEMPLATE TEMP STYLES //
 //////////////////////////
@@ -303,7 +276,7 @@
 	}
 
 	.addComponent{
-		width: 0px;
+		width: 100%;
 		vertical-align: middle;
 		
 		&:after{
@@ -316,10 +289,11 @@
 	}
 	
 	.activeSection{
-		width: 0px;
+		width: 100%;
 		background-color: aquamarine !important;
 
 		&:after{
+			text-align: center;
 			color: darken(aquamarine, 50%);
 			.actionButtons(minus-circle);
 		}
@@ -354,6 +328,37 @@
 			cursor: pointer;
 		}
 	}
+
+	.removeComponent{
+		vertical-align: middle;
+		&:before{
+			content: '';
+			position: absolute;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(250, 0, 57, 0.5);
+			top: 0;
+			left: 0;
+			z-index: 999
+		}
+
+		&:after{
+			.fa(minus-circle);
+			font-size: 3em;
+			position: absolute;
+			z-index: 1000;
+			margin: auto;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			width: 1em;
+			height: 1em;
+			cursor: pointer;
+		}
+	}
+
 	.activeSidebar{
 		width: auto;
 	}

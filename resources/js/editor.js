@@ -252,7 +252,7 @@ Editor.prototype.sidebarMode = {
 		target.html(template)
 		
 		// todo get tables add editComponent class
-		$('[data-added-component], .sidebarContent').addClass('editComponent')
+		$('[data-added-component]').addClass('removeComponent')
 
 		if( $('.tempFlag').size() == 0){
 			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}')
@@ -265,7 +265,7 @@ Editor.prototype.events = {
 	
 	activateSidebar: function(editorRef){
 		var Editor = editorRef;
-		$('button[data-editor-mode]').on('click', function(e){
+		$('button[data-editor-mode]').on('click.activateSidebar', function(e){
 			e.preventDefault();
 			var modeName = $(this).data('editor-mode');
 			
@@ -291,7 +291,7 @@ Editor.prototype.events = {
 	
 	formatText: function(editorRef){
 		var Editor = editorRef;
-		$('button[data-editor-format]').on('click', function(e){
+		$('button[data-editor-format]').on('click.formatText', function(e){
 			e.preventDefault();
 			var textFormat = $(this).data('editor-format');
 			Editor.formatText(textFormat)
@@ -300,7 +300,7 @@ Editor.prototype.events = {
 
 	tooltipFormat: function(editorRef){
 		var Editor = editorRef;
-		$('button[data-editor-insert]').on('click', function(e){
+		$('button[data-editor-insert]').on('click.tooltipFormat', function(e){
 			e.preventDefault()
 			var insetType = $(this).data('editor-insert');
 			console.log(insetType)
@@ -309,7 +309,7 @@ Editor.prototype.events = {
 
 	showComponents: function(editorRef){
 		var Editor = editorRef;
-		$(document).on('click', '.addComponent', function(e){
+		$(document).on('click.showComponents', '.addComponent', function(e){
 			e.preventDefault();
 			var activeSections = $('.activeSection');
 			var componentType = ( $(this).parent().hasClass('templateHeader') )? 'header' : 'body';
@@ -326,7 +326,7 @@ Editor.prototype.events = {
 
 	hideComponents: function(editorRef){
 		var Editor = editorRef;
-		$(document).on('click', '.activeSection', function(e){
+		$(document).on('click.hideComponents', '.activeSection', function(e){
 			e.preventDefault();
 			$(this).removeClass('activeSection')
 			$(this).addClass('addComponent');
@@ -336,11 +336,11 @@ Editor.prototype.events = {
 	},
 
 	closeSiderbar: function(Editor) {
-		$(document).on('click', '.modelView-modelClose', function(e){
+		$(document).on('click.closeSiderbar', '.modelView-modelClose', function(e){
 			e.preventDefault();
 			$('.editor-modeView').addClass('displayNone').html('');
 
-			$('.editComponent').removeClass('editComponent');
+			$('.removeComponent').removeClass('removeComponent');
 			$('.tempFlag').remove();
 			$('.editMe').attr('contenteditable', 'true')
 		});
@@ -348,7 +348,7 @@ Editor.prototype.events = {
 
 	widthSelect: function(editorRef){
 		var Editor = editorRef;
-		$(document).on('change', '.templateWidth', function(e){
+		$(document).on('change.widthSelect', '.templateWidth', function(e){
 			e.preventDefault();
 			var newWidth = $(this).val()
 			Editor.resizeTemplate(newWidth);
@@ -356,7 +356,7 @@ Editor.prototype.events = {
 	},
 	layoutChange: function(editorRef){
 		var Editor = editorRef;
-		$(document).on('click', '[data-component]', function(){
+		$(document).on('click.layoutChange', '[data-component]', function(){
 			var componentName = $(this).data('component');
 			Editor.changeLayout(componentName)
 		})
@@ -364,7 +364,7 @@ Editor.prototype.events = {
 	
 	saveTemplate: function(editorRef){
 		var Editor = editorRef;
-		$(document).on('click', '[data-save]', function(){
+		$(document).on('click.saveTemplate', '[data-save]', function(){
 			var saveAction = $(this).data('save');
 			Editor[saveAction]();
 		});
@@ -372,7 +372,7 @@ Editor.prototype.events = {
 
 	revisionChange: function(editorRef){
 		var Editor = editorRef;
-		$(document).on('click', '[data-revison-file]', function(){
+		$(document).on('click.revisionChange', '[data-revison-file]', function(){
 			var revisonFile = $(this).data('revison-file');
 			var filePath = Editor.path.savedTemplates + Editor.template.id +  '/' + revisonFile;
 
@@ -381,6 +381,13 @@ Editor.prototype.events = {
 				$('.editMe').attr('contenteditable', true);
 			});
 		});
+	},
+	removeComponent: function (editorRef) {
+		var Editor = editorRef;
+		$(document).on('click.removeComponent', '.removeComponent', function (e) {
+			e.preventDefault();
+			$(this).remove();
+		})
 	}
 }
 
@@ -393,19 +400,21 @@ Editor.prototype.formatText = function(formatType){
 	getSelected(formatType)
 
 	function getSelected (formatType){
-		formatType = formatType;//node type
+		//node type
+		formatType = formatType;
 		
 		if ( window.getSelection) {
-			sel = window.getSelection();// get selection
+			// get selection
+			sel = window.getSelection();
 
 			if (sel.rangeCount) {
 				range = sel.getRangeAt(0);
 				
-				if ( $(sel.focusNode).parents(formatType).size() > 0 ) {//remove format node
-					
+				if ( $(sel.focusNode).parents(formatType).size() > 0 ) {
+					//remove format node	
 					removeFormat();
-				} else {//add format node
-					
+				} else {
+					//add format node
 					addFormat();
 				}
 			}
@@ -413,29 +422,21 @@ Editor.prototype.formatText = function(formatType){
 	}
 	
 	function addFormat (){
-
-		var replacementText = $('<' + formatType + '/>').append(range.toString())[0];//create format node with selection text 
-
-		range.deleteContents();//remove text from DOM
-		range.insertNode(replacementText);//append format node to removed text position
-		
-		if ( formatType == 'a' ) {
-			aNode = $(replacementText);
-			aNode.attr({
-				href: '',
-				target: '_blank',
-				'class': 'green'
-			})
-			// call tooltip
-		}
+		//create format node with selection text 
+		var replacementText = $('<' + formatType + '/>').append(range.toString())[0];
+		//remove text from DOM
+		range.deleteContents();
+		//append format node to removed text position
+		range.insertNode(replacementText);
 	}
 
 	function removeFormat() {
 
 		var replacementText = range.toString();
-			
-		var removeNode = $(sel.focusNode).parents(formatType); // node to remove
-		var parentNode = removeNode.parent();// removeNode Parent node
+		// Wrapping node to remove
+		var removeNode = $(sel.focusNode).parents(formatType); 
+		// removeNode Parent node
+		var parentNode = removeNode.parent();
 		/**
 		 * get parentNode string with tag
 		 * Find format text tag in parentNode
@@ -453,6 +454,7 @@ Editor.prototype.save = function() {
 		if( !validFragment ){
 			return false
 		}
+
 		var fragmentData = Editor.cleanFragment();
 
 		$.post(Editor.path.handler, { 
@@ -583,7 +585,7 @@ Editor.prototype.changeLayout = function(componentName) {
 			var headerSection = $('.templateHeader');
 
 			// add edit component class
-			content.addClass('editComponent');
+			content.addClass('removeComponent');
 			content.attr('data-added-component', 'true')
 
 			// remove temp tables
@@ -605,7 +607,7 @@ Editor.prototype.changeLayout = function(componentName) {
 			activeComponent.removeClass('noBottom noContent')
 
 			// add edit component class
-			content.addClass('editComponent');
+			content.addClass('removeComponent');
 			content.attr('data-added-component', 'true')
 			
 			$('.activeSection').before(content)
@@ -613,8 +615,6 @@ Editor.prototype.changeLayout = function(componentName) {
 			Editor.resizeTemplate(Editor.template.width);
 		break;
 	}
-
-	$('.sidebarContent').addClass('editComponent')
 	$('.editMe').attr('contenteditable', 'true')
 };
 
