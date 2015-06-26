@@ -1,10 +1,12 @@
 var Editor = function() {
 	var Editor = this;
 	
-	Editor.handler = '/app/handlers/editor.php';
-	Editor.savedTemplates = '/data/templates/';
-	Editor.viewsDir = '/data/views/';
-	Editor.images = '/resources/images/'
+	Editor.path = {
+		handler: '/app/handlers/editor.php',
+		savedTemplates: '/data/templates/',
+		viewsDir: '/data/views/',
+		images: '/resources/images/'
+	}
 	
 	Editor.template = {
 		title: App.GET.template,
@@ -16,72 +18,72 @@ var Editor = function() {
 			id: 'template-body-content-cols-1',
 			title: 'Single Column',
 			fileName: 'template-body-content-cols-1.html',
-			thumb: Editor.images + 'template-body-content-cols-1.png'
+			thumb: Editor.path.images + 'template-body-content-cols-1.png'
 		},
 		'template-body-content-cols-2': {
 			id: 'template-body-content-cols-2',
 			title: '2 Columns',
 			fileName: 'template-body-content-cols-2.html',
-			thumb: Editor.images + 'template-body-content-cols-2.png'
+			thumb: Editor.path.images + 'template-body-content-cols-2.png'
 		},
 		'template-body-content-cols-3': {
 			id: 'template-body-content-cols-3',
 			title: '3 Columns',
 			fileName: 'template-body-content-cols-3.html',
-			thumb: Editor.images + 'template-body-content-cols-3.png'
+			thumb: Editor.path.images + 'template-body-content-cols-3.png'
 		},
 		'template-body-content-cols-4': {
 			id: 'template-body-content-cols-4',
 			title: '4 Columns',
 			fileName: 'template-body-content-cols-4.html',
-			thumb: Editor.images + 'template-body-content-cols-4.png'
+			thumb: Editor.path.images + 'template-body-content-cols-4.png'
 		},
 		'template-header-cols-1': {
 			id: 'template-header-cols-1',
 			title: 'Image Only',
 			fileName: 'template-header-cols-1.html',
-			thumb: Editor.images + 'template-header-cols-1.png'
+			thumb: Editor.path.images + 'template-header-cols-1.png'
 		},
 		'template-header-cols-2-left': {
 			id: 'template-header-cols-2-left',
 			title: 'Left image w/ text ',
 			fileName: 'template-header-cols-2-left.html',
-			thumb: Editor.images + 'template-header-cols-2-left.png'
+			thumb: Editor.path.images + 'template-header-cols-2-left.png'
 		},
 		'template-header-cols-2-right': {
 			id: 'template-header-cols-2-right',
 			title: 'Right Image w/ text',
 			fileName: 'template-header-cols-2-right.html',
-			thumb: Editor.images + 'template-header-cols-2-right.png'
+			thumb: Editor.path.images + 'template-header-cols-2-right.png'
 		},
 		'template-header-cols-3': {
 			id: 'template-header-cols-3',
 			title: 'Cented Image w/ text',
 			fileName: 'template-header-cols-3.html',
-			thumb: Editor.images + 'template-header-cols-3.png'
+			thumb: Editor.path.images + 'template-header-cols-3.png'
 		},
 		'template-layout-sidebar-left': {
 			id: 'template-layout-sidebar-left',
 			title: 'Left sidebar, content right',
 			fileName:'template-body-sidebar.html',
-			thumb: Editor.images + 'template-layout-sidebar-left.png'
+			thumb: Editor.path.images + 'template-layout-sidebar-left.png'
 		},
 		'template-layout-sidebar-right': {
 			id: 'template-layout-sidebar-right',
 			title: 'Left content, right sidebar',
 			fileName:'template-body-sidebar.html',
-			thumb: Editor.images + 'template-layout-sidebar-right.png'
+			thumb: Editor.path.images + 'template-layout-sidebar-right.png'
 		},
 		'template-layout-cols-3': {
 			id: 'template-layout-cols-3',
 			title :'Center content, two sidebars',
 			fileName:'template-body-sidebar.html',
-			thumb : Editor.images + 'template-layout-cols-3.png'
+			thumb : Editor.path.images + 'template-layout-cols-3.png'
 		},
-		'template-layout-single ':{
+		'template-layout-single':{
 			id: 'template-layout-single',
 			title :'Single column',
-			thumb : Editor.images + 'template-layout-single.png'
+			thumb : Editor.path.images + 'template-layout-single.png'
 		},
 		'editor-modify': {
 			id: 'editor-modify',
@@ -115,13 +117,13 @@ var Editor = function() {
 Editor.prototype.init = function() {
 	var Editor = this;
 	
-	Editor.events();
+	Editor.bindEvents();
 
-	Editor.getViews(function(){
+	getViews(function(){
 		// list of template versions
-		Editor.getVersions().done(function(){
+		getVersions().done(function(){
 
-			Editor.getCurrentHtml(function(){
+			getCurrentHtml(function(){
 				// new template start in modify mode
 				if ( Editor.template.versions.length == 1 ) {
 					Editor.activateSidebar('modify');
@@ -129,207 +131,258 @@ Editor.prototype.init = function() {
 			});
 		});
 	});//get Views
-};
 
-Editor.prototype.activateSidebar = function(sidebarMode) {
-	var Editor = this;
-	var functionName = 'mode' + sidebarMode.capFirst();
-	// prevent user from editing template
-	$('.editMe').removeAttr('contenteditable')
-	
-	$('.editor-modeView').removeClass('displayNone');
-	
-	if ( typeof Editor[functionName] == 'function' ) {
-		Editor[functionName]();
+	function getVersions() {
+		var templateVersions = $.getJSON(Editor.path.handler, {
+			action:'versions',
+			templateID: Editor.template.id
+		});
+
+		templateVersions.done(function(versionsJson){
+			Editor.template.versions = versionsJson;
+		});
+
+		return templateVersions;
+	};
+
+	// GET LATEST VERSION HTML
+	function getCurrentHtml() {
+		var templateID = Editor.template.id;
+		var fileName = Editor.template.versions[0].fileName;
+		var filePath = Editor.path.savedTemplates + templateID + '/' + fileName;
+
+		$.get(filePath, function(latestVer) {
+			var template = $(latestVer);
+
+			Editor.template.width = template.find('#templateContainer').attr('width');
+			Editor.template.sidebarWidth = template.find('[sidebar-width]').attr('width');
+
+			$('.widthSelect').find('[value~=' + Editor.template.width + ']').attr('selected', 'true');
+			$('.editor').find('.editor-template').html(template);
+
+			if (typeof callback == 'function') {
+				callback()
+			};
+		});
+	};
+
+	function getViews(callback){
+		var tracker = 0;
+		_.each(Editor.components, function(viewObj, key){
+
+			if( typeof viewObj.contents == 'undefined' && typeof viewObj.fileName != 'undefined' ){
+
+				var repeatedFiles = _.filter(Editor.components, function(component){
+					return (component.fileName == viewObj.fileName) && (typeof component.contents == 'undefined');
+				});
+
+				_.each(repeatedFiles, function(value, index){
+					value.contents = null
+				})
+
+				$.get(Editor.path.viewsDir + viewObj.fileName, function(viewDOM) {
+
+					_.each(repeatedFiles, function(value, index){
+						value.contents = viewDOM
+					})
+
+					tracker += repeatedFiles.length;
+					if( (tracker == _.size(Editor.components)) && (typeof callback == 'function') ){
+						callback();
+					}
+
+				});
+			} else if( typeof viewObj.fileName != 'undefined' ){
+				tracker++;
+			}
+		});
 	}
 };
 
-
-Editor.prototype.modeDefaults = function() {
+Editor.prototype.bindEvents = function() {
 	var Editor = this;
-	var template = $.handlebars(Editor.components['editor-defaults'].contents, {
-		title: 'Defaults',
-		id: Editor.template.id,
-		revisions: Editor.template.versions
-	});
-	$('.editor-modeView').html(template)
-};
-
-Editor.prototype.modeRevisions = function() {
-	var Editor = this;
-	var template = $.handlebars(Editor.components['editor-revisions'].contents, {
-		title: 'revisions',
-		id: Editor.template.id,
-		revisions: Editor.template.versions
-	});
-	$('.editor-modeView').html(template)
-};
-
-Editor.prototype.modeSave = function() {
-	var Editor = this;
-	var template = $.handlebars(Editor.components['editor-save'].contents, {
-		title: 'save'
-	});
-	$('.editor-modeView').html(template)
-};
-
-Editor.prototype.modeModify = function() {
-	var Editor = this;
-	var templateHeader = $('[data-template-header]');
-	var templatesComponents = $('[component-columns]');
 	
-	Editor.renderModify({
-		target: $('.editor-modeView'), 
-		view: Editor.components['editor-modify'].contents,
-		title: 'layouts'
-	});
-	// todo get tables add editComponent class
-	
-	$('[data-added-component], .sidebarContent').addClass('editComponent')
-
-	$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}')
-	$('.templateHeader, .templateContent, .templateBottom').handlebars();
+	_.each(Editor.events, function(eventValue, eventKey){
+		eventValue(Editor);
+	})
 };
 
-Editor.prototype.renderModify = function(args) {
-	var Editor = this;
-	var target = args.target
-	var view = args.view
-	var title = args.title;
-	var bodyComponents = [];
-	var headerComponents = [];
-	var layoutsComponents = [];
-	
+Editor.prototype.sidebarMode = {
+	defaults: function(EditorRef){
+		var Editor = EditorRef;
+		var template = $.handlebars(Editor.components['editor-defaults'].contents, {
+			title: 'Defaults',
+			id: Editor.template.id,
+		});
+		$('.editor-modeView').html(template)
+	},
 
-	_.each(Editor.components, function(component, key){
-		if ( /template-body/g.test(key) ) {
-			
-			bodyComponents.push(component);
-		} else if ( /template-header/g.test(key) ){
-			
-			headerComponents.push(component);
-		} else if ( /template-layout/g.test(key) ) {
-			layoutsComponents.push(component);
+	revisions: function(EditorRef){
+		var Editor = EditorRef;
+		var template = $.handlebars(Editor.components['editor-revisions'].contents, {
+			title: 'revisions',
+			id: Editor.template.id,
+			revisions: Editor.template.versions
+		});
+		$('.editor-modeView').html(template)
+	},
+
+	save: function(EditorRef){
+		var Editor = EditorRef;
+		var template = $.handlebars(Editor.components['editor-save'].contents, {
+			title: 'save'
+		});
+		$('.editor-modeView').html(template)
+	},
+
+	modify: function(EditorRef, componentsType){
+		// componentsType: header, body, layout
+		var Editor = EditorRef;
+		var target = $('.editor-modeView');
+		var view = Editor.components['editor-modify'].contents;
+		var requestedComponents = _.filter(Editor.components, function(componentValue, componentKey){
+			var exp = new RegExp(componentsType, 'g');
+			return exp.test(componentKey);
+		})
+		var template = $.handlebars(view, {
+			title: 'Modify Template',
+			listType: componentsType,
+			componentList: requestedComponents
+		});
+		target.html(template)
+		
+		// todo get tables add editComponent class
+		$('[data-added-component], .sidebarContent').addClass('editComponent')
+
+		if( $('.tempFlag').size() == 0){
+			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}')
+			$('.templateHeader, .templateContent, .templateBottom').handlebars();	
 		}
-	});
-	
-	var templateArrays = {
-		title: title,
-		layoutMode: (title.toLowerCase() == 'layouts')? true: false,
-		layoutsComponents: layoutsComponents,
-		bodyComponents: bodyComponents,
-		headerComponents: headerComponents
 	}
+}
+
+Editor.prototype.events = {
 	
-	var template = $.handlebars(view, templateArrays);
-	target.html(template)
-};
+	activateSidebar: function(editorRef){
+		var Editor = editorRef;
+		$('button[data-editor-mode]').on('click', function(e){
+			e.preventDefault();
+			var modeName = $(this).data('editor-mode');
+			
+			// prevent user from editing template
+			$('.editMe').removeAttr('contenteditable')
+			
+			$('.editor-modeView').removeClass('displayNone');
+			
+			if ( typeof Editor.sidebarMode[modeName] == 'function' ) {
+				switch(modeName){
+					case 'modify':
+					Editor.sidebarMode[modeName](Editor, 'layout');
+					break;
 
-Editor.prototype.events = function() {
-	var Editor = this;
-	// open sidebar
-	$('button[data-editor-mode]').on('click', function(e){
-		e.preventDefault();
-		var editorMode = $(this).data('editor-mode');
-
-		Editor.activateSidebar(editorMode)
-	});
-
-	// text format option
-	$('button[data-editor-format]').on('click', function(e){
-		e.preventDefault();
-		var textFormat = $(this).data('editor-format');
-		Editor.formatText(textFormat)
-		console.log(textFormat)
-	});
-
-	// inert image/a tags
-	$('button[data-editor-insert]').on('click', function(e){
-		e.preventDefault()
-		var insetType = $(this).data('editor-insert');
-		console.log(insetType)
-	});
-
-	// sidebar show components according to tempalte section
-	$(document).on('click', '.addComponent', function(e){
-		e.preventDefault();
-		var activeSections = $('.activeSection');
-		
-		activeSections.removeClass('activeSection');
-		activeSections.addClass('addComponent');
-		
-		$(this).removeClass('addComponent');
-		$(this).addClass('activeSection')
-
-
-		Editor.renderModify({
-			title: 'components',
-			target: $('.editor-modeView'), 
-			view: Editor.components['editor-modify'].contents,
+					default:
+					Editor.sidebarMode[modeName](Editor);
+					break;
+				}
+				
+			}
 		});
-
-		if( $(this).parents('.templateHeader').size() ){
-			$('.modify-componentsList').removeClass('displayNone');
-			$('[data-component-type=body]').remove()
-		} else {
-			$('.modify-componentsList').removeClass('displayNone');
-			$('[data-component-type=header]').remove()
-		}
-	});
-
-	// return to layout options
-	$(document).on('click', '.activeSection', function(e){
-		e.preventDefault();
-		$(this).removeClass('activeSection')
-		$(this).addClass('addComponent');
-
-		Editor.renderModify({
-			title: 'layouts',
-			target: $('.editor-modeView'), 
-			view: Editor.components['editor-modify'].contents,
+	},
+	
+	formatText: function(editorRef){
+		var Editor = editorRef;
+		$('button[data-editor-format]').on('click', function(e){
+			e.preventDefault();
+			var textFormat = $(this).data('editor-format');
+			Editor.formatText(textFormat)
 		});
-	})
+	},
 
-	// close sidebar
-	$(document).on('click', '.modelView-modelClose', function(e){
-		e.preventDefault();
-		$('.editor-modeView').addClass('displayNone').html('');
-		
-		$('.editComponent').removeClass('editComponent');
-		$('.tempFlag').remove();
-		$('.editMe').attr('contenteditable', 'true')
-	});
-
-	// width select change
-	$(document).on('change', '.templateWidth', function(e){
-		e.preventDefault();
-		var newWidth = $(this).val()
-		Editor.resizeTemplate(newWidth);
-	});
-
-	// sidebar component selected
-	$(document).on('click', '[data-component]', function(){
-		var componentName = $(this).data('component');
-		Editor.changeLayout(componentName)
-	})
-		
-	// save template
-	$(document).on('click', '[data-save]', function(){
-		var saveAction = $(this).data('save');
-		Editor[saveAction]();
-	});
-
-	// replace with selected revision
-	$(document).on('click', '[data-revison-file]', function(){
-		var revisonFile = $(this).data('revison-file');
-		var filePath = Editor.savedTemplates + Editor.template.id +  '/' + revisonFile;
-		
-		$.get( filePath, function(fragment) {
-			$('.editor').find('.editor-template').html(fragment);
-			$('.editMe').attr('contenteditable', true);
+	tooltipFormat: function(editorRef){
+		var Editor = editorRef;
+		$('button[data-editor-insert]').on('click', function(e){
+			e.preventDefault()
+			var insetType = $(this).data('editor-insert');
+			console.log(insetType)
 		});
-	});
-};
+	},
+
+	showComponents: function(editorRef){
+		var Editor = editorRef;
+		$(document).on('click', '.addComponent', function(e){
+			e.preventDefault();
+			var activeSections = $('.activeSection');
+			var componentType = ( $(this).parent().hasClass('templateHeader') )? 'header' : 'body';
+
+			activeSections.removeClass('activeSection');
+			activeSections.addClass('addComponent');
+
+			$(this).removeClass('addComponent');
+			$(this).addClass('activeSection')
+
+			Editor.sidebarMode.modify(Editor, componentType);
+		});
+	},
+
+	hideComponents: function(editorRef){
+		var Editor = editorRef;
+		$(document).on('click', '.activeSection', function(e){
+			e.preventDefault();
+			$(this).removeClass('activeSection')
+			$(this).addClass('addComponent');
+
+			Editor.sidebarMode.modify(Editor, 'layout');
+		})	
+	},
+
+	closeSiderbar: function(Editor) {
+		$(document).on('click', '.modelView-modelClose', function(e){
+			e.preventDefault();
+			$('.editor-modeView').addClass('displayNone').html('');
+
+			$('.editComponent').removeClass('editComponent');
+			$('.tempFlag').remove();
+			$('.editMe').attr('contenteditable', 'true')
+		});
+	},
+
+	widthSelect: function(editorRef){
+		var Editor = editorRef;
+		$(document).on('change', '.templateWidth', function(e){
+			e.preventDefault();
+			var newWidth = $(this).val()
+			Editor.resizeTemplate(newWidth);
+		});
+	},
+	layoutChange: function(editorRef){
+		var Editor = editorRef;
+		$(document).on('click', '[data-component]', function(){
+			var componentName = $(this).data('component');
+			Editor.changeLayout(componentName)
+		})
+	},
+	
+	saveTemplate: function(editorRef){
+		var Editor = editorRef;
+		$(document).on('click', '[data-save]', function(){
+			var saveAction = $(this).data('save');
+			Editor[saveAction]();
+		});
+	},
+
+	revisionChange: function(editorRef){
+		var Editor = editorRef;
+		$(document).on('click', '[data-revison-file]', function(){
+			var revisonFile = $(this).data('revison-file');
+			var filePath = Editor.path.savedTemplates + Editor.template.id +  '/' + revisonFile;
+
+			$.get( filePath, function(fragment) {
+				$('.editor').find('.editor-template').html(fragment);
+				$('.editMe').attr('contenteditable', true);
+			});
+		});
+	}
+}
 
 Editor.prototype.formatText = function(formatType){
 	var Editor = this;
@@ -390,19 +443,19 @@ Editor.prototype.formatText = function(formatType){
 		 */
 		var newContent = parentNode[0].outerHTML.replace(removeNode[0].outerHTML, removeNode[0].innerHTML);
 		parentNode.html(newContent);
-	}
+		}
 }
 
 Editor.prototype.save = function() {
 	var Editor = this;
 	
-	Editor.validate(function(validFragment){
+	Editor.validate(function(validFragment, fullFragment){
 		if( !validFragment ){
 			return false
 		}
 		var fragmentData = Editor.cleanFragment();
 
-		$.post(Editor.handler, { 
+		$.post(Editor.path.handler, { 
 			action: 'save',
 			templateID: Editor.template.id,
 			fragment: fragmentData.html()
@@ -410,71 +463,65 @@ Editor.prototype.save = function() {
 			Editor.template.versions.push({
 				fileName: response.fileName,
 				title: response.title
-			});
+			}, 'json');
 
-			$('.responseCode').find('textarea').val(Editor.fullFragment())
-			
+			$('.responseCode').find('textarea').val(fullFragment)	
 		}, 'json');
 	})
-};
+}
 
 Editor.prototype.validate = function(callback) {
 	var Editor = this;
-
-	var fragment = Editor.cleanFragment();
+	var fullFragment = fullFragment();
 	
-	var fullFragment = Editor.fullFragment();
-	
-	$.post(Editor.handler, {
+	$.post(Editor.path.handler, {
 		action: 'validate',
 		fragment: fullFragment,
 	}, function(response) {
-		var validFragment = Editor.validatorResponse(response.message);
+		var validFragment = validatorResponse(response.message);
 		
 		if( (validFragment) && (typeof callback == 'function') ){
-			callback(validFragment);
+			callback(validFragment, fullFragment);
 		}
 	}, 'json');
-};
 
-Editor.prototype.validatorResponse = function(response) {
-	var Editor = this;
-	var jsonResponse = $.parseJSON(response);
-	var messages = [];
-	var exemptions = [
-		'70', //self-close tag not close (br, img, etc).
-		'108',
-		'127' //alt tag
-	]
+	function validatorResponse (response) {
+		var jsonResponse = $.parseJSON(response);
+		var messages = [];
+		var exemptions = [
+			'70', //self-close tag not close (br, img, etc).
+			'108',
+			'127' //alt tag
+		]
 
-	_.each(jsonResponse.messages, function(message, index){
-		if( ($.inArray(message.messageid, exemptions) == -1) && (typeof message.messageid != 'undefined') ){
-			messages.push(message)
-		}
-	});
-
-	if( messages.length == 0 ){
-		$('.feedback').html('<p>Code is valid.</p>')
-		return true
-	} else {
-		var responseView = $.handlebars(Editor.components['editor-save'].contents, {
-			'title': 'save',
-			'errors': messages
+		_.each(jsonResponse.messages, function(message, index){
+			if( ($.inArray(message.messageid, exemptions) == -1) && (typeof message.messageid != 'undefined') ){
+				messages.push(message)
+			}
 		});
-		$('.editor-modeView').html(responseView)
-		return false
-	}
-};
 
-Editor.prototype.fullFragment = function() {
-	var Editor = this;
-	var fragment = Editor.cleanFragment();
-	var fullFragment = [
-		Editor.components['template-head'].contents,
-		fragment.html(),
-		Editor.components['template-footer'].contents
-	];
-	return fullFragment.join('\n');
+		if( messages.length == 0 ){
+			$('.feedback').html('<p>Code is valid.</p>')
+			return true
+		} else {
+			var responseView = $.handlebars(Editor.components['editor-save'].contents, {
+				'title': 'save',
+				'errors': messages
+			});
+			$('.editor-modeView').html(responseView)
+			return false
+		}
+	}
+
+	function fullFragment() {
+		var fragment = Editor.cleanFragment();
+		var fullFragment = [
+			Editor.components['template-head'].contents,
+			fragment.html(),
+			Editor.components['template-footer'].contents
+		];
+		return fullFragment.join('\n');
+	}
 };
 
 Editor.prototype.cleanFragment = function() {
@@ -488,6 +535,7 @@ Editor.prototype.changeLayout = function(componentName) {
 	var Editor = this;
 	var component = Editor.components[componentName];
 	
+	// modify layout depending on component type
 	switch(componentName){
 		case 'template-layout-sidebar-left':
 			var filledSide = $('.templateSidebar').eq(0);
@@ -554,16 +602,13 @@ Editor.prototype.changeLayout = function(componentName) {
 		case 'template-body-content-cols-4':
 			var content = $(component.contents);
 			var activeComponent = $('.activeSection').parent();
-			var removeClass = ( activeComponent.hasClass('templateBottom') )? 'noBottom' : 'noContent';
+			activeComponent.removeClass('noBottom noContent')
+
 			// add edit component class
 			content.addClass('editComponent');
 			content.attr('data-added-component', 'true')
-
-			activeComponent.find('.tempFlag').remove();
 			
-			activeComponent.append(content, '{{tempFlag true}}');
-			activeComponent.removeClass(removeClass);
-			activeComponent.handlebars();
+			$('.activeSection').before(content)
 
 			Editor.resizeTemplate(Editor.template.width);
 		break;
@@ -572,77 +617,6 @@ Editor.prototype.changeLayout = function(componentName) {
 	$('.sidebarContent').addClass('editComponent')
 	$('.editMe').attr('contenteditable', 'true')
 };
-
-// GET LATEST VERSION HTML
-Editor.prototype.getCurrentHtml = function(callback) {
-	var Editor = this;
-	var templateID = Editor.template.id;
-	var fileName = Editor.template.versions[0].fileName;
-	
-	$.get(Editor.savedTemplates + templateID + '/' + fileName, function(latestVer) {
-		var template = $(latestVer);
-
-		Editor.template.width = template.find('#templateContainer').attr('width');
-		Editor.template.sidebarWidth = template.find('[sidebar-width]').attr('width');
-		
-		$('.widthSelect').find('[value~=' + Editor.template.width + ']').attr('selected', 'true');
-		$('.editor').find('.editor-template').html(template);
-		
-		if (typeof callback == 'function') {
-			callback()
-		};
-	});
-};
-
-Editor.prototype.getVersions = function() {
-	var Editor = this;
-	
-	var templateVersions = $.getJSON(Editor.handler, {
-		action:'versions',
-		templateID: Editor.template.id
-	});
-	
-	templateVersions.done(function(versionsJson){
-		
-		Editor.template.versions = versionsJson;
-	});
-
-	return templateVersions;
-};
-
-Editor.prototype.getViews = function(callback){
-	var Editor = this;
-	var tracker = 0;
-
-	_.each(Editor.components, function(viewObj, key){
-
-		if( typeof viewObj.contents == 'undefined' ){
-
-			var repeatedFiles = _.filter(Editor.components, function(component){
-				return (component.fileName == viewObj.fileName) && (typeof component.contents == 'undefined');
-			});
-
-			_.each(repeatedFiles, function(value, index){
-				value.contents = null
-			})
-
-			$.get(Editor.viewsDir + viewObj.fileName, function(viewDOM) {
-
-				_.each(repeatedFiles, function(value, index){
-					value.contents = viewDOM
-				})
-				
-				tracker += repeatedFiles.length;
-
-				if( (tracker == _.size(Editor.components)) && (typeof callback == 'function') ){
-
-					callback();
-				}
-
-			});
-		}
-	});
-}
 
 Editor.prototype.resizeTemplate = function(newWidth) {
 	var Editor = this;

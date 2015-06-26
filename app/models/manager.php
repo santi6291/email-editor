@@ -8,11 +8,10 @@ class manager extends database{
 	
 	// CREATE 'template' TABLE
 	public function install() {
-		global $paths;
 
-		if ( file_exists($paths['data']['templates']) === false ) {
+		if ( file_exists(SAVED_TEMPLATES) === false ) {
 			
-			if ( mkdir($paths['data']['templates']) === false ) {
+			if ( mkdir(SAVED_TEMPLATES) === false ) {
 				return array(
 					'success' => false,
 					'message' => error_get_last(),
@@ -43,10 +42,9 @@ class manager extends database{
 	
 	// DROP 'template' TABLE
 	public function uninstall (){
-		global $paths;
 
-		if ( count(scandir($paths['data']['templates'])) > 2) {
-			if ( $this->destroy_dir($paths['data']['templates']) === false) {
+		if ( count(scandir(SAVED_TEMPLATES)) > 2) {
+			if ( $this->destroy_dir(SAVED_TEMPLATES) === false) {
 				return array(
 					'success' => false,
 					'message' => error_get_last(),
@@ -75,7 +73,6 @@ class manager extends database{
 
 	//INSERT NEW TEMPLATE DATA TO 'templates' TABLE
 	public function newTemp ($makeVerFile = true){
-		global $paths;
 		//check if template name taken 
 		$templateTaken = $this->validate();
 		
@@ -118,7 +115,7 @@ class manager extends database{
 		$this->ID = $con->insert_id;
 
 		// check if folder name taken
-		if ( file_exists($paths['data']['templates'] . $this->ID) == true ){
+		if ( file_exists(SAVED_TEMPLATES . $this->ID) == true ){
 			return array(
 				'success' => false,
 				'message' => error_get_last(),
@@ -126,7 +123,7 @@ class manager extends database{
 		}
 
 		// make dir with provide name
-		if ( mkdir($paths['data']['templates'] . $this->ID) == false ) {
+		if ( mkdir(SAVED_TEMPLATES . $this->ID) == false ) {
 			return array(
 				'success' => false,
 				'message' => error_get_last(),
@@ -139,7 +136,7 @@ class manager extends database{
 		}
 
 		// copy template body, to template folder, with timestamp
-		if ( copy($paths['data']['views'] . 'template-new.html', $paths['data']['templates'] . $this->ID . '/' . $this->version . '.html') ) {
+		if ( copy(VIEWS . 'template-new.html', SAVED_TEMPLATES . $this->ID . '/' . $this->version . '.html') ) {
 			
 			return array(
 				'success' => true,
@@ -153,7 +150,6 @@ class manager extends database{
 
 	// CLONE EXISTING TEMPLATE
 	public function cloneTemp ( $orgTemplateID ) {
-		global $paths;
 
 		$createTemp = $this->newTemp(false);		
 		
@@ -161,11 +157,11 @@ class manager extends database{
 			return $createTemp;
 		}
 		//get all version of template to be copied
-		$orgTempVer = scandir($paths['data']['templates'] . $orgTemplateID, 1);
+		$orgTempVer = scandir(SAVED_TEMPLATES . $orgTemplateID, 1);
 		
 		if ( $orgTempVer == false) {
 			return array(
-				'folderID' => $paths['data']['templates'] . $orgTemplateID,
+				'folderID' => SAVED_TEMPLATES . $orgTemplateID,
 				'success' => false,
 				'message' => error_get_last(),
 			);
@@ -175,7 +171,7 @@ class manager extends database{
 		$orgLatestVer = '/' . $orgTempVer[0];
 
 		// copy to new direcotry
-		if ( copy($paths['data']['templates'] . $orgTemplateID . $orgLatestVer, $paths['data']['templates'] . $this->ID . '/' . $this->version .'.html') == false) {
+		if ( copy(SAVED_TEMPLATES . $orgTemplateID . $orgLatestVer, SAVED_TEMPLATES . $this->ID . '/' . $this->version .'.html') == false) {
 			return array(
 				'success' => false,
 				'message' => error_get_last(),
@@ -214,9 +210,8 @@ class manager extends database{
 
 	// DELETE ROW FROM DB, DESTORY TEMPLTE DIRECTORY
 	public function delete () {
-		global $paths;
 		
-		if ( $this->destroy_dir( $paths['data']['templates'] . $this->ID) == false) {
+		if ( $this->destroy_dir( SAVED_TEMPLATES . $this->ID) == false) {
 			return array(
 				'success' => false,
 				'message' => error_get_last(),

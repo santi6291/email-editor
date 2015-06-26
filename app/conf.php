@@ -19,9 +19,12 @@ class database{
 	public function DBConnect(){
 
 		$db_host 	 = 'localhost';
-		$db_user 	 = 'editor';
-		$db_password = 'EpXpxKtVHwJ3A4rj';
 		$db_name 	 = 'editor';
+		
+		// include variables 
+		// $db_user
+		// $db_password
+		include 'DB.php';
 
 		$connection = new mysqli($db_host, $db_user, $db_password, $db_name);
 
@@ -51,25 +54,10 @@ class database{
 	}
 }
 
-global $paths;
-$paths = [
-	'url' => $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/',
-	'app' => [
-		'handlers' => [
-			'template' => $_SERVER['DOCUMENT_ROOT'] . 'app/handlers/manager/',
-		],
-		'models' => [
-			'template' => $_SERVER['DOCUMENT_ROOT'] . 'app/models/manager/',
-		],
-	],
-	'data' => [
-		'templates' => $_SERVER['DOCUMENT_ROOT'] . 'data/templates/',
-		'views' => $_SERVER['DOCUMENT_ROOT'] . 'data/views/',
-	],
-	'resources' => [
-		'styles' => 'resources/styles/',
-		'images' => 'resources/images/',
-		'js' => 'resources/js/',
-		'vendors' => 'resources/vendors/',
-	],
-];
+// PATHS
+define('URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/');
+define('MANGER_HANDLERS', $_SERVER['DOCUMENT_ROOT'] . 'app/handlers/manager/');
+define('MANAGER_MODEL', $_SERVER['DOCUMENT_ROOT'] . 'app/models/manager/');
+define('SAVED_TEMPLATES', $_SERVER['DOCUMENT_ROOT'] . 'data/templates/');
+define('VIEWS', $_SERVER['DOCUMENT_ROOT'] . 'data/views/');
+define('RESOURCES', URL . 'resources/');

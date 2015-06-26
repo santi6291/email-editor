@@ -10,10 +10,10 @@
 		<div class="editor-tools">
 			<div class="editor-modeView displayNone"></div>
 			<div class="editor-toolsBtn">
-				<button data-editor-mode="revisions">Revisions</button>
+				<button data-editor-mode="revisions">Revisions History</button>
 				<button data-editor-mode="modify">Modify Template</button>
-				<button data-editor-mode="defaults">Set Defaults</button>
-				<button data-editor-mode="save">Save</button>
+				<button data-editor-mode="defaults">Set Defaults Options</button>
+				<button data-editor-mode="save">Save/Validate Template</button>
 			</div>
 		</div>
 		

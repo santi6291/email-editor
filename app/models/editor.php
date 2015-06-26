@@ -5,9 +5,8 @@ class editor extends database{
 	public $id;
 
 	public function listVer () {
-		global $paths;
 
-		$revisions = scandir($paths['data']['templates'] . $this->id, 1);
+		$revisions = scandir(SAVED_TEMPLATES . $this->id, 1);
 
 		$response = array();
 
@@ -74,7 +73,6 @@ class editor extends database{
 	}
 
 	public function saveFragment($fragment) {
-		global $paths;
 		$time = time();
 		$con = $this->DBConnect();
 
@@ -82,12 +80,12 @@ class editor extends database{
 		$timeStamp = date('ymd', $time);
 
 		// eventually change to include client name 
-		if ( !file_exists( $paths['data']['templates'] . $this->id ) ){
-			mkdir( $paths['data']['templates'] . $this->id );
+		if ( !file_exists( SAVED_TEMPLATES . $this->id ) ){
+			mkdir( SAVED_TEMPLATES . $this->id );
 		} 
 
 		// create file name Unix timestamp
-		$bodyFile = fopen( $paths['data']['templates'] . $this->id . '/'. $time . '.html', "w");
+		$bodyFile = fopen( SAVED_TEMPLATES . $this->id . '/'. $time . '.html', "w");
 		$writeSucces = fwrite($bodyFile, $fragment);
 
 		fclose($bodyFile);
