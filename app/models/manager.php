@@ -21,7 +21,7 @@ class manager extends database{
 
 		$con = $this->DBConnect(); 
 		
-		$templateQuery = $con->prepare("CREATE TABLE `templates` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, title TINYTEXT NOT NULL, version TINYTEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT 1, user Int, colorPallet MEDIUMBLOB);");
+		$templateQuery = $con->prepare("CREATE TABLE `templates` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, title TINYTEXT NOT NULL, version TINYTEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT 1, user Int, color_pallet TEXT, default_colors TEXT);");
 		$usersQuery    = $con->prepare("CREATE TABLE `users` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, username TEXT NOT NULL, displayname TEXT NOT NULL, password TEXT NOT NULL);");
 		
 		if ( $templateQuery == false || $usersQuery == false) {
@@ -86,10 +86,25 @@ class manager extends database{
 		
 		// file give current time for version control
 		$this->version = time();
+		
+		$defaultColors = array(
+			'paragraph' => '#505050',
+			'bold' => '#505050',
+			'italic' => '#505050',
+			'strikethrough' => '#505050',
+			'subscript' => '#505050',
+			'superscript' => '#505050',
+			'heading1' => '#202020',
+			'heading2' => '#202020',
+			'heading3' => '#202020',
+			'heading4' => '#202020',
+			'heading5' => '#202020',
+		);
+		$jsonColor = json_encode($defaultColors);
 
 		$con = $this->DBConnect();
 		// insert template name and time-stamp as first version
-		$newTemplate = $con->prepare("INSERT INTO `templates` (title, version) VALUES (?, ?);");
+		$newTemplate = $con->prepare("INSERT INTO `templates` (title, version, default_colors) VALUES (?, ?, ?);");
 		
 		if ( $newTemplate == false ) {
 
@@ -99,7 +114,7 @@ class manager extends database{
 			);
 		}
 
-		$newTemplate->bind_param('ss', $this->name, $this->version);
+		$newTemplate->bind_param('sss', $this->name, $this->version, $jsonColor);
 		
 		$this->name = $this->requestEscape($this->name, $con);
 
@@ -271,7 +286,7 @@ class manager extends database{
 
 		if ( $listRows !== false) {
 			$listRows->execute();
-			$listRows->bind_result($ID, $title, $version, $active, $user, $colorPallet);
+			$listRows->bind_result($ID, $title, $version, $active, $user, $colorPallet, $defaultColors);
 			
 			$templateList = [];
 			
@@ -281,8 +296,9 @@ class manager extends database{
 					'title'       => $title,
 					'version'     => $version,
 					'active'      => ( $active == 1 )? true : false,
-					"user"        => $user,
-					"colorPallet" => $colorPallet,
+					'user'        => $user,
+					'colorPallet' => $colorPallet,
+					'defaultColors' => $defaultColors,
 				);
 			}
 			return $templateList;

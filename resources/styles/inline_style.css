@@ -1,4 +1,5 @@
 h1, .h1{
+	color: #202020;
 	display:block;
 	font-family:Arial;
 	font-size:34px;
@@ -12,6 +13,7 @@ h1, .h1{
 }
 
 h2, .h2{
+	color: #202020;
 	display:block;
 	font-family:Arial;
 	font-size:16px;
@@ -26,6 +28,7 @@ h2, .h2{
 }
 
 h3, .h3{
+	color: #202020;
 	display:block;
 	font-family:Arial;
 	font-size:16px;
@@ -40,6 +43,7 @@ h3, .h3{
 }
 
 h4, .h4{
+	color: #202020;
 	display:block;
 	font-family:Arial;
 	font-size:14px;
@@ -54,6 +58,7 @@ h4, .h4{
 }
 
 h5, .h5{
+	color: #202020;
 	display:block;
 	font-family:Arial;
 	font-size:12px;
@@ -68,4 +73,12 @@ h5, .h5{
 
 a{
 	text-decoration: none;
+}
+
+p{
+	color: #505050;
+	font-family: Arial;
+	font-size: 14px;
+	line-height: 150%;
+	text-align: left
 }

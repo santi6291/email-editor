@@ -12,6 +12,8 @@ else:
 	<meta charset="UTF-8">
 	<title>Document</title>
 	<link rel="stylesheet" href="<?= RESOURCES ?>vendors/tooltipster/css/tooltipster.css">
+	<link rel="stylesheet" href="<?= RESOURCES ?>vendors/spectrum/spectrum.css">
+	
 	<link rel="stylesheet" href="<?= RESOURCES ?>styles/styles.min.css">
 </head>
 
@@ -25,6 +27,7 @@ else:
 		<script src="<?= RESOURCES ?>vendors/underscore/underscore-min.js"></script>
 		<script src="<?= RESOURCES ?>vendors/tooltipster/js/jquery.tooltipster.min.js"></script>
 		<script src="<?= RESOURCES ?>vendors/handlebars/handlebars.js"></script>
+		<script src="<?= RESOURCES ?>vendors/spectrum/spectrum.js"></script>
 
 		<script src="<?= RESOURCES ?>js/jquery.extensions.js"></script>
 		<script src="<?= RESOURCES ?>js/handlebars.helpers.js"></script>

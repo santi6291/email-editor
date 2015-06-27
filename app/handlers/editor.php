@@ -26,6 +26,10 @@ switch ($action) {
 		$editor->id = $templateID;
 		$response = $editor->saveFragment($fragment);
 	break;
+	case 'updateDefaultColors':
+		$editor->id = $templateID;
+		$response = $editor->updateDefaultColors($colors);
+	break;
 }
 
 echo json_encode($response);

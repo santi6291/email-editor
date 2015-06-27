@@ -121,32 +121,33 @@ Editor.prototype.init = function() {
 
 	getViews(function(){
 		// list of template versions
-		getVersions().done(function(){
+		getTemplateData().done(function(){
 
 			getCurrentHtml(function(){
 				// new template start in modify mode
 				if ( Editor.template.versions.length == 1 ) {
-					Editor.activateSidebar('modify');
+					Editor.sidebarMode.modify(Editor, 'layout');
 				};
 			});
 		});
 	});//get Views
 
-	function getVersions() {
+	function getTemplateData() {
 		var templateVersions = $.getJSON(Editor.path.handler, {
 			action:'versions',
 			templateID: Editor.template.id
 		});
 
 		templateVersions.done(function(versionsJson){
-			Editor.template.versions = versionsJson;
+			Editor.template.versions = versionsJson.versions;
+			Editor.template.colors = versionsJson.defaultColors
 		});
 
 		return templateVersions;
 	};
 
 	// GET LATEST VERSION HTML
-	function getCurrentHtml() {
+	function getCurrentHtml(callback) {
 		var templateID = Editor.template.id;
 		var fileName = Editor.template.versions[0].fileName;
 		var filePath = Editor.path.savedTemplates + templateID + '/' + fileName;
@@ -199,6 +200,62 @@ Editor.prototype.init = function() {
 	}
 };
 
+Editor.prototype.setColor = function(colorTarget) {
+	var Editor = this;
+	var target;
+	var newColor = Editor.template.colors[colorTarget];
+	
+	switch(colorTarget){
+		case 'paragraph':
+			target = $('p');
+		break;
+
+		case 'bold':
+			target = $('strong');
+		break;
+
+		case 'italic':
+			target = $('em');
+		break;
+
+		case 'strikethrough':
+			target = $('del');
+		break;
+
+		case 'subscript':
+			target = $('sub');
+		break;
+
+		case 'superscript':
+			target = $('sup');
+		break;
+
+		case 'heading1':
+		case 'heading2':
+		case 'heading3':
+		case 'heading4':
+		case 'heading5':
+			var headingNumber = colorTarget.charAt(colorTarget.length-1);
+			target = $('h' + headingNumber);
+		break;
+	}
+
+	$('.editor-template').find(target).css('color', newColor);
+	Editor.updateDefaultColors();
+};
+
+Editor.prototype.updateDefaultColors = function() {
+	var Editor = this;
+	$.post(Editor.path.handler, {
+		action: 'updateDefaultColors',
+		colors: Editor.template.colors,
+		templateID: editor.template.id
+	}, function(response) {
+		var message = (response.success)? response.message : objectToText(response.message);
+		$('.modify .response').html(message);
+	}, 'json');
+};
+
 Editor.prototype.bindEvents = function() {
 	var Editor = this;
 	
@@ -211,16 +268,40 @@ Editor.prototype.sidebarMode = {
 	defaults: function(EditorRef){
 		var Editor = EditorRef;
 		var template = $.handlebars(Editor.components['editor-defaults'].contents, {
-			title: 'Defaults',
-			id: Editor.template.id,
+			title: 'Set Defaults Template Options',
+			colors: Editor.template.colors,
 		});
+		
+		template.find('[data-color]').spectrum({
+			showAlpha: false,
+			showInitial: true,
+			showInput: true,
+			preferredFormat: "hex",
+			palette: (_.isArray(Editor.template.pallet))? Editor.template.pallet : ['white'],
+			showPalette: true,
+			maxSelectionSize: 0,
+			hide: function (color) {
+				var colorTarget = $(this).data('color-target');
+				var newColor = color.toHexString();
+				
+				$(this).attr('data-color', newColor);
+				Editor.template.colors[colorTarget] = newColor;
+				Editor.setColor(colorTarget)
+			}
+		});
+
+		$('.innerColumn, .templateSidebar, .templateHeader table[data-added-component]').not('.noSidebar').addClass('editComponent');
 		$('.editor-modeView').html(template)
+
+		if( $('.editor-modeView').hasClass('displayNone') ){
+			$('.editor-modeView').removeClass('displayNone');
+		}
 	},
 
 	revisions: function(EditorRef){
 		var Editor = EditorRef;
 		var template = $.handlebars(Editor.components['editor-revisions'].contents, {
-			title: 'revisions',
+			title: 'Revisions History',
 			id: Editor.template.id,
 			revisions: Editor.template.versions
 		});
@@ -230,9 +311,13 @@ Editor.prototype.sidebarMode = {
 	save: function(EditorRef){
 		var Editor = EditorRef;
 		var template = $.handlebars(Editor.components['editor-save'].contents, {
-			title: 'save'
+			title: 'Save / Validate Template'
 		});
 		$('.editor-modeView').html(template)
+
+		if( $('.editor-modeView').hasClass('displayNone') ){
+			$('.editor-modeView').removeClass('displayNone');
+		}
 	},
 
 	modify: function(EditorRef, componentsType){
@@ -257,6 +342,10 @@ Editor.prototype.sidebarMode = {
 		if( $('.tempFlag').size() == 0){
 			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}')
 			$('.templateHeader, .templateContent, .templateBottom').handlebars();	
+		}
+
+		if( $('.editor-modeView').hasClass('displayNone') ){
+			$('.editor-modeView').removeClass('displayNone');
 		}
 	}
 }
@@ -286,6 +375,19 @@ Editor.prototype.events = {
 				}
 				
 			}
+		});
+	},
+
+	closeSiderbar: function(Editor) {
+		$(document).on('click.closeSiderbar', '.modelView-modelClose', function(e){
+			e.preventDefault();
+			// destroy color picker
+			$('[data-color]').spectrum('destroy');
+
+			$('.editor-modeView').addClass('displayNone').html('');
+			$('.removeComponent, .editComponent').removeClass('removeComponent editComponent');
+			$('.tempFlag').remove();
+			$('.editMe').attr('contenteditable', 'true');
 		});
 	},
 	
@@ -333,17 +435,6 @@ Editor.prototype.events = {
 
 			Editor.sidebarMode.modify(Editor, 'layout');
 		})	
-	},
-
-	closeSiderbar: function(Editor) {
-		$(document).on('click.closeSiderbar', '.modelView-modelClose', function(e){
-			e.preventDefault();
-			$('.editor-modeView').addClass('displayNone').html('');
-
-			$('.removeComponent').removeClass('removeComponent');
-			$('.tempFlag').remove();
-			$('.editMe').attr('contenteditable', 'true')
-		});
 	},
 
 	widthSelect: function(editorRef){

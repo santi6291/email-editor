@@ -26,6 +26,14 @@
 				</div>
 				
 				<div class="editor-toolbarBtn">
+					<select name="fontType" class="textFormat">
+						<option value="p">Normal</option>
+						<option value="h1">Heading 1</option>
+						<option value="h2">Heading 2</option>
+						<option value="h3">Heading 3</option>
+						<option value="h4">Heading 4</option>
+						<option value="h5">Heading 5</option>
+					</select>
 					<button class="Bold" data-editor-format="strong" />
 					<button class="Italic" data-editor-format="em" />
 					<button class="Strikethrough" data-editor-format="del" />
@@ -33,6 +41,7 @@
 					<button class="Subscript" data-editor-format="sub" />
 					<button class="Superscript" data-editor-format="sup" />
 				</div>
+				<br>
 			</div>
 
 			<div class="editor-template"></div>

@@ -5,10 +5,44 @@ class editor extends database{
 	public $id;
 
 	public function listVer () {
+		$con = $this->DBConnect();
+		
+		$templateQuery = $con->prepare("SELECT * FROM `templates` WHERE id = ?");
+		
+		if( $templateQuery == false ){
+			return array(
+				'success' => false,
+				'message' => $con->error,
+			);
+		}
+		
+		$templateQuery->bind_param('i', $this->id);
+		
+		if( $templateQuery->execute() == false ){
+			return array(
+				'success' => false,
+				'message' => $con->error,
+			);
+		}
+		
+		$templateQuery->bind_result($ID, $title, $version, $active, $user, $colorPallet, $defaultColors);
+		$templateData = array();
+		
+		while ( $templateQuery->fetch() ) {
+			$templateData = array(
+				'ID' => $ID, 
+				'title' => $title, 
+				'latestVersion' => $version, 
+				'active' => $active, 
+				'user' => $user, 
+				'colorPallet' => $colorPallet, 
+				'defaultColors' => json_decode($defaultColors),
+			);
+		}
 
 		$revisions = scandir(SAVED_TEMPLATES . $this->id, 1);
 
-		$response = array();
+		$templateData['versions'] = array();
 
 		foreach ($revisions as $key => $value) {
 			
@@ -18,13 +52,13 @@ class editor extends database{
 
 			$timeStamp = preg_replace('/(\.)\w+$/', '', $value);
 			
-			$response[] = array(
+			$templateData['versions'][] = array(
 				'title' => date('m.d.y - h:i:s a', $timeStamp),
 				'fileName' => $value,
 			);
 		}
 
-		return $response;
+		return $templateData;
 	}
 	
 	public function validateFragment ($fragment){
@@ -57,10 +91,6 @@ class editor extends database{
 		curl_setopt($ch, CURLOPT_POST, 4);
 		//post fields
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
-		//connection time out
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-		//user agent
-		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36');
 		//execute post
 		$result = curl_exec($ch);
 		//close connection
@@ -95,7 +125,6 @@ class editor extends database{
 				'success' => false,
 				'message' => error_get_last(),
 			);
-			die();
 		}
 
 		$updateVerison = $con->prepare("UPDATE `templates` SET version = ? WHERE id = ?;");
@@ -105,7 +134,6 @@ class editor extends database{
 				'success' => false,
 				'message' => $con->error,
 			);
-			die();
 		}
 
 		$updateVerison->bind_param('si', $time, $this->id);
@@ -118,6 +146,28 @@ class editor extends database{
 			'title' => date('m.d.y - h:i:s', $time),
 			'fileName' => $time,
 			'success' => ( $rowUpdated !== false )? true : false,
+		);
+	}
+
+	public function updateDefaultColors($colors){
+		$con = $this->DBConnect();
+		$colorsJson = json_encode($colors);
+		
+		$updateQuery = $con->prepare("UPDATE `templates` SET default_colors = ? WHERE id = ?;");
+		
+		if($updateQuery == false){
+			return array(
+				'success' => false,
+				'message' => $con->error,
+			);
+		}
+
+		$updateQuery->bind_param('si', $colorsJson, $this->id);
+		$querySuccess = $updateQuery->execute();
+
+		return array(
+			'success' => ($querySuccess == false )? false : true,
+			'message' => ($querySuccess == false )? $con->error : 'Colors Saved successfully.',
 		);
 	}
 }
