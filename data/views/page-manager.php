@@ -1,42 +1,38 @@
-<div class="manager">
-	
+<header>
 	<h2>
 		Templates
 	</h2>
-	
-	<div class="manager-installer">
+</header>
+<div class="manager">
+	<!-- <div class="manager-installer">
 		<h3>Install / Uninstall table</h3>
 
 		<input type="button" value="Install" data-manager="installer"/>
 		<input type="button" value="Uninstall" data-manager="installer"/>
 		
 		<div class="feedback"></div>
-	</div>
+	</div> -->
 
-	<form class="manager-new" data-manager="create">
-		<fieldset>
-			<h3>
-				New Template
-			</h3>
-			<input type="text" name="title" class="title" required/>
-			<br>
-			<input type="submit" value="New">
-			<br>
-			<div class="feedback"></div>
-		</fieldset>
-	</form>	
+	<nav class="templatesNavigations">
+		<ul>
+			<li>
+				<button data-manager="list-active">Active</button>
+			</li>
+			<li>
+				<button data-manager="list-trash">Trash</button>
+			</li>
+			<li>
+				<button data-manage="create">New Template</button>
+			</li>
+		</ul>
+	</nav>
+	
 
 	<div class="manager-active" data-manager="active-list">
-		<h3>
-			Active
-		</h3>
 		<ul></ul>
 	</div>
 
 	<div class="manager-trash" data-manager="trash-list">
-		<h3>
-			Trash
-		</h3>
 		<ul></ul>
 	</div>
 </div>

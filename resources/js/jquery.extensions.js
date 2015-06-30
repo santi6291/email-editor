@@ -1,21 +1,31 @@
-$.extend({
-	handlebars: function(view, data) {
-		registerPartial(view);
-		var compiled = view;
-		compiled = Handlebars.compile(compiled);
-		compiled = compiled(data);
-		compiled = $(compiled).not('template')
-		
-		return compiled;
-	}
-});
+// args.view, args.data
+$.fn.handlebars = function(args){
+	$(this).each(function () {
+		// assing itself for compiling
+		var properView = $(this).html();
+		// stays undefiend of args.data not defined
+		var viewData;
+		// compiled data
+		var compiled;
 
-$.fn.handlebars = function(data){
-	registerPartial(this)
-	
-	this.each(function(index, element){
-		var compiled = Handlebars.compile($(element).html());
-		$(element).html(compiled(data))
-	})
-	
+		// assign args if defined
+		if (typeof args !== 'undefined') {
+			// if args.view passed make it data for compiling
+			properView = ( typeof args.view === 'undefined' )? properView : args.view;
+			// set data to parse
+			viewData = args.data;
+		};
+		// register view partials
+		registerPartial(properView);
+		// compiled view
+		compiled = Handlebars.compile(properView);
+
+		// bind data if set
+		if( (typeof viewData !== 'undefined') ){
+			compiled = compiled(viewData)
+		}
+		// append to target
+		$(this).html(compiled);	
+	});
+	return $(this);
 }

@@ -26,9 +26,12 @@ switch ($action) {
 		$editor->id = $templateID;
 		$response = $editor->saveFragment($fragment);
 	break;
-	case 'updateDefaultColors':
+	case 'updateSettings':
 		$editor->id = $templateID;
-		$response = $editor->updateDefaultColors($colors);
+		$response = $editor->updateSettings($colors);
+	break;
+	case 'getComponents':
+		$response = $editor->getComponents();
 	break;
 }
 

@@ -13,6 +13,7 @@
 				<button data-editor-mode="revisions">Revisions History</button>
 				<button data-editor-mode="modify">Modify Template</button>
 				<button data-editor-mode="defaults">Set Defaults Options</button>
+				<button data-editor-mode="pallet">Set Color Pallet</button>
 				<button data-editor-mode="save">Save/Validate Template</button>
 			</div>
 		</div>
@@ -26,7 +27,7 @@
 				</div>
 				
 				<div class="editor-toolbarBtn">
-					<select name="fontType" class="textFormat">
+					<select class="textFormat" data-editor-format='p' />
 						<option value="p">Normal</option>
 						<option value="h1">Heading 1</option>
 						<option value="h2">Heading 2</option>

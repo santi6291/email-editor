@@ -7,7 +7,7 @@ class editor extends database{
 	public function listVer () {
 		$con = $this->DBConnect();
 		
-		$templateQuery = $con->prepare("SELECT * FROM `templates` WHERE id = ?");
+		$templateQuery = $con->prepare("SELECT * FROM `templates` WHERE template_id = ?");
 		
 		if( $templateQuery == false ){
 			return array(
@@ -25,7 +25,7 @@ class editor extends database{
 			);
 		}
 		
-		$templateQuery->bind_result($ID, $title, $version, $active, $user, $colorPallet, $defaultColors);
+		$templateQuery->bind_result($ID, $title, $version, $active, $defaultSettings, $colorPallet, $user);
 		$templateData = array();
 		
 		while ( $templateQuery->fetch() ) {
@@ -35,8 +35,8 @@ class editor extends database{
 				'latestVersion' => $version, 
 				'active' => $active, 
 				'user' => $user, 
-				'colorPallet' => $colorPallet, 
-				'defaultColors' => json_decode($defaultColors),
+				'colorPallet' => json_encode($colorPallet), 
+				'defaultSettings' => json_decode($defaultSettings),
 			);
 		}
 
@@ -127,7 +127,7 @@ class editor extends database{
 			);
 		}
 
-		$updateVerison = $con->prepare("UPDATE `templates` SET version = ? WHERE id = ?;");
+		$updateVerison = $con->prepare("UPDATE `templates` SET version = ? WHERE template_id = ?;");
 		
 		if ( $updateVerison == false) {
 			return array(
@@ -149,11 +149,11 @@ class editor extends database{
 		);
 	}
 
-	public function updateDefaultColors($colors){
+	public function updateSettings($settings){
 		$con = $this->DBConnect();
-		$colorsJson = json_encode($colors);
+		$settingsJson = json_encode($settings);
 		
-		$updateQuery = $con->prepare("UPDATE `templates` SET default_colors = ? WHERE id = ?;");
+		$updateQuery = $con->prepare("UPDATE `templates` SET default_settings = ? WHERE template_id = ?;");
 		
 		if($updateQuery == false){
 			return array(
@@ -162,12 +162,137 @@ class editor extends database{
 			);
 		}
 
-		$updateQuery->bind_param('si', $colorsJson, $this->id);
+		$updateQuery->bind_param('si', $settingsJson, $this->id);
 		$querySuccess = $updateQuery->execute();
 
 		return array(
 			'success' => ($querySuccess == false )? false : true,
-			'message' => ($querySuccess == false )? $con->error : 'Colors Saved successfully.',
+			'message' => ($querySuccess == false )? $con->error : 'Settings Saved successfully.',
 		);
+	}
+
+	public function getComponents(){
+
+		$components = array(
+			'template-body-content-cols-1' => array(
+				'id' => 'template-body-content-cols-1',
+				'title' => 'Single Column',
+				'contents' => file_get_contents(VIEWS . 'template-body-content-cols-1.html'),
+				'thumb' => RESOURCES . 'images/template-body-content-cols-1.png',
+			),
+
+			'template-body-content-cols-2'=> array(
+				'id' => 'template-body-content-cols-2',
+				'title' => '2 Columns',
+				'contents' => file_get_contents(VIEWS . 'template-body-content-cols-2.html'),
+				'thumb' => RESOURCES . 'images/template-body-content-cols-2.png',
+			),
+
+			'template-body-content-cols-3'=> array(
+				'id' => 'template-body-content-cols-3',
+				'title' => '3 Columns',
+				'contents' => file_get_contents(VIEWS . 'template-body-content-cols-3.html'),
+				'thumb' => RESOURCES . 'images/template-body-content-cols-3.png',
+			),
+
+			'template-body-content-cols-4'=> array(
+				'id' => 'template-body-content-cols-4',
+				'title' => '4 Columns',
+				'contents' => file_get_contents(VIEWS . 'template-body-content-cols-4.html'),
+				'thumb' => RESOURCES . 'images/template-body-content-cols-4.png',
+			),
+
+			'template-header-cols-1'=> array(
+				'id' => 'template-header-cols-1',
+				'title' => 'Image Only',
+				'contents' => file_get_contents(VIEWS . 'template-header-cols-1.html'),
+				'thumb' => RESOURCES . 'images/template-header-cols-1.png',
+			),
+
+			'template-header-cols-2-left'=> array(
+				'id' => 'template-header-cols-2-left',
+				'title' => 'Left image w/ text ',
+				'contents' => file_get_contents(VIEWS . 'template-header-cols-2-left.html'),
+				'thumb' => RESOURCES . 'images/template-header-cols-2-left.png',
+			),
+
+			'template-header-cols-2-right'=> array(
+				'id' => 'template-header-cols-2-right',
+				'title' => 'Right Image w/ text',
+				'contents' => file_get_contents(VIEWS . 'template-header-cols-2-right.html'),
+				'thumb' => RESOURCES . 'images/template-header-cols-2-right.png',
+			),
+
+			'template-header-cols-3'=> array(
+				'id' => 'template-header-cols-3',
+				'title' => 'Cented Image w/ text',
+				'contents' => file_get_contents(VIEWS . 'template-header-cols-3.html'),
+				'thumb' => RESOURCES . 'images/template-header-cols-3.png',
+			),
+
+			'template-layout-sidebar-left'=> array(
+				'id' => 'template-layout-sidebar-left',
+				'title' => 'Left sidebar, content right',
+				'contents' => file_get_contents(VIEWS .'template-body-sidebar.html'),
+				'thumb' => RESOURCES . 'images/template-layout-sidebar-left.png',
+			),
+
+			'template-layout-sidebar-right'=> array(
+				'id' => 'template-layout-sidebar-right',
+				'title' => 'Left content, right sidebar',
+				'contents' => file_get_contents(VIEWS .'template-body-sidebar.html'),
+				'thumb' => RESOURCES . 'images/template-layout-sidebar-right.png',
+			),
+
+			'template-layout-cols-3'=> array(
+				'id' => 'template-layout-cols-3',
+				'title' =>'Center content, two sidebars',
+				'contents' => file_get_contents(VIEWS . 'template-body-sidebar.html'),
+				'thumb' => RESOURCES . 'images/template-layout-cols-3.png',
+			),
+
+			'template-layout-single' => array(
+				'id' => 'template-layout-single',
+				'title' =>'Single column',
+				'thumb' => RESOURCES . 'images/template-layout-single.png',
+			),
+
+			'editor-modify' => array(
+				'id' => 'editor-modify',
+				'contents' => file_get_contents(VIEWS . 'editor-modify.php'),
+			),
+			
+			'editor-save' => array(
+				'id' => 'editor-save',
+				'contents' => file_get_contents(VIEWS . 'editor-save.php'),
+			),
+			
+			'editor-defaults' => array(
+				'id' => 'editor-defaults',
+				'contents' => file_get_contents(VIEWS . 'editor-defaults.php'),
+			),
+
+			'template-head' => array(
+				'id' => 'template-head',
+				'contents' => file_get_contents(VIEWS . 'template-head.html'),
+			),
+
+			'template-footer' => array(
+				'id' => 'template-footer',
+				'contents' => file_get_contents(VIEWS . 'template-footer.html'),
+			),
+
+			'editor-revisions' => array(
+				'id' => 'editor-revisions',
+				'contents' => file_get_contents(VIEWS . 'editor-revisions.php'),
+			),
+			
+			'editor-modify-component' => array(
+				'id' => 'editor-modify-component',
+				'contents' => file_get_contents(VIEWS . 'editor-modify-component.php'),
+			)
+		); //end components array
+		
+		return $components;
 	}
 }

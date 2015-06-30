@@ -1,3 +1,4 @@
+@import "normalize.css";
 @import "../vendors/font-awesome/less/font-awesome";
 
 // MIXINS START
@@ -48,36 +49,83 @@
 	.fa(@faIcon);
 }
 
+.overlayAction(@fa-type, @bgColor){
+	position: relative;
+	&:before{
+		content: '';
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 999;
+		background-color: @bgColor;
+	}
+
+	&:after{
+		.fa(@fa-type);
+		width: 1em;
+		height: 1em;
+		font-size: 3em;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1000;
+		margin: auto;
+		cursor: pointer;
+	}
+}
+
 .displayNone{
 	display: none !important;
 }
-
-.scrollBar{
-	::-webkit-scrollbar{}
-
-	::-webkit-scrollbar-thumb{}
-}
-
 // MIXINS END
 
-*{
-	position: relative;
-	margin: 0px;
-	padding: 0px;
+// VARIABLES START
+@darkBlue2:#2c3e50;
+@darkBlue:#2A2B30;
+@white: #fff;
+
+// VARIABLES END
+
+* {
+	:not(table) :not(td){
+		position: relative;
+		margin: 0px;
+		padding: 0px;
+		font-family: arial;
+	}
 }
-.editor-template *{
-	margin: initial;
-	padding: initial;
+
+body{
+	background-color: @darkBlue;
 }
 
 .wrapper{
-	margin: 20px 0px;
-	
+
+	header{
+		background-color: @darkBlue2;
+		color: #fff;
+		height: 5vh;
+		display: table;
+		width: 100%;
+
+		h2{
+			display: table-cell;
+			vertical-align: middle;
+			padding: 0 5%;
+		}
+	}
+
 	&-editor{
 		margin-top: 70px;
 	}
 }
+.modal{
 
+}
 
 ////////////////////
 // MANAGER STYLES //
@@ -87,7 +135,27 @@
 	max-width: 900px;
 	margin: 0 auto;
 }
+.templatesNavigations{
+	display: block;
+	ul{
+		display: table;
+		width: 100%;
+		background-color: #fafafa;
+		list-style: none;
+		height: 5vh;
+	}
+	
+	li{
+		display: table-cell;
+		vertical-align: middle;
+		border-left: 1px solid #000;
+		text-align: center;
+	}
+	
+	button{
 
+	}
+}
 .manager-active, .manager-trash {
 	ul{
 		padding: 0;
@@ -211,6 +279,10 @@
 			width: 90px;
 			padding: 10px 0px;
 			margin-right: 1%;
+
+			&.active{
+				background-color: darken(rgb(192, 192, 192), 20%);
+			}
 		}
 		
 		
@@ -306,63 +378,15 @@
 	}
 	
 	.editComponent{
-		vertical-align: middle;
-		&:before{
-			content: '';
-			position: absolute;
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			background-color: rgba(140, 194, 176, 0.89);
-			top: 0;
-			left: 0;
-			z-index: 999
-		}
-
-		&:after{
-			.fa(cog);
-			font-size: 3em;
-			position: absolute;
-			z-index: 1000;
-			margin: auto;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			width: 1em;
-			height: 1em;
-			cursor: pointer;
-		}
+		.overlayAction(cog, rgba(140, 194, 176, 0.20));
+	}
+	
+	.closeComponent{
+		.overlayAction(times, rgba(140, 194, 176, 0.20));
 	}
 
 	.removeComponent{
-		vertical-align: middle;
-		&:before{
-			content: '';
-			position: absolute;
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			background-color: rgba(250, 0, 57, 0.5);
-			top: 0;
-			left: 0;
-			z-index: 999
-		}
-
-		&:after{
-			.fa(minus-circle);
-			font-size: 3em;
-			position: absolute;
-			z-index: 1000;
-			margin: auto;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			width: 1em;
-			height: 1em;
-			cursor: pointer;
-		}
+		.overlayAction(minus-circle, rgba(250, 0, 57, 0.5));
 	}
 
 	.activeSidebar{

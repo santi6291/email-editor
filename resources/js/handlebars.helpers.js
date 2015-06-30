@@ -23,3 +23,13 @@ Handlebars.registerHelper('tempFlag', function(active){
 	var tempFlag = '<table class="tempFlag ' + activeClass + '"></table>';
 	return new Handlebars.SafeString(tempFlag);
 });
+
+Handlebars.registerHelper('valign', function (selected) {
+	var aligments = ['top', 'middle', 'bottom', 'baseline'];
+	var options = '';
+	_.each(aligments, function (aligment) {
+		var selected = (selected == aligment)?'selected="selected"': '';
+		options += '<option value="' + aligment + '" ' + selected + '>'  + aligment + '</option>';
+	})
+	return new Handlebars.SafeString(options);
+})

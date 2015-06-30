@@ -13,103 +13,21 @@ var Editor = function() {
 		id: App.GET.id,
 	};
 	
-	Editor.components = {
-		'template-body-content-cols-1': {
-			id: 'template-body-content-cols-1',
-			title: 'Single Column',
-			fileName: 'template-body-content-cols-1.html',
-			thumb: Editor.path.images + 'template-body-content-cols-1.png'
-		},
-		'template-body-content-cols-2': {
-			id: 'template-body-content-cols-2',
-			title: '2 Columns',
-			fileName: 'template-body-content-cols-2.html',
-			thumb: Editor.path.images + 'template-body-content-cols-2.png'
-		},
-		'template-body-content-cols-3': {
-			id: 'template-body-content-cols-3',
-			title: '3 Columns',
-			fileName: 'template-body-content-cols-3.html',
-			thumb: Editor.path.images + 'template-body-content-cols-3.png'
-		},
-		'template-body-content-cols-4': {
-			id: 'template-body-content-cols-4',
-			title: '4 Columns',
-			fileName: 'template-body-content-cols-4.html',
-			thumb: Editor.path.images + 'template-body-content-cols-4.png'
-		},
-		'template-header-cols-1': {
-			id: 'template-header-cols-1',
-			title: 'Image Only',
-			fileName: 'template-header-cols-1.html',
-			thumb: Editor.path.images + 'template-header-cols-1.png'
-		},
-		'template-header-cols-2-left': {
-			id: 'template-header-cols-2-left',
-			title: 'Left image w/ text ',
-			fileName: 'template-header-cols-2-left.html',
-			thumb: Editor.path.images + 'template-header-cols-2-left.png'
-		},
-		'template-header-cols-2-right': {
-			id: 'template-header-cols-2-right',
-			title: 'Right Image w/ text',
-			fileName: 'template-header-cols-2-right.html',
-			thumb: Editor.path.images + 'template-header-cols-2-right.png'
-		},
-		'template-header-cols-3': {
-			id: 'template-header-cols-3',
-			title: 'Cented Image w/ text',
-			fileName: 'template-header-cols-3.html',
-			thumb: Editor.path.images + 'template-header-cols-3.png'
-		},
-		'template-layout-sidebar-left': {
-			id: 'template-layout-sidebar-left',
-			title: 'Left sidebar, content right',
-			fileName:'template-body-sidebar.html',
-			thumb: Editor.path.images + 'template-layout-sidebar-left.png'
-		},
-		'template-layout-sidebar-right': {
-			id: 'template-layout-sidebar-right',
-			title: 'Left content, right sidebar',
-			fileName:'template-body-sidebar.html',
-			thumb: Editor.path.images + 'template-layout-sidebar-right.png'
-		},
-		'template-layout-cols-3': {
-			id: 'template-layout-cols-3',
-			title :'Center content, two sidebars',
-			fileName:'template-body-sidebar.html',
-			thumb : Editor.path.images + 'template-layout-cols-3.png'
-		},
-		'template-layout-single':{
-			id: 'template-layout-single',
-			title :'Single column',
-			thumb : Editor.path.images + 'template-layout-single.png'
-		},
-		'editor-modify': {
-			id: 'editor-modify',
-			fileName: 'editor-modify.php'
-		},
-		'editor-save': {
-			id: 'editor-save',
-			fileName: 'editor-save.php'
-		},
-		'editor-defaults': {
-			id: 'editor-defaults',
-			fileName: 'editor-defaults.php'
-		},
-		'template-head': {
-			id: 'template-head',
-			fileName: 'template-head.html'
-		},
-		'template-footer': {
-			id: 'template-footer',
-			fileName: 'template-footer.html'
-		},
-		'editor-revisions': {
-			id: 'editor-revisions',
-			fileName: 'editor-revisions.php'
-		}
+	Editor.spectrum = function (options) {
+		var spectrum = this;
+		spectrum.showAlpha = false;
+		spectrum.showInitial = true;
+		spectrum.showInput = true;
+		spectrum.preferredFormat = "hex";
+		spectrum.palette = (_.isArray(Editor.template.pallet))? Editor.template.pallet : [];
+		spectrum.showPalette = true;
+		spectrum.maxSelectionSize = 0;
+		
+		_.each(options, function (optionValue, optionKey) {
+			spectrum[optionKey] = optionValue
+		});
 	};
+	
 
 	Editor.init();
 }
@@ -119,7 +37,7 @@ Editor.prototype.init = function() {
 	
 	Editor.bindEvents();
 
-	getViews(function(){
+	getComponents(function(){
 		// list of template versions
 		getTemplateData().done(function(){
 
@@ -133,17 +51,17 @@ Editor.prototype.init = function() {
 	});//get Views
 
 	function getTemplateData() {
-		var templateVersions = $.getJSON(Editor.path.handler, {
+		var templateData = $.getJSON(Editor.path.handler, {
 			action:'versions',
 			templateID: Editor.template.id
 		});
 
-		templateVersions.done(function(versionsJson){
+		templateData.done(function(versionsJson){
 			Editor.template.versions = versionsJson.versions;
-			Editor.template.colors = versionsJson.defaultColors
+			Editor.template.settings = versionsJson.defaultSettings
 		});
 
-		return templateVersions;
+		return templateData;
 	};
 
 	// GET LATEST VERSION HTML
@@ -160,74 +78,56 @@ Editor.prototype.init = function() {
 
 			$('.widthSelect').find('[value~=' + Editor.template.width + ']').attr('selected', 'true');
 			$('.editor').find('.editor-template').html(template);
-
+			$('.editor').find('.editMe').attr('contenteditable', 'true')
 			if (typeof callback == 'function') {
 				callback()
 			};
 		});
 	};
 
-	function getViews(callback){
-		var tracker = 0;
-		_.each(Editor.components, function(viewObj, key){
-
-			if( typeof viewObj.contents == 'undefined' && typeof viewObj.fileName != 'undefined' ){
-
-				var repeatedFiles = _.filter(Editor.components, function(component){
-					return (component.fileName == viewObj.fileName) && (typeof component.contents == 'undefined');
-				});
-
-				_.each(repeatedFiles, function(value, index){
-					value.contents = null
-				})
-
-				$.get(Editor.path.viewsDir + viewObj.fileName, function(viewDOM) {
-
-					_.each(repeatedFiles, function(value, index){
-						value.contents = viewDOM
-					})
-
-					tracker += repeatedFiles.length;
-					if( (tracker == _.size(Editor.components)) && (typeof callback == 'function') ){
-						callback();
-					}
-
-				});
-			} else if( typeof viewObj.fileName != 'undefined' ){
-				tracker++;
+	function getComponents(callback){
+		$.getJSON(Editor.path.handler, {
+			action: 'getComponents'
+		}, function(components) {
+			Editor.components = components
+			if ( typeof callback == 'function' ) {
+				callback();
 			}
 		});
 	}
 };
 
-Editor.prototype.setColor = function(colorTarget) {
+Editor.prototype.previewSettings = function(args) {
+	// args.target, args.style:{styleType:styleValue}
 	var Editor = this;
-	var target;
-	var newColor = Editor.template.colors[colorTarget];
-	
-	switch(colorTarget){
+	var properTarget;
+	switch(args.target){
 		case 'paragraph':
-			target = $('p');
+			properTarget = 'p';
 		break;
 
 		case 'bold':
-			target = $('strong');
+			properTarget = 'strong';
 		break;
 
 		case 'italic':
-			target = $('em');
+			properTarget = 'em';
 		break;
 
 		case 'strikethrough':
-			target = $('del');
+			properTarget = 'del';
 		break;
 
 		case 'subscript':
-			target = $('sub');
+			properTarget = 'sub';
 		break;
 
 		case 'superscript':
-			target = $('sup');
+			properTarget = 'sup';
+		break;
+
+		case 'anchor':
+			properTarget = 'a';
 		break;
 
 		case 'heading1':
@@ -235,20 +135,42 @@ Editor.prototype.setColor = function(colorTarget) {
 		case 'heading3':
 		case 'heading4':
 		case 'heading5':
-			var headingNumber = colorTarget.charAt(colorTarget.length-1);
-			target = $('h' + headingNumber);
+			var headingNumber = args.target.charAt(args.target.length-1);
+			properTarget = 'h' + headingNumber;
 		break;
+		
+		case 'templateContainer':
+		case 'backgroundTable':
+			properTarget = '#' + args.target;
+		break
+		default:
+			properTarget = args.target;
+		break
 	}
+	
+	_.each(args.style, function (styleValue, styleType) {
+		// check if element exist
+		var styleSet = ( $('[data-style-target=' + properTarget + styleType + ']').size() > 0 );
+		// select or create element
+		var previewStyles = ( styleSet )? $('[data-style-target=' + properTarget + styleType + ']') : $('<style class="previewStyles" data-style-target="' + properTarget + styleType + '" />');
+		previewStyles.data({
+			'target': properTarget,
+			'styleType': styleType,
+			'styleValue': styleValue
+		});
+		// append styles to container
+		previewStyles.html('.editor-template ' +properTarget + '{' + styleType + ':' + styleValue + ' !important}');
+		// append to body
+		$('body').append(previewStyles);
+	})
 
-	$('.editor-template').find(target).css('color', newColor);
-	Editor.updateDefaultColors();
 };
 
-Editor.prototype.updateDefaultColors = function() {
+Editor.prototype.updateDefaultSettings = function() {
 	var Editor = this;
 	$.post(Editor.path.handler, {
-		action: 'updateDefaultColors',
-		colors: Editor.template.colors,
+		action: 'updateSettings',
+		colors: Editor.template.settings,
 		templateID: editor.template.id
 	}, function(response) {
 		var message = (response.success)? response.message : objectToText(response.message);
@@ -265,83 +187,124 @@ Editor.prototype.bindEvents = function() {
 };
 
 Editor.prototype.sidebarMode = {
-	defaults: function(EditorRef){
-		var Editor = EditorRef;
-		var template = $.handlebars(Editor.components['editor-defaults'].contents, {
-			title: 'Set Defaults Template Options',
-			colors: Editor.template.colors,
+	defaults: function(editorRef){
+		var Editor = editorRef;
+		var colors = _.mapObject(Editor.template.settings, function (val) {
+			return val.color;
 		});
 		
-		template.find('[data-color]').spectrum({
-			showAlpha: false,
-			showInitial: true,
-			showInput: true,
-			preferredFormat: "hex",
-			palette: (_.isArray(Editor.template.pallet))? Editor.template.pallet : ['white'],
-			showPalette: true,
-			maxSelectionSize: 0,
-			hide: function (color) {
-				var colorTarget = $(this).data('color-target');
-				var newColor = color.toHexString();
-				
-				$(this).attr('data-color', newColor);
-				Editor.template.colors[colorTarget] = newColor;
-				Editor.setColor(colorTarget)
+		$('.editor-modeView').handlebars({
+			view: Editor.components['editor-defaults'].contents,
+			data: {
+				title: 'Set Defaults Options',
+				settings: Editor.template.settings,
 			}
 		});
 
+		spectrumSettings = new Editor.spectrum({
+			hide: function (color) {
+				var colorTarget = $(this).parents('[data-setting-target]').data('setting-target');
+				var newColor = color.toHexString();
+				var styleType = $(this).parents('[data-style]').data('style');
+				var previewArgs = {
+					target: colorTarget,
+					style: {}
+				};
+				previewArgs.style[styleType] = newColor;
+				Editor.template.settings[colorTarget][styleType] = newColor;
+				Editor.previewSettings(previewArgs);
+			}
+		});
+
+		$('.editor-modeView').find('[data-color]').spectrum(spectrumSettings);
+
 		$('.innerColumn, .templateSidebar, .templateHeader table[data-added-component]').not('.noSidebar').addClass('editComponent');
-		$('.editor-modeView').html(template)
+
+		if( $('.editor-modeView').hasClass('displayNone') ){
+			$('.editor-modeView').removeClass('displayNone');
+		}
+	},
+	
+	editComponent: function (editorRef, target) {
+		var Editor = editorRef;
+		target = $(target);
+		var styles = {
+			border: {
+				color: target.css('border-color'),
+				width: target.css('border-width').replace('px', ''),
+				style: target.css('border-style')
+			},
+			valign: target.attr('valign'),
+			width: target.width(),
+			bgColor: target.css('background-color')
+		};
+		
+		$('.editor-modeView').handlebars({
+			view: Editor.components['editor-modify-component'].contents,
+			data: {
+				title: 'Modify component',
+				styles: styles
+			}
+		});
+		
+		var spectrumSettings = new Editor.spectrum();
+
+		$('.editor-modeView').find('[data-color]').spectrum(spectrumSettings)
+	},
+
+	revisions: function(editorRef){
+		var Editor = editorRef;
+
+		$('.editor-modeView').handlebars({
+			view: Editor.components['editor-revisions'].contents,
+			data:{
+				title: 'Revisions History',
+				id: Editor.template.id,
+				revisions: Editor.template.versions
+			}
+		});
+	},
+
+	save: function(editorRef){
+		var Editor = editorRef;
+		
+		$('.editor-modeView').handlebars({
+			view: Editor.components['editor-save'].contents,
+			data: {
+				title: 'Save / Validate Template'
+			}
+		})
 
 		if( $('.editor-modeView').hasClass('displayNone') ){
 			$('.editor-modeView').removeClass('displayNone');
 		}
 	},
 
-	revisions: function(EditorRef){
-		var Editor = EditorRef;
-		var template = $.handlebars(Editor.components['editor-revisions'].contents, {
-			title: 'Revisions History',
-			id: Editor.template.id,
-			revisions: Editor.template.versions
-		});
-		$('.editor-modeView').html(template)
-	},
-
-	save: function(EditorRef){
-		var Editor = EditorRef;
-		var template = $.handlebars(Editor.components['editor-save'].contents, {
-			title: 'Save / Validate Template'
-		});
-		$('.editor-modeView').html(template)
-
-		if( $('.editor-modeView').hasClass('displayNone') ){
-			$('.editor-modeView').removeClass('displayNone');
-		}
-	},
-
-	modify: function(EditorRef, componentsType){
+	modify: function(editorRef, componentsType){
 		// componentsType: header, body, layout
-		var Editor = EditorRef;
+		var Editor = editorRef;
 		var target = $('.editor-modeView');
 		var view = Editor.components['editor-modify'].contents;
 		var requestedComponents = _.filter(Editor.components, function(componentValue, componentKey){
 			var exp = new RegExp(componentsType, 'g');
 			return exp.test(componentKey);
 		})
-		var template = $.handlebars(view, {
-			title: 'Modify Template',
-			listType: componentsType,
-			componentList: requestedComponents
-		});
-		target.html(template)
+
+		target.handlebars({
+			view: view,
+			data: {
+				title: 'Modify Template',
+				listType: componentsType,
+				componentList: requestedComponents
+			}
+		})
 		
 		// todo get tables add editComponent class
 		$('[data-added-component]').addClass('removeComponent')
 
 		if( $('.tempFlag').size() == 0){
 			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}')
-			$('.templateHeader, .templateContent, .templateBottom').handlebars();	
+			$('.templateHeader, .templateContent, .templateBottom').handlebars();
 		}
 
 		if( $('.editor-modeView').hasClass('displayNone') ){
@@ -351,7 +314,7 @@ Editor.prototype.sidebarMode = {
 }
 
 Editor.prototype.events = {
-	
+	// activate sidebar, get mode from data-editor-mode
 	activateSidebar: function(editorRef){
 		var Editor = editorRef;
 		$('button[data-editor-mode]').on('click.activateSidebar', function(e){
@@ -377,29 +340,90 @@ Editor.prototype.events = {
 			}
 		});
 	},
+	// close sidebar and clean up
+	closeSiderbar: function(editorRef) {
+		var Editor = editorRef;
 
-	closeSiderbar: function(Editor) {
 		$(document).on('click.closeSiderbar', '.modelView-modelClose', function(e){
 			e.preventDefault();
 			// destroy color picker
 			$('[data-color]').spectrum('destroy');
-
+			// hide sidebar
 			$('.editor-modeView').addClass('displayNone').html('');
+			// remove modification classes from components
 			$('.removeComponent, .editComponent').removeClass('removeComponent editComponent');
+			// remove temp flag marker
 			$('.tempFlag').remove();
+			// make content editable
 			$('.editMe').attr('contenteditable', 'true');
+			// remove preview styles
+			$('.previewStyles').remove();
 		});
 	},
 	
-	formatText: function(editorRef){
+	settingChanged: function (editorRef) {
 		var Editor = editorRef;
-		$('button[data-editor-format]').on('click.formatText', function(e){
+		$(document).on('change.settingChanged, keyup.settingChanged', '[data-style]:not([data-style=color]) input', function (e) {
 			e.preventDefault();
-			var textFormat = $(this).data('editor-format');
-			Editor.formatText(textFormat)
+			var target;
+			var styleType = $(this).parents('[data-style]').data('style');
+			var styleValue = $(this).val();
+			var previewArgs = {
+				target: $(this).parents('[data-setting-target]').data('setting-target'),
+				style: {}
+			}
+			switch(styleType){
+				case 'line-height':
+					styleValue += '%';
+				break;
+				default:
+					styleValue += 'px';
+				break;
+			}
+			previewArgs.style[styleType] = styleValue
+			Editor.previewSettings(previewArgs)
 		});
 	},
 
+	// add requested text format to highlighted text
+	formatText: function(editorRef){
+		var Editor = editorRef;
+		
+		$('button[data-editor-format]').on('click.formatText', function(e){
+			e.preventDefault();
+			var textFormat = $(this).data('editor-format');
+			Editor.formatText({
+				formatType: textFormat,
+				returnSelection: false
+			})
+		});
+		
+		$('select[data-editor-format]').on('change.formatText', function (e) {
+			e.preventDefault()
+			var textFormat = $(this).val();
+			
+			$(this).attr('data-editor-format', textFormat);
+			
+			Editor.formatText({
+				formatType: textFormat,
+				returnSelection: false
+			});
+		})
+	},
+
+	// get format of clicked text
+	getFormat: function (editorRef) {
+		var Editor = editorRef;
+		$('.editor-template').on('mouseup', function (e) {
+			var selectedText = Editor.formatText({
+				returnSelection: true
+			});
+			var parentNode = $(selectedText.anchorNode.parentNode).prop('nodeName').toLowerCase();
+			Editor.hintFormat(parentNode);
+		})
+	},
+
+	// open tool tip for a, img actions
 	tooltipFormat: function(editorRef){
 		var Editor = editorRef;
 		$('button[data-editor-insert]').on('click.tooltipFormat', function(e){
@@ -409,6 +433,7 @@ Editor.prototype.events = {
 		});
 	},
 
+	// render components to modify template
 	showComponents: function(editorRef){
 		var Editor = editorRef;
 		$(document).on('click.showComponents', '.addComponent', function(e){
@@ -426,6 +451,7 @@ Editor.prototype.events = {
 		});
 	},
 
+	// return to layout view
 	hideComponents: function(editorRef){
 		var Editor = editorRef;
 		$(document).on('click.hideComponents', '.activeSection', function(e){
@@ -437,6 +463,7 @@ Editor.prototype.events = {
 		})	
 	},
 
+	// modify template width
 	widthSelect: function(editorRef){
 		var Editor = editorRef;
 		$(document).on('change.widthSelect', '.templateWidth', function(e){
@@ -445,6 +472,7 @@ Editor.prototype.events = {
 			Editor.resizeTemplate(newWidth);
 		});
 	},
+	// change sidebars
 	layoutChange: function(editorRef){
 		var Editor = editorRef;
 		$(document).on('click.layoutChange', '[data-component]', function(){
@@ -453,6 +481,7 @@ Editor.prototype.events = {
 		})
 	},
 	
+	// save temaplte code
 	saveTemplate: function(editorRef){
 		var Editor = editorRef;
 		$(document).on('click.saveTemplate', '[data-save]', function(){
@@ -461,6 +490,7 @@ Editor.prototype.events = {
 		});
 	},
 
+	// change to selected revision 
 	revisionChange: function(editorRef){
 		var Editor = editorRef;
 		$(document).on('click.revisionChange', '[data-revison-file]', function(){
@@ -473,22 +503,185 @@ Editor.prototype.events = {
 			});
 		});
 	},
+	// remove component from template
 	removeComponent: function (editorRef) {
 		var Editor = editorRef;
 		$(document).on('click.removeComponent', '.removeComponent', function (e) {
 			e.preventDefault();
 			$(this).remove();
+		});
+	},
+
+	// change component settings
+	editComponent: function (editorRef) {
+		var Editor = editorRef;
+
+		$(document).on('click.editComponent', '.editComponent', function (e) {
+			e.preventDefault();
+			$('[data-color]').spectrum('destroy');
+			
+			$('.closeComponent').removeClass('closeComponent').addClass('editComponent');
+			$(this).removeClass('editComponent').addClass('closeComponent')
+			
+			Editor.sidebarMode.editComponent(Editor, $(this));
+		});
+	},
+	
+	// returnt from component settings to default settings
+	closeComponent: function (editorRef) {
+		var Editor = editorRef;
+		
+		$(document).on('click.closeComponent', '.closeComponent', function (e) {
+			$('[data-color]').spectrum('destroy');
+			$('.closeComponent').removeClass('closeComponent').addClass('editComponent');			
+			Editor.sidebarMode.defaults(Editor);
+		})
+	},
+	// update tempalte default settings
+	updateSettings: function (editorRef) {
+		var Editor = editorRef;
+		$(document).on('click.applySettings', '[data-defaults]', function (e) {
+			e.preventDefault();
+			Editor.updateDefaultSettings();
+			
+			if( $(this).data('defaults') == 'apply' ){
+				Editor.applySettings();
+			}
 		})
 	}
 }
 
-Editor.prototype.formatText = function(formatType){
+Editor.prototype.applySettings = function() {
+	$('.previewStyles').each(function() {
+		var target = $(this).data('target');
+		var styleType = $(this).data('styleType');
+		var styleValue = $(this).data('styleValue');
+
+		$('.editor-template').find(target).css(styleType, styleValue);
+	});
+};
+
+Editor.prototype.hintFormat = function(nodeName) {
+	$('select[hintFormat]').find('option').attr('selected', false);
+	$('button[data-editor-format]').removeClass('active');
+	
+	switch(nodeName){
+		case 'p':
+		case 'h1':
+		case 'h2':
+		case 'h3':
+		case 'h4':
+		case 'h5':
+			$('select[data-editor-format]').find('option[value=' + nodeName + ']').attr('selected', true);
+		break;
+		
+		default:
+			$('button[data-editor-format=' + nodeName + ']').addClass('active');
+		break;
+	}
+};
+
+Editor.prototype.formatText = function(args){
 	var Editor = this;
-	var formatType;
+	var formatType = args.formatType;
+	var returnSelection = args.returnSelection
 	var sel;
 	var range;
-	
-	getSelected(formatType)
+	var styles = {
+		'h1' : [
+			'display:block',
+			'font-family:Arial',
+			'font-weight:bold',
+			'margin-top:0',
+			'margin-right:0',
+			'margin-bottom:10px',
+			'margin-left:0',
+			'text-align:left',
+
+			'color:' + Editor.template.settings.heading1['color'],
+			'font-size:' + Editor.template.settings.heading1['font-size'] + 'px',
+			'line-height:' + Editor.template.settings.heading1['line-height'] + '%'
+		],
+		'h2': [
+			'display:block',
+			'font-family:Arial',
+			'font-weight:bold',
+			'margin-top:0',
+			'margin-right:0',
+			'margin-bottom:0px',
+			'margin-left:0',
+			'text-align:center',
+			'text-transform:uppercase',
+
+			'color:' + Editor.template.settings.heading2['color'],
+			'font-size:' + Editor.template.settings.heading2['font-size'] + 'px',
+			'line-height:' + Editor.template.settings.heading2['line-height'] + '%'
+		],
+		
+		'h3':[
+			'display:block',
+			'font-family:Arial',
+			'font-weight:bold',
+			'margin-top:0',
+			'margin-right:0',
+			'margin-bottom:10px',
+			'margin-left:0',
+			'text-align:left',
+			'text-transform: uppercase',
+
+			'color:' + Editor.template.settings.heading3['color'],
+			'font-size:' + Editor.template.settings.heading3['font-size'] + 'px',
+			'line-height:' + Editor.template.settings.heading3['line-height'] + '%'
+		],
+
+		'h4':[
+			'display:block',
+			'font-family:Arial',
+			'font-weight:bold',
+			'margin-top:0',
+			'margin-right:0',
+			'margin-bottom:10px',
+			'margin-left:0',
+			'text-align:left',
+			'text-transform: uppercase',
+
+			'color:' + Editor.template.settings.heading4['color'],
+			'font-size:' + Editor.template.settings.heading4['font-size'] + 'px',
+			'line-height:' + Editor.template.settings.heading4['line-height'] + '%'
+		],
+
+		'h5':[
+			'display:block',
+			'font-family:Arial',
+			'font-weight:bold',
+			'margin-top:0',
+			'margin-right:0',
+			'margin-bottom:0px',
+			'margin-left:0',
+			'text-align:left',
+
+			'color:' + Editor.template.settings.heading5['color'],
+			'font-size:' + Editor.template.settings.heading5['font-size'] + 'px',
+			'line-height:' + Editor.template.settings.heading5['line-height'] + '%',
+		],
+		
+		'a': [
+			'text-decoration: none;',
+			'color:' + Editor.template.settings.anchor['color'],
+			'line-height:' + Editor.template.settings.anchor['line-height'] + '%',
+		],
+		
+		'p': [
+			'font-family: Arial',
+			'text-align: left',
+
+			'color:' + Editor.template.settings.paragraph['color'],
+			'font-size:' + Editor.template.settings.paragraph['font-size'] + 'px',
+			'line-height:' + Editor.template.settings.paragraph['line-height'] + '%',
+		]
+	};
+
+	return getSelected(formatType)
 
 	function getSelected (formatType){
 		//node type
@@ -501,6 +694,9 @@ Editor.prototype.formatText = function(formatType){
 			if (sel.rangeCount) {
 				range = sel.getRangeAt(0);
 				
+				if( returnSelection ) {
+					return sel;
+				}
 				if ( $(sel.focusNode).parents(formatType).size() > 0 ) {
 					//remove format node	
 					removeFormat();
@@ -513,8 +709,10 @@ Editor.prototype.formatText = function(formatType){
 	}
 	
 	function addFormat (){
+		console.log(styles)
+		var formatStyles = (typeof styles[formatType] !== 'undefined')? styles[formatType].join(';') : '';
 		//create format node with selection text 
-		var replacementText = $('<' + formatType + '/>').append(range.toString())[0];
+		var replacementText = $('<' + formatType + ' style="' + formatStyles + '"/>').append(range.toString())[0];
 		//remove text from DOM
 		range.deleteContents();
 		//append format node to removed text position
@@ -535,7 +733,7 @@ Editor.prototype.formatText = function(formatType){
 		 */
 		var newContent = parentNode[0].outerHTML.replace(removeNode[0].outerHTML, removeNode[0].innerHTML);
 		parentNode.html(newContent);
-		}
+	}
 }
 
 Editor.prototype.save = function() {
@@ -558,7 +756,8 @@ Editor.prototype.save = function() {
 				title: response.title
 			}, 'json');
 
-			$('.responseCode').find('textarea').val(fullFragment)	
+			$('.responseCode').find('textarea').val(fullFragment);
+			$('.feedback').html('<p>Changes saved.</p>')
 		}, 'json');
 	})
 }
@@ -566,6 +765,8 @@ Editor.prototype.save = function() {
 Editor.prototype.validate = function(callback) {
 	var Editor = this;
 	var fullFragment = fullFragment();
+
+	$('.feedback').html('<p>Validating code.</p>')
 	
 	$.post(Editor.path.handler, {
 		action: 'validate',
@@ -597,11 +798,11 @@ Editor.prototype.validate = function(callback) {
 			$('.feedback').html('<p>Code is valid.</p>')
 			return true
 		} else {
-			var responseView = $.handlebars(Editor.components['editor-save'].contents, {
+			
+			$('.editor-modeView').handlebars(Editor.components['editor-save'].contents, {
 				'title': 'save',
 				'errors': messages
-			});
-			$('.editor-modeView').html(responseView)
+			})
 			return false
 		}
 	}

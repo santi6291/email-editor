@@ -20,11 +20,25 @@ class manager extends database{
 		}
 
 		$con = $this->DBConnect(); 
+
+		$templateQuery = $con->prepare("CREATE TABLE `templates` (
+			template_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+			title TINYTEXT NOT NULL,
+			version TINYTEXT NOT NULL,
+			active BOOLEAN NOT NULL DEFAULT 1,
+			default_settings TEXT,
+			color_pallet TEXT,
+			users_id Int);"
+		);
 		
-		$templateQuery = $con->prepare("CREATE TABLE `templates` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, title TINYTEXT NOT NULL, version TINYTEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT 1, user Int, color_pallet TEXT, default_colors TEXT);");
-		$usersQuery    = $con->prepare("CREATE TABLE `users` (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, username TEXT NOT NULL, displayname TEXT NOT NULL, password TEXT NOT NULL);");
+		$usersQuery = $con->prepare("CREATE TABLE `users` (
+			user_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+			username TEXT NOT NULL,
+			display_name TEXT NOT NULL,
+			password TEXT NOT NULL);"
+		);
 		
-		if ( $templateQuery == false || $usersQuery == false) {
+		if ( ($templateQuery == false) || ($usersQuery == false) ) {
 			return array(
 				'success' => false,
 				'message' => $con->error,
@@ -35,8 +49,8 @@ class manager extends database{
 		$userSuccess = $usersQuery->execute();
 		
 		return array(
-			'success' => ( $templateSuccess === true || $userSuccess === true )? true : false,
-			'message' => ( $templateSuccess === true || $userSuccess === true )? 'Table \'templates\' and  \'users\' Created' : $con->error,
+			'success' => ( ($templateSuccess === true) || ($userSuccess === true) )? true : false,
+			'message' => ( ($templateSuccess === true) || ($userSuccess === true) )? 'Table \'templates\' and  \'users\' Created' : $con->error,
 		);
 	}
 	
@@ -87,25 +101,75 @@ class manager extends database{
 		// file give current time for version control
 		$this->version = time();
 		
-		$defaultColors = array(
-			'paragraph' => '#505050',
-			'bold' => '#505050',
-			'italic' => '#505050',
-			'strikethrough' => '#505050',
-			'subscript' => '#505050',
-			'superscript' => '#505050',
-			'heading1' => '#202020',
-			'heading2' => '#202020',
-			'heading3' => '#202020',
-			'heading4' => '#202020',
-			'heading5' => '#202020',
+		$defaultSettings = array(
+			'paragraph' => array(
+				'color' => '#505050',
+				'line-height' => '150',
+				'font-size' => '14',
+			),
+			'bold' => array(
+				'color' => '#505050',
+				'line-height' => '150',
+			),
+			'italic' => array(
+				'color' => '#505050',
+				'line-height' => '150',
+			),
+			'strikethrough' => array(
+				'color' => '#505050',
+				'line-height' => '150',
+			),
+			'subscript' => array(
+				'color' => '#505050',
+				'line-height' => '150',
+			),
+			'superscript' => array(
+				'color' => '#505050',
+				'line-height' => '150',
+			),
+			'anchor' => array(
+				'color' => '#0000EE',
+				'line-height' => '150',
+			),
+			'heading1' => array(
+				'color' => '#202020',
+				'line-height' => '100',
+				'font-size' => '34',
+			),
+			'heading2' => array(
+				'color' => '#202020',
+				'line-height' => '100',
+				'font-size' => '16',
+			),
+			'heading3' => array(
+				'color' => '#202020',
+				'line-height' => '100',
+				'font-size' => '16',
+			),
+			'heading4' => array(
+				'color' => '#202020',
+				'line-height' => '100',
+				'font-size' => '14',
+			),
+			'heading5' => array(
+				'color' => '#202020',
+				'line-height' => '100',
+				'font-size' => '12',
+			),
+			'backgroundTable' => array(
+				'background-color' => '#fafafa'
+			),
+			'templateContainer' => array(
+				'background-color' => '#fff'
+			),
 		);
-		$jsonColor = json_encode($defaultColors);
+
+		$jsonSettings = json_encode($defaultSettings);
 
 		$con = $this->DBConnect();
 		// insert template name and time-stamp as first version
-		$newTemplate = $con->prepare("INSERT INTO `templates` (title, version, default_colors) VALUES (?, ?, ?);");
-		
+		$newTemplate = $con->prepare("INSERT INTO `templates` (title, version, default_settings) VALUES (?, ?, ?);");
+
 		if ( $newTemplate == false ) {
 
 			return array(
@@ -114,7 +178,7 @@ class manager extends database{
 			);
 		}
 
-		$newTemplate->bind_param('sss', $this->name, $this->version, $jsonColor);
+		$newTemplate->bind_param('sss', $this->name, $this->version, $jsonSettings);
 		
 		$this->name = $this->requestEscape($this->name, $con);
 
@@ -128,7 +192,7 @@ class manager extends database{
 		}
 
 		$this->ID = $con->insert_id;
-
+		
 		// check if folder name taken
 		if ( file_exists(SAVED_TEMPLATES . $this->ID) == true ){
 			return array(
@@ -206,7 +270,7 @@ class manager extends database{
 	public function moveToTrash () {
 		$con = $this->DBConnect();
 		
-		$updateRow = $con->prepare("UPDATE `templates` SET active = 0 WHERE id = ?;");
+		$updateRow = $con->prepare("UPDATE `templates` SET active = 0 WHERE template_id = ?;");
 		if ( $updateRow == false) {
 			return array(
 				'success' => false,
@@ -236,7 +300,7 @@ class manager extends database{
 		$con = $this->DBConnect();
 
 		// delete folder with template files
-		$delTemplate = $con->prepare("DELETE FROM `templates` WHERE id = ?");
+		$delTemplate = $con->prepare("DELETE FROM `templates` WHERE template_id = ?");
 		
 		if ( $delTemplate == false ) {
 			return array(
@@ -258,7 +322,7 @@ class manager extends database{
 	public function update ($newName) {
 		$con = $this->DBConnect();
 		
-		$updateRow = $con->prepare("UPDATE `templates` SET title = ? WHERE id = ?;");
+		$updateRow = $con->prepare("UPDATE `templates` SET title = ? WHERE template_id = ?;");
 		if ( $updateRow == false) {
 			return array(
 				'success' => false,
@@ -286,8 +350,7 @@ class manager extends database{
 
 		if ( $listRows !== false) {
 			$listRows->execute();
-			$listRows->bind_result($ID, $title, $version, $active, $user, $colorPallet, $defaultColors);
-			
+			$listRows->bind_result($ID, $title, $version, $active, $defaultSettings, $colorPallet, $user);
 			$templateList = [];
 			
 			while ( $listRows->fetch() ) {
@@ -297,8 +360,6 @@ class manager extends database{
 					'version'     => $version,
 					'active'      => ( $active == 1 )? true : false,
 					'user'        => $user,
-					'colorPallet' => $colorPallet,
-					'defaultColors' => $defaultColors,
 				);
 			}
 			return $templateList;

@@ -30,7 +30,6 @@ switch ($action) {
 
 	case 'new':
 		$manager->name = $templateName;
-		// if any errors return as JSON in $templateCreated
 		error_reporting(0);
 		$response = $manager->newTemp();
 	break;
@@ -46,7 +45,6 @@ switch ($action) {
 
 	case 'clone':
 		$manager->name = $newTempName;
-		// if any errors return as JSON in $templateCreated
 		error_reporting(0);
 		$response = $manager->cloneTemp( $cloneID );
 	break;

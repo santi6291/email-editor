@@ -14,16 +14,24 @@ Manager.prototype.init = function() {
 	}, function(templateList){
 		Manager.list = templateList;
 		Manager.renderList();
-		Manager.events();
+		Manager.bindEvents()
 	});
 };
-
-Manager.prototype.events = function() {
+Manager.prototype.bindEvents = function() {
 	var Manager = this;
+	_.each(Manager.events, function (event, eventKey) {
+		$(document).on('click', '[data-manager=' + eventKey + ']', function(e){
+			e.preventDefault();
+			event(Manager, $(this));
+		})
+	})
+};
+
+Manager.prototype.events = {
 	// INSTALL / UNINSTALL TABLE
-	$('[data-manager ~= installer]').on('click', function(e){
-		e.preventDefault();
-		var target = $(this);
+	installer: function(managerRef, target){
+		var Manager = managerRef;
+		var target = $(target);
 		$.post(Manager.handler, {
 			//function type install : uninstall
 			action: target.val().toLowerCase()
@@ -35,13 +43,13 @@ Manager.prototype.events = function() {
 			}
 
 			target.parent('.manager-installer').find('.feedback').html(response.message);
-		}, 'json')//post end
-	});
+		}, 'json');//post end
+	},
 
 	// CREATE NEW TEMPALTE
-	$('[data-manager ~= create]').on('submit', function(e){
-		e.preventDefault();
-		var target = $(this);
+	create: function(managerRef, target){
+		var Manager = managerRef;
+		var target = $(target);
 
 		if ( target.find('.title').val() === '' ) {
 			target.find('.feedback').html('Template Title is Blank');
@@ -69,17 +77,15 @@ Manager.prototype.events = function() {
 				// append response
 				target.find('.feedback').html(errMsg);
 			}
-		}, 'json');
-		// post end
-	});
+		}, 'json');// post end
+	},
 
-	//UPDATE EXISTING TEMPLATE NAME
-	$(document).on('click', '[data-manager ~= update]', function(e){
-		e.preventDefault();
-		var target = $(this);
+	update: function(managerRef, target){
+		var Manager = managerRef;
+		var target = $(target);
 
 		// template node
-		var template = $(this).parent('li');
+		var template = target.parent('li');
 		// tempalte id
 		var templateID = template.data('template').ID;
 		// Manager.list instance
@@ -111,15 +117,12 @@ Manager.prototype.events = function() {
 				// alert of errors
 				window.alert(response.message);
 			}
-		}, 'json');
-		//post end
-	});
-
-	// CLONE EXISTING TEMPLATE
-	$(document).on('click', '[data-manager ~= clone]', function(e){
-		e.preventDefault();
-		
-		var target = $(this);
+		}, 'json');//post end
+	},
+	
+	clone: function(managerRef, target){
+		var Manager = managerRef;
+		var target = $(target);
 		// prompt for cloned template name
 		var newTemplate  = window.prompt('Insert Template Name.');
 		// return if prompt is empty or canceled
@@ -138,7 +141,6 @@ Manager.prototype.events = function() {
 			// new template name
 			newTempName: newTemplate
 		}, function(response){
-			console.log(response)
 			if ( response.success === true ) {
 				// add to template list
 				Manager.list[response.ID] = {
@@ -154,16 +156,12 @@ Manager.prototype.events = function() {
 				var errMsg = objectToText(response.message);
 				alert(errMsg);
 			}
-		}, 'json');
-		//post end
-	});
+		}, 'json');//post end
+	},
 
-
-	// MOVE TEMPALTE TO TRASH / DELETE TEMPLATE
-	$(document).on('click', '[data-manager ~= trash], [data-manager ~= delete]', function(e){
-		e.preventDefault();
-
-		var target = $(this);
+	trash: function(managerRef, target){
+		var Manager = managerRef
+		var target = $(target);
 		// template node
 		var template = target.parent('li');
 		// template id
@@ -203,8 +201,13 @@ Manager.prototype.events = function() {
 				window.alert('error deleting template');
 			}
 		}, 'json');// post
-	});
-};
+	},
+	
+	'delete': function(managerRef, target){
+		var Manager = managerRef;
+		Manager.events.trash(Manager);
+	}
+}
 
 Manager.prototype.renderTemplate = function(id) {
 	var Manager = this;
