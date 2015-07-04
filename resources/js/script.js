@@ -52,23 +52,58 @@ App.setPageID = function() {
 	}
 },
 
-function objectToText(theObject){
+String.prototype.capFirst = function() {
+	return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+function objectToText (theObject){
 	return "<pre>" + JSON.stringify(theObject, null, 4) + "</pre>";
 }
 
-String.prototype.capFirst = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-}
+// args.view, args.title, args.callback
+function modalHelper (args){
 
-function registerPartial (view){
-	var partials = $(view).filter(function(){
-		return /TEMPLATE/g.test( $(this).prop("tagName") );
-	});
+	$('body').append(args.modal);
 	
-	partials.each(function(){
-		var partialName = $(this).attr('id');
-		var partialContent = $(this).html();
-		// register partial
-		Handlebars.registerPartial(partialName, partialContent);
+	$('.modal').find('.modal-title').html(args.title);
+	$('.modal').find('.modal-body').handlebars({
+		view: args.view,
+		data: args.data
 	});
-}
+
+	// do something after modal done rendering
+	$('.modal').off('show.bs.modal')
+	$('.modal').on('show.bs.modal', function(e){
+		if(typeof args.show === 'function'){
+			args.show(e, $('.modal'))
+		}
+	});
+
+	// do something after modal done rendering
+	$('.modal').off('shown.bs.modal')
+	$('.modal').on('shown.bs.modal', function(e){
+		if(typeof args.shown === 'function'){
+			args.shown(e, $('.modal'))
+		}
+	});
+
+	// do something when model begins to hide
+	$('.modal').off('hide.bs.modal')
+	$('.modal').on('hide.bs.modal', function(e){
+		if(typeof args.hide === 'function'){
+			args.hide(e, $('.modal'))
+		}
+	});
+
+	// do something when modal is hidden, also removes modal
+	$('.modal').off('hidden.bs.modal')
+	$('.modal').on('hidden.bs.modal', function(e){
+		if(typeof args.hidden === 'function'){
+			args.hidden(e, $('.modal'));
+		}
+		
+		$('.modal').remove();
+	});
+
+	$('.modal').modal('show');
+}	

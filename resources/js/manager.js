@@ -1,7 +1,8 @@
 var Manager = function(){
 	var Manager = this;
-	Manager.handler = '/app/handlers/manager.php';
-	Manager.list;
+	Manager.path = {
+		handler: '/app/handlers/manager.php'
+	};
 	Manager.init();
 };
 
@@ -9,20 +10,43 @@ var Manager = function(){
 Manager.prototype.init = function() {
 	var Manager = this;
 
-	$.getJSON(Manager.handler,{
-		action: 'list'
-	}, function(templateList){
-		Manager.list = templateList;
-		Manager.renderList();
-		Manager.bindEvents()
-	});
+	getComponents(function(){
+		tempalteList()
+	})
+
+	function getComponents(callback){
+		$.getJSON(Manager.path.handler, {
+			action: 'getComponents'
+		}, function(components) {
+			Manager.components = components
+			if ( typeof callback == 'function' ) {
+				callback();
+			}
+		});
+	}
+
+	function tempalteList(callback){
+		$.getJSON(Manager.path.handler,{
+			action: 'list'
+		}, function(templateList){
+			Manager.list = templateList;
+			Manager.renderList('active-list');
+			Manager.bindEvents()
+		});
+	}
 };
 Manager.prototype.bindEvents = function() {
 	var Manager = this;
-	_.each(Manager.events, function (event, eventKey) {
-		$(document).on('click', '[data-manager=' + eventKey + ']', function(e){
-			e.preventDefault();
-			event(Manager, $(this));
+	// loop through events
+	_.each(Manager.events, function (eventFunction, eventKey) {
+		// seperate multiple selectors
+		selectorArray = eventKey.split(' ');
+		
+		_.each(selectorArray, function(selectorValue, selectorIndex){
+			$(document).on('click', '[data-manager ="' + selectorValue + '"]', function(e){
+				e.preventDefault();
+				eventFunction(Manager, $(this));
+			})
 		})
 	})
 };
@@ -30,9 +54,10 @@ Manager.prototype.bindEvents = function() {
 Manager.prototype.events = {
 	// INSTALL / UNINSTALL TABLE
 	installer: function(managerRef, target){
+		return;
 		var Manager = managerRef;
 		var target = $(target);
-		$.post(Manager.handler, {
+		$.post(Manager.path.handler, {
 			//function type install : uninstall
 			action: target.val().toLowerCase()
 		}, function (response){
@@ -50,34 +75,60 @@ Manager.prototype.events = {
 	create: function(managerRef, target){
 		var Manager = managerRef;
 		var target = $(target);
+		
+		modalHelper({
+			modal: Manager.components['bootstrap-modal'].contents,
+			view: Manager.components['manager-template-action'].contents,
+			data:{
+				action: 'Create Template'
+			},
+			title: 'Create New Template',
+			shown: function(event, modal){
+				
+				$(modal).find('.templateAction').on('click.createTemplate', function(){
+					
+					if( $(modal).find('.templateName').val() == '' ){
+						
+						$(modal).find('.form-group').addClass('has-error');
+						$(modal).find('.response').html('No Template Name Provided');
+					} else {
 
-		if ( target.find('.title').val() === '' ) {
-			target.find('.feedback').html('Template Title is Blank');
-			return false;
-		}
-
-		$.post(Manager.handler, {
-			action: 'new',
-			// template title
-			templateName : target.find('.title').val()
-		}, function(response){
-			if ( response.success === true) {
-				// add to template list
-				Manager.list[response.ID] = {
-					ID: response.ID,
-					title: response.title,
-					version:response.version,
-					active: response.active
-				};
-				//render template
-				Manager.renderTemplate(response.ID);
-			} else {
-				// parse response
-				var errMsg = objectToText(response.message);
-				// append response
-				target.find('.feedback').html(errMsg);
+						$.post(Manager.path.handler, {
+							action: 'new',
+							// template title
+							templateName : $(modal).find('.templateName').val()
+						}, function(response){
+							if ( response.success === true) {
+								$(modal).find('.form-group').addClass('has-success').removeClass('has-error');
+								$(modal).find('.response').html('')
+								
+								// add to template list
+								Manager.list[response.ID] = {
+									ID: response.ID,
+									title: response.title,
+									version:response.version,
+									active: response.active
+								};
+								
+								//render template
+								Manager.renderList('active-list');
+								setTimeout(function(){
+									$(modal).modal('hide');	
+								}, 500)
+								
+							} else {
+								$(modal).find('.form-group').addClass('has-error');
+								// parse response
+								var errMsg = objectToText(response.message);
+								
+								// append response
+								$(modal).find('.response').html(errMsg)
+							}
+						}, 'json');// post end
+					}
+				});
 			}
-		}, 'json');// post end
+		});
 	},
 
 	update: function(managerRef, target){
@@ -85,90 +136,182 @@ Manager.prototype.events = {
 		var target = $(target);
 
 		// template node
-		var template = target.parent('li');
+		var template = target.parents('[data-template-id]');
 		// tempalte id
-		var templateID = template.data('template').ID;
+		var templateID = template.data('template-id');
 		// Manager.list instance
 		var templateInfo = Manager.list[templateID];
-		// prompt for new title
-		var newTitle  = window.prompt('Rename Template:', templateInfo.title);
 		
-		// return if prompt is empty or canceled
-		if ( newTitle === '' || newTitle === null ) {
-			
-			if ( newTitle === null ) {
-				window.alert('No Title Provided.');
-			}
-			return false;
-		}
-		
-		$.post(Manager.handler, {
-			action: 'update',
-			// template id
-			templateID: templateID,
-			//new template name
-			newName: newTitle
-		}, function(response){
+		modalHelper({
+			modal: Manager.components['bootstrap-modal'].contents,
+			view: Manager.components['manager-template-action'].contents,
+			data:{
+				action: 'Update template'
+			},
+			title: 'Update template',
+			show: function(event, modal){
+				$(modal).find('.templateName').val(templateInfo.title);
+			},
+			shown: function(event, modal){
+				$(modal).find('.templateAction').on('click.updateTemplate', function(){
+					var newTitle = $(modal).find('.templateName').val();
 
-			if ( response.success === true ) {
-				// replace title 
-				template.find('.template-title').html(newTitle);
-			} else {
-				// alert of errors
-				window.alert(response.message);
-			}
-		}, 'json');//post end
+					// return if prompt is empty or canceled
+					if ( newTitle === '' ) {
+
+						$(modal).find('.form-group').addClass('has-error');
+						$(modal).find('.response').html('No Title Provided.')
+					} else {
+
+						$.post(Manager.path.handler, {
+							action: 'update',
+							// template id
+							templateID: templateID,
+							//new template name
+							newName: newTitle
+						}, function(response){
+
+							if ( response.success === true ) {
+								$(modal).find('.form-group').addClass('has-success').removeClass('has-error');
+								$(modal).find('.response').html('')
+
+								// replace title
+								template.find('.template-title-link').html(newTitle);
+
+								setTimeout(function(){
+									$(modal).modal('hide');	
+								}, 500)
+							} else {
+								$(modal).find('.form-group').addClass('has-error');
+								$(modal).find('.response').html(response.message)
+							}
+						}, 'json');//post end
+					}// else
+				}); //click.updateTemplate
+			} //shown
+		});// modelHelper
 	},
 	
 	clone: function(managerRef, target){
 		var Manager = managerRef;
 		var target = $(target);
-		// prompt for cloned template name
-		var newTemplate  = window.prompt('Insert Template Name.');
-		// return if prompt is empty or canceled
-		if ( newTemplate === '' || newTemplate === null ) {
-			
-			if ( newTemplate === null ) {
-				window.alert('No Title Provided for New Template.');
-			}
-			return false;
-		}
+		
+		modalHelper({
+			modal: Manager.components['bootstrap-modal'].contents,
+			view: Manager.components['manager-template-action'].contents,
+			data:{
+				action: 'Template Name'
+			},
+			title: 'Clone Template',
+			shown: function(event, modal){
+				$(modal).find('.templateAction').on('click.cloneTemplate', function(){
+					var newTitle = $(modal).find('.templateName').val();
 
-		$.post(Manager.handler, {
-			action: 'clone',
-			//template to be cloned ID
-			cloneID: target.parent('li').data('template').ID,
-			// new template name
-			newTempName: newTemplate
-		}, function(response){
-			if ( response.success === true ) {
-				// add to template list
-				Manager.list[response.ID] = {
-					ID: response.ID,
-					title: response.title,
-					version:response.version.toString(),
-					active: response.active
-				};
-				// render template
-				Manager.renderTemplate(response.ID);
-			} else {
-				// parse error response
-				var errMsg = objectToText(response.message);
-				alert(errMsg);
-			}
-		}, 'json');//post end
+					// return if prompt is empty or canceled
+					if ( newTitle === '' ) {
+
+						$(modal).find('.form-group').addClass('has-error');
+						$(modal).find('.response').html('No Title Provided for New Template.')
+					} else {
+
+						$.post(Manager.path.handler, {
+							action: 'clone',
+							//template to be cloned ID
+							cloneID: target.parents('[data-template-id]').data('template-id'),
+							// new template name
+							newTempName: $(modal).find('.templateName').val()
+						}, function(response){
+							if ( response.success === true ) {
+								$(modal).find('.form-group').addClass('has-success').removeClass('has-error');
+								$(modal).find('.response').html('')
+
+								// add to template list
+								Manager.list[response.ID] = {
+									ID: response.ID,
+									title: response.title,
+									version:response.version.toString(),
+									active: response.active
+								};
+								//render template
+								Manager.renderList('active-list');
+								setTimeout(function(){
+									$(modal).modal('hide');	
+								}, 500);
+							} else {
+								$(modal).find('.form-group').addClass('has-error');
+								// parse response
+								var errMsg = objectToText(response.message);
+								
+								// append response
+								$(modal).find('.response').html(errMsg)
+							}
+						}, 'json');//post end
+					}// else
+				}); //click.cloneTemplate
+			} //shown
+		});// modelHelper
 	},
 
-	trash: function(managerRef, target){
+	'trash delete': function(managerRef, target){
 		var Manager = managerRef
 		var target = $(target);
 		// template node
-		var template = target.parent('li');
+		var template = target.parents('[data-template-id]');
 		// template id
-		var templateID = template.data('template').ID;
+		var templateID = template.data('template-id');
 		// Manager.list instance
 		var templateInfo = Manager.list[templateID];
+
+		modalHelper({
+			modal: Manager.components['bootstrap-modal'].contents,
+			view: Manager.components['manager-template-delete'].contents,
+			data:{
+				action: (templateInfo.active)? 'Move To Trash' : 'Permenetly Delete',
+				isActive: templateInfo.active
+			},
+			title: (templateInfo.active)? 'Move To Trash' : 'Permenetly Delete',
+			shown: function(event, modal){
+				$(modal).find('.templateAction').on('click.delete', function(){
+					$.post(Manager.path.handler, {
+						action: 'delete',
+						// temple id
+						templateID: templateID,
+						// template status
+						isActive: Boolean(templateInfo.active)
+					}, function(response){
+
+						if ( response.success === true ) {
+							$(modal).find('.form-group').addClass('has-success').removeClass('has-error');
+							$(modal).find('.response').html('')
+
+							template.remove();
+							
+							if ( templateInfo.active === true ) {
+								templateInfo.active = false;
+							} else {
+								delete Manager.list[templateID];
+							}
+
+							setTimeout(function(){
+								$(modal).modal('hide');	
+							}, 500);
+							
+						} else {
+							// parse error response
+							$(modal).find('.form-group').addClass('has-error');
+							// parse response
+							var errMsg = objectToText(response.message);
+							
+							// append response
+							$(modal).find('.response').html(errMsg)
+						}
+					}, 'json');// post
+				})
+			}
+		})
 		
+		return
+
 		// alter message if template is active or inactive
 		var confirmMsg = ( templateInfo.active === true )? 'Press OK Move ' + templateInfo.title + ' Template to Trash' : 'Press OK to Permenetly Delete  ' + templateInfo.title;
 		var delNodeConfirm = window.confirm(confirmMsg);
@@ -178,7 +321,7 @@ Manager.prototype.events = {
 			return;
 		}
 		
-		$.post(Manager.handler, {
+		$.post(Manager.path.handler, {
 			action: 'delete',
 			// temple id
 			templateID: templateID,
@@ -191,9 +334,7 @@ Manager.prototype.events = {
 				template.remove();
 				
 				if ( templateInfo.active === true ) {
-					
 					templateInfo.active = false;
-					Manager.renderTemplate(templateID);
 				} else {
 					delete Manager.list[templateID];
 				}
@@ -202,56 +343,51 @@ Manager.prototype.events = {
 			}
 		}, 'json');// post
 	},
-	
-	'delete': function(managerRef, target){
-		var Manager = managerRef;
-		Manager.events.trash(Manager);
+
+	'preview': function(managerRef, target){
+		var Manager = managerRef
+		var target = $(target);
+		var template = target.parents('[data-template-id]');
+		// template id
+		var templateID = template.data('template-id');
+		// Manager.list instance
+		var templateInfo = Manager.list[templateID];
+		var previewUrl = [
+			'template=' + templateInfo.title,
+			'id=' + templateInfo.ID,
+			'version=' + templateInfo.version
+		]
+		window.open('/template/?' + previewUrl.join('&'), '_blank')
+	},
+
+	'list-trash list-active': function(managerRef, target){
+		var Manager = managerRef
+		var listType = target.data('manager');
+
+		// find active tab, remove class active if clicked tab is not active tab
+		$('.templatesNavigations').find('.active').not($(target)).removeClass('active');
+
+		$(target).addClass('active');
+			
+		// render if not active list
+		if( $('[data-manager-list-type=' + listType + ']').size() == 0 ){
+			Manager.renderList(listType);
+		}
 	}
 }
 
-Manager.prototype.renderTemplate = function(id) {
+Manager.prototype.renderList = function(listType) {
 	var Manager = this;
-	templateInfo = Manager.list[id];
-	
-	// template container
-	var listItem = $('<li/>').addClass('listItem').data('template', { 'ID': id });
-	
-	// link to editor with GET to template
-	var templateNode = $('<a/>').html(templateInfo.title).addClass('template-title').attr('href', '/editor/?id=' + id + '&template=' + encodeURI(templateInfo.title)).appendTo(listItem);
-	
-	// update tempalte node
-	var updateNode = $('<p/>').html('Rename').addClass('template-control').appendTo(listItem).attr('data-manager', 'update');
+	var getActive = /active/.test(listType);
+	var filterTemplates = _.filter(Manager.list, function(item) {
+		return item.active == getActive;
+	});
 
-	// clone node
-	var cloneNode = $('<p/>').html('Copy').addClass('template-control').appendTo(listItem).attr('data-manager', 'clone');
-	
-	// delete Node with TemplateID
-	var trashNode = $('<p/>').appendTo(listItem);
-	
-	if ( templateInfo.active === true ) {
-		trashNode.html('Move to <br/> Trash').addClass('template-control').attr('data-manager', 'trash');
-	} else {
-		trashNode.html('Delete <br/> Permenetly').addClass('template-control').attr('data-manager', 'delete');
-	}
-	
-	// preview latest version of template
-	var previewNode = $('<a/>').html('preview').addClass('template-control').attr({
-		'href': window.location.origin + '/template?template=' + templateInfo.title + '&id=' + id + '&version=' + templateInfo.version,
-		'target': '_blank',
-	}).appendTo(listItem);
-
-	// append to document
-	if ( templateInfo.active === true ) {
-		$('[data-manager ~= active-list]').find('ul').append(listItem);
-	} else {
-		$('[data-manager ~= trash-list]').find('ul').append(listItem);
-	}
-};
-
-Manager.prototype.renderList = function() {
-	var Manager = this;
-	// loop through existing templates
-	_.each(Manager.list, function (listValue, ListIndex){
-		Manager.renderTemplate(listValue.ID);
-	});//each templateList
+	$('.manager-templates').handlebars({
+		data:{
+			templates: filterTemplates,
+			listType: listType
+		},
+		view: Manager.components['manager-listing'].contents
+	})
 };

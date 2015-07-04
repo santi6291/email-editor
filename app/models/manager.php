@@ -410,4 +410,28 @@ class manager extends database{
 	    
 	    return rmdir($dir); 
 	}
+
+	public function getComponents(){
+
+		$components = array(
+			'manager-listing' => array(
+				'id' => 'manager-listing',
+				'contents' => file_get_contents(VIEWS . 'manager-listing.php'),
+			),
+			'manager-template-action' => array(
+				'id' => 'manager-template-action',
+				'contents' => file_get_contents(VIEWS . 'manager-template-action.php'),
+			),
+			'bootstrap-modal' => array(
+				'id' => 'bootstrap-modal',
+				'contents' => file_get_contents(VIEWS . 'bootstrap-modal.php'),
+			),
+			'manager-template-delete' => array(
+				'id' => 'manager-template-delete',
+				'contents' => file_get_contents(VIEWS . 'manager-template-delete.php'),
+			),
+		); //end components array
+		
+		return $components;
+	}
 }

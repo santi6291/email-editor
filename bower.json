@@ -20,6 +20,7 @@
     "underscore": "~1.8.2",
     "tooltipster": "~3.3.0",
     "handlebars": "~3.0.3",
-    "spectrum": "~1.7.0"
+    "spectrum": "~1.7.0",
+    "bootstrap": "~3.3.5"
   }
 }

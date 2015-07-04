@@ -1,7 +1,13 @@
 <header>
-	<h2>
-		Templates
-	</h2>
+	<div class="container">
+		<div class="navbar-header">
+			<h2 class="navbar-brand">Templates</h2>
+		</div>
+
+		<div class="navbar-right">
+			<button data-manager="create">New Template</button>
+		</div>
+	</div>
 </header>
 <div class="manager">
 	<!-- <div class="manager-installer">
@@ -15,24 +21,14 @@
 
 	<nav class="templatesNavigations">
 		<ul>
-			<li>
-				<button data-manager="list-active">Active</button>
+			<li data-manager="list-active" class="active">
+				<a href="#">Active</a>
 			</li>
-			<li>
-				<button data-manager="list-trash">Trash</button>
-			</li>
-			<li>
-				<button data-manage="create">New Template</button>
+			<li data-manager="list-trash">
+				<a href="#">Trash</a>
 			</li>
 		</ul>
 	</nav>
 	
-
-	<div class="manager-active" data-manager="active-list">
-		<ul></ul>
-	</div>
-
-	<div class="manager-trash" data-manager="trash-list">
-		<ul></ul>
-	</div>
+	<div class="manager-templates"></div>
 </div>

@@ -61,6 +61,9 @@ switch ($action) {
 
 		$response = $templateRemoved;
 	break;
+	case 'getComponents':
+		$response = $manager->getComponents();
+	break;
 }
 echo json_encode($response);
 ?>

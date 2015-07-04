@@ -17,6 +17,7 @@ $.fn.handlebars = function(args){
 		};
 		// register view partials
 		registerPartial(properView);
+
 		// compiled view
 		compiled = Handlebars.compile(properView);
 
@@ -25,7 +26,20 @@ $.fn.handlebars = function(args){
 			compiled = compiled(viewData)
 		}
 		// append to target
-		$(this).html(compiled);	
+		$(this).html(compiled);
+		$(this).find('template').remove();
 	});
 	return $(this);
+	
+	function registerPartial (view){
+		var partials = $(view).filter(function(){
+			return /TEMPLATE/g.test( $(this).prop("tagName") );
+		});
+
+		partials.each(function(){
+			var partialName = $(this).attr('id');
+			var partialContent = $(this).html();
+			Handlebars.registerPartial(partialName, partialContent);
+		});
+	}
 }
