@@ -9,7 +9,7 @@ Handlebars.registerHelper('templateSizes', function(){
 });
 
 Handlebars.registerHelper('modelHeader', function(title){
-	var header ='<header>'+
+	var header ='<header class="panel-heading">'+
 					'<h3>' + title + '</h3>'+
 					'<div class="modelView-modelExit">'+
 						'<i class="fa fa-times modelView-modelClose"></i>'+

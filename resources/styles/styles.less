@@ -1,4 +1,6 @@
-@import "normalize.css";
+@import "../vendors/tooltipster/css/tooltipster.css";
+@import "../vendors/spectrum/spectrum.css";
+
 @import "../vendors/font-awesome/less/font-awesome";
 @import "../vendors/bootstrap/less/bootstrap";
 
@@ -23,12 +25,6 @@
 	*vertical-align: @vAlign;
 }
 
-.box-sizing(@property: border-box){
-	-webkit-box-sizing: @property;
-	-moz-box-sizing: @property;
-	box-sizing: @property; 
-}
-
 .editor-button(@type, @text: '@{type}'){
 	&::before{
 		.fa(@type);
@@ -40,18 +36,27 @@
 	}
 }
 
-.actionButtons(@faIcon){
-	font-size: 3em !important;
-	display: block !important;
-	padding: 20px;
-	box-sizing: border-box;
-	cursor: pointer;
-	margin: 0 auto;
-	.fa(@faIcon);
+.actionButtons(@faIcon, @color){
+	width: 100%;
+	background-color: lighten(@color, 20%);
+	
+	&:after{
+		color: @color;
+		text-align: center;
+		font-size: 3em !important;
+		display: block !important;
+		padding: 20px;
+		cursor: pointer;
+		margin: 0 auto;
+		.box-sizing(border-box);
+		.fa(@faIcon);
+	}
 }
 
-.overlayAction(@fa-type, @bgColor){
+.overlayAction(@fa-type, @color){
 	position: relative;
+	border: 1px solid @gray-lighter;
+
 	&:before{
 		content: '';
 		width: 100%;
@@ -60,24 +65,40 @@
 		top: 0;
 		left: 0;
 		z-index: 999;
-		background-color: @bgColor;
+		border: 15px solid fadeout(@color, 15%);
 	}
 
 	&:after{
 		.fa(@fa-type);
-		width: 1em;
-		height: 1em;
+		color: #fff;
+		text-shadow: darken(@color, 20%) 3px 3px 5px;
+		background-color: fadeout(@color, 15%);
+		padding: 0px 15px 15px 0px;
 		font-size: 3em;
 		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		top: 15px;
+		left: 15px;
 		z-index: 1000;
-		margin: auto;
 		cursor: pointer;
 	}
 }
+
+.scrollbar(@color){
+	
+	&::-webkit-scrollbar{
+		background-color: green;
+		color: green;
+
+		&-thumb{
+			background-color: @color;
+		}
+
+		&-track-piece{
+			background-color: lighten(@color, 30%);
+		}
+	}
+}
+
 
 * {
 	:not(table) :not(td){
@@ -88,13 +109,9 @@
 	}
 }
 
-body{
-	// background-color: @darkBlue;
-}
-
 .wrapper{
 	
-	header{
+	> header{
 		.navbar();
 		.navbar-default();
 		
@@ -105,10 +122,6 @@ body{
 				.navbar-btn();
 			}
 		}
-	}
-
-	&-editor{
-		margin-top: 70px;
 	}
 }
 
@@ -209,7 +222,7 @@ body{
 		.btn-warning();
 		.center-block();
 	}
-	
+
 	.deleteTemplate{
 		.btn();
 		.btn-danger();
@@ -223,16 +236,15 @@ body{
 
 .editor{
 	&-wrapper{
+		// .container();
 		display: table;
 		width: 100%;
 		min-width: 1200px;
-		margin-top: 3%;
 	}
 	
 	&-tools{
 		display: table-cell;
 		width: 35%;
-		padding: 0px 10px;
 		vertical-align: top;
 	}
 	
@@ -240,35 +252,154 @@ body{
 		button{
 			width: 100%;
 			font-size: 2em;
-			margin-bottom: 2%
+			height: 18vh;
+			outline: none;
+			text-align: center;
 		}
 	}
 	
 	&-modeView{
-		background-color: #666;
 		position: absolute;
 		width: 100%;
-		height: 100%;
 		z-index: 999;
-		overflow-x: hidden;
+		.border-top-radius(4px);
+		.border-bottom-radius(4px);
 		
-		header{
+		.panel-heading{
+
 			display: table;
 			width: 100%;
 			font-size: 2em;
 			height: 55px;
 			padding: 0px 20px;
-			box-sizing: border-box;
+			.box-sizing(border-box);
 			
 			h3{
 				display: table-cell;
 				vertical-align: middle;
 				text-align: left;
 			}
-			div{
+			.modelView-modelExit{
 				display: table-cell;
 				vertical-align: middle;
 				text-align: right;
+				
+				i{
+					cursor: pointer;
+
+					&:hover{
+						color: @gray-lighter;
+					}
+				}
+			}
+		}
+		
+		> .panel>.panel-body{
+			height: 85vh;
+			overflow-x: hidden;
+			background-color: @gray-lighter;
+			.scrollbar(@brand-primary);
+		}
+
+		.revisions{
+			height: 100%;
+			margin-bottom: 0px;
+			.panel-primary();
+			
+			ul{
+				.list-group();
+			}
+
+			li{
+				.list-group-item();
+			}
+
+			p{
+				.btn();
+				.btn-link();
+			}
+		}
+
+		.modify{
+			.panel-primary();
+			
+			.layout-content{
+				h3{
+					text-align: center;
+					margin-bottom: 5%;
+					text-transform: uppercase;
+				}
+			}
+
+			&-componentsList{
+				.make-row(0px);
+			}
+			
+			.component{
+				.panel-info();
+				.make-md-column(5.5, 0px);
+				margin-right: 2%;
+				margin-left: 2%;
+
+				&-title{
+					display: table;
+
+					h4{
+						display: table-cell;
+						vertical-align: middle;
+					}
+				}
+
+				&-thumb{
+					width: 100%;
+					height: 400px;
+					text-align: center;
+					display: table;
+					
+					.thumb-container{
+						display: table-cell;
+						vertical-align: middle;
+						height: 350px;
+					}
+
+					img{
+						max-width: 100%;
+						max-height: 100%;
+					}
+				}
+			}
+		}
+
+		.defaults{
+			.panel-primary();
+
+			h4{
+				margin-bottom: 5%;
+			}
+			.layout-action {
+				.panel-default();
+
+				.panel-body{
+					text-align: center;
+				}
+			}
+
+			.tagType{
+				.make-row(0px);
+
+				.styleType{
+					.make-md-column(6, 10px);
+					
+					&[data-style *= color]{
+						.make-md-column(12, 0px);	
+					}
+				}
+				.sp-replacer{
+					width: 100%;
+					.sp-preview{
+						width: 96%;
+					}
+				}
 			}
 		}
 	}
@@ -288,7 +419,7 @@ body{
 		min-width: 650px;
 		padding: 0px 10px;
 		text-align: center;
-		.box-sizing();
+		.box-sizing(border-box);
 	}
 	
 	&-template{
@@ -298,7 +429,7 @@ body{
 		margin: 0 auto;
 		min-width: 650px;
 		border: 1px solid #ddd;
-		.box-sizing();
+		.box-sizing(border-box);
 	}
 
 	&-toolbarBtn{
@@ -386,39 +517,23 @@ body{
 	}
 
 	.addComponent{
-		width: 100%;
-		vertical-align: middle;
-		
-		&:after{
-			text-align: center;
-			vertical-align: top;
-			color: darken(aquamarine, 50%);
-			background-color: aquamarine;
-			.actionButtons(plus-circle);
-		}
+		.actionButtons(plus, @brand-success);
 	}
 	
 	.activeSection{
-		width: 100%;
-		background-color: aquamarine !important;
-
-		&:after{
-			text-align: center;
-			color: darken(aquamarine, 50%);
-			.actionButtons(minus-circle);
-		}
+		.actionButtons(minus, @brand-success);
 	}
 	
 	.editComponent{
-		.overlayAction(cog, rgba(140, 194, 176, 0.20));
+		.overlayAction(cog, @brand-success);
 	}
 	
 	.closeComponent{
-		.overlayAction(times, rgba(140, 194, 176, 0.20));
+		.overlayAction(times, @brand-success);
 	}
 
 	.removeComponent{
-		.overlayAction(minus-circle, rgba(250, 0, 57, 0.5));
+		.overlayAction(times, @brand-danger);
 	}
 
 	.activeSidebar{

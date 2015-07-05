@@ -10,11 +10,17 @@ else:
 
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
-	<link rel="stylesheet" href="<?= RESOURCES ?>vendors/tooltipster/css/tooltipster.css">
-	<link rel="stylesheet" href="<?= RESOURCES ?>vendors/spectrum/spectrum.css">
+	<title>
+		<?php 
+			if ( isset($_GET['template']) ) {
+				echo 'Template: ' .  $_GET['template'];
+			} else {
+				echo 'Template Manager';
+			}
+		?>
+	</title>
 	
-	<link rel="stylesheet" href="<?= RESOURCES ?>styles/styles.min.css">
+	<link rel="stylesheet" href="<?php echo RESOURCES ?>styles/styles.min.css">
 </head>
 
 <body>
@@ -23,18 +29,18 @@ else:
 	</div>
 
 	<div>
-		<script src="<?= RESOURCES ?>vendors/jquery/dist/jquery.min.js"></script>
-		<script src="<?= RESOURCES ?>vendors/underscore/underscore-min.js"></script>
-		<script src="<?= RESOURCES ?>vendors/tooltipster/js/jquery.tooltipster.min.js"></script>
-		<script src="<?= RESOURCES ?>vendors/handlebars/handlebars.js"></script>
-		<script src="<?= RESOURCES ?>vendors/spectrum/spectrum.js"></script>
-		<script src="<?= RESOURCES ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="<?php echo RESOURCES ?>vendors/jquery/dist/jquery.min.js"></script>
+		<script src="<?php echo RESOURCES ?>vendors/underscore/underscore-min.js"></script>
+		<script src="<?php echo RESOURCES ?>vendors/tooltipster/js/jquery.tooltipster.min.js"></script>
+		<script src="<?php echo RESOURCES ?>vendors/handlebars/handlebars.js"></script>
+		<script src="<?php echo RESOURCES ?>vendors/spectrum/spectrum.js"></script>
+		<script src="<?php echo RESOURCES ?>vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
-		<script src="<?= RESOURCES ?>js/jquery.extensions.js"></script>
-		<script src="<?= RESOURCES ?>js/handlebars.helpers.js"></script>
-		<script src="<?= RESOURCES ?>js/manager.js"></script>
-		<script src="<?= RESOURCES ?>js/editor.js"></script>
-		<script src="<?= RESOURCES ?>js/script.js"></script>
+		<script src="<?php echo RESOURCES ?>js/jquery.extensions.js"></script>
+		<script src="<?php echo RESOURCES ?>js/handlebars.helpers.js"></script>
+		<script src="<?php echo RESOURCES ?>js/manager.js"></script>
+		<script src="<?php echo RESOURCES ?>js/editor.js"></script>
+		<script src="<?php echo RESOURCES ?>js/script.js"></script>
 	</div>
 </body>
 </html>

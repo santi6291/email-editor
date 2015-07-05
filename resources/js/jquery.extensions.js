@@ -15,6 +15,7 @@ $.fn.handlebars = function(args){
 			// set data to parse
 			viewData = args.data;
 		};
+
 		// register view partials
 		registerPartial(properView);
 
@@ -32,6 +33,12 @@ $.fn.handlebars = function(args){
 	return $(this);
 	
 	function registerPartial (view){
+		try{
+			$(view)
+		}catch(e){
+			return false;
+		}
+
 		var partials = $(view).filter(function(){
 			return /TEMPLATE/g.test( $(this).prop("tagName") );
 		});

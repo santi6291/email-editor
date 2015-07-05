@@ -54,7 +54,7 @@ Manager.prototype.bindEvents = function() {
 Manager.prototype.events = {
 	// INSTALL / UNINSTALL TABLE
 	installer: function(managerRef, target){
-		return;
+		// return;
 		var Manager = managerRef;
 		var target = $(target);
 		$.post(Manager.path.handler, {
@@ -112,6 +112,7 @@ Manager.prototype.events = {
 								
 								//render template
 								Manager.renderList('active-list');
+								
 								setTimeout(function(){
 									$(modal).modal('hide');	
 								}, 500)
@@ -295,7 +296,7 @@ Manager.prototype.events = {
 							setTimeout(function(){
 								$(modal).modal('hide');	
 							}, 500);
-							
+
 						} else {
 							// parse error response
 							$(modal).find('.form-group').addClass('has-error');
@@ -379,10 +380,14 @@ Manager.prototype.events = {
 Manager.prototype.renderList = function(listType) {
 	var Manager = this;
 	var getActive = /active/.test(listType);
-	var filterTemplates = _.filter(Manager.list, function(item) {
-		return item.active == getActive;
-	});
 
+	var filterTemplates = _.filter(Manager.list, function(listItem) {
+		console.log(Manager.list, listItem);
+		return listItem.active == getActive;
+	});
+	
+	filterTemplates.reverse()
+	
 	$('.manager-templates').handlebars({
 		data:{
 			templates: filterTemplates,

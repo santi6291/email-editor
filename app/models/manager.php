@@ -1,5 +1,5 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . 'app/conf.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/app/conf.php');
 
 class manager extends database{
 	public $ID;
@@ -351,7 +351,7 @@ class manager extends database{
 		if ( $listRows !== false) {
 			$listRows->execute();
 			$listRows->bind_result($ID, $title, $version, $active, $defaultSettings, $colorPallet, $user);
-			$templateList = [];
+			$templateList = array();
 			
 			while ( $listRows->fetch() ) {
 				$templateList[$ID] = array(

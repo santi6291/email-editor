@@ -220,8 +220,8 @@ Editor.prototype.sidebarMode = {
 
 		$('.innerColumn, .templateSidebar, .templateHeader table[data-added-component]').not('.noSidebar').addClass('editComponent');
 
-		if( $('.editor-modeView').hasClass('displayNone') ){
-			$('.editor-modeView').removeClass('displayNone');
+		if( $('.editor-modeView').hasClass('hidden') ){
+			$('.editor-modeView').removeClass('hidden');
 		}
 	},
 	
@@ -275,8 +275,8 @@ Editor.prototype.sidebarMode = {
 			}
 		})
 
-		if( $('.editor-modeView').hasClass('displayNone') ){
-			$('.editor-modeView').removeClass('displayNone');
+		if( $('.editor-modeView').hasClass('hidden') ){
+			$('.editor-modeView').removeClass('hidden');
 		}
 	},
 
@@ -303,12 +303,12 @@ Editor.prototype.sidebarMode = {
 		$('[data-added-component]').addClass('removeComponent')
 
 		if( $('.tempFlag').size() == 0){
-			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}')
+			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}');
 			$('.templateHeader, .templateContent, .templateBottom').handlebars();
 		}
 
-		if( $('.editor-modeView').hasClass('displayNone') ){
-			$('.editor-modeView').removeClass('displayNone');
+		if( $('.editor-modeView').hasClass('hidden') ){
+			$('.editor-modeView').removeClass('hidden');
 		}
 	}
 }
@@ -324,7 +324,7 @@ Editor.prototype.events = {
 			// prevent user from editing template
 			$('.editMe').removeAttr('contenteditable')
 			
-			$('.editor-modeView').removeClass('displayNone');
+			$('.editor-modeView').removeClass('hidden');
 			
 			if ( typeof Editor.sidebarMode[modeName] == 'function' ) {
 				switch(modeName){
@@ -349,7 +349,7 @@ Editor.prototype.events = {
 			// destroy color picker
 			$('[data-color]').spectrum('destroy');
 			// hide sidebar
-			$('.editor-modeView').addClass('displayNone').html('');
+			$('.editor-modeView').addClass('hidden').html('');
 			// remove modification classes from components
 			$('.removeComponent, .editComponent').removeClass('removeComponent editComponent');
 			// remove temp flag marker

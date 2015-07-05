@@ -56,8 +56,8 @@ class database{
 
 // PATHS
 define('URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/');
-define('MANGER_HANDLERS', $_SERVER['DOCUMENT_ROOT'] . 'app/handlers/manager/');
-define('MANAGER_MODEL', $_SERVER['DOCUMENT_ROOT'] . 'app/models/manager/');
-define('SAVED_TEMPLATES', $_SERVER['DOCUMENT_ROOT'] . 'data/templates/');
-define('VIEWS', $_SERVER['DOCUMENT_ROOT'] . 'data/views/');
+define('MANGER_HANDLERS', $_SERVER['DOCUMENT_ROOT'] . '/app/handlers/manager/');
+define('MANAGER_MODEL', $_SERVER['DOCUMENT_ROOT'] . '/app/models/manager/');
+define('SAVED_TEMPLATES', $_SERVER['DOCUMENT_ROOT'] . '/data/templates/');
+define('VIEWS', $_SERVER['DOCUMENT_ROOT'] . '/data/views/');
 define('RESOURCES', URL . 'resources/');

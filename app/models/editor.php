@@ -1,5 +1,5 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . 'app/conf.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/app/conf.php');
 
 class editor extends database{
 	public $id;

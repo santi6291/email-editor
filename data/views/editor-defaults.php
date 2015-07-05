@@ -1,34 +1,40 @@
-<div class="modify">
+<div class="defaults panel">
 	
 	{{modelHeader title}}
-
-	<div class="layout-widthContainer">
-		<strong>Change Width</strong>
+	<div class="panel-body">
 		
-		<select class="templateWidth">
-			{{templateSizes}}
-		</select>
-	</div>
-	
-	<div class="response"></div>
+		<div class="layout-action panel">
+			<div class="panel-body">
+				<div class="btn-group">
+					<button class="btn btn-default" data-defaults="save">
+						Save
+					</button>
+					<button class="btn btn-default" data-defaults="apply">
+						Apply and Save
+					</button>
+				</div>
+				<div class="response"></div>
+			</div>
+		</div><!-- /layout-action -->
 
-	<div class="layout-defaultSettings">
-		{{#each settings}}
+		<div class="layout-defaultSettings list-group">
+			<div class="layout-widthContainer list-group-item">
+				<h4>Change Width</h4>
+				
+				<div>
+					<select class="templateWidth form-control">
+						{{templateSizes}}
+					</select>
+				</div>
+			</div><!-- /layout-widthContainer -->
+			{{#each settings}}
 			{{> settingItem textType=@key settings=this}}
-		{{/each}}
-	</div>
-
-	<div class="layout-action">
-		<button data-defaults="save">
-			Save
-		</button>
-		<button data-defaults="apply">
-			Apply and Save
-		</button>
-	</div>
+			{{/each}}
+		</div><!-- /layout-defaultSettings -->
+	</div><!-- /panel-body -->
 </div>
 <template id="settingItem">
-	<div class="tagType" data-setting-target="{{textType}}">
+	<div class="tagType list-group-item" data-setting-target="{{textType}}">
 		
 		<h4>{{textType}}</h4>
 		
@@ -37,7 +43,7 @@
 			<p>
 				Font Size <small>in pixels</small>
 			</p>
-			<input type="number" value="{{font-size}}"/>
+			<input class="form-control" type="number" value="{{font-size}}"/>
 		</div>
 		{{/if}}
 		
@@ -46,7 +52,7 @@
 			<p>
 				Line Height <small>in percentage</small>
 			</p>
-			<input type="number" step="5"  value="{{line-height}}"/>
+			<input class="form-control" type="number" step="5"  value="{{line-height}}"/>
 		</div>
 		{{/if}}
 
@@ -55,7 +61,7 @@
 				<p>
 					Font Color
 				</p>
-				<input type="text" data-color="{{color}}" />
+				<input class="form-control" type="text" data-color="{{color}}" />
 			</div>
 		{{/if}}
 		
@@ -64,7 +70,7 @@
 			<p>
 				Background Color
 			</p>
-			<input type="text" data-color="{{background-color}}" />
+			<input class="form-control" type="text" data-color="{{background-color}}" />
 		</div>
 		{{/if}}
 	</div>

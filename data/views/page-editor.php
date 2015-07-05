@@ -1,22 +1,42 @@
-<div class="backBtn">
-	<a href="/">Back</a>
-	<h2><?=$_GET['template']?></h2>
-</div>
+<header>
+	<div class="container">
+		<div class="navbar-left">
+			<ul class="nav navbar-nav">
+				<li>
+					<a href="/">Back</a>
+				</li>
+			</ul>
+		</div><!-- /navbar-left -->
+
+		<div class="navbar-header">
+			<h2 class="navbar-brand"><?=$_GET['template']?></h2>
+		</div><!-- /navbar-header -->
+
+		<div class="navbar-right">
+			<ul class="nav navbar-nav">
+				<li>
+					<a href="/">Preview</a>
+				</li>
+			</ul>
+		</div><!-- /navbar-right -->
+	</div> <!-- /container -->
+</header>
 
 <div class="editor">
 	
 	<div class="editor-wrapper">
 		
 		<div class="editor-tools">
-			<div class="editor-modeView displayNone"></div>
-			<div class="editor-toolsBtn">
-				<button data-editor-mode="revisions">Revisions History</button>
-				<button data-editor-mode="modify">Modify Template</button>
-				<button data-editor-mode="defaults">Set Defaults Options</button>
-				<button data-editor-mode="pallet">Set Color Pallet</button>
-				<button data-editor-mode="save">Save/Validate Template</button>
+			<div class="editor-modeView hidden"></div>
+			
+			<div class="editor-toolsBtn list-group">
+				<button class="list-group-item" data-editor-mode="revisions">Revisions History</button>
+				<button class="list-group-item" data-editor-mode="modify">Modify Template</button>
+				<button class="list-group-item" data-editor-mode="defaults">Set Defaults Options</button>
+				<button class="list-group-item" data-editor-mode="pallet">Set Color Pallet</button>
+				<button class="list-group-item" data-editor-mode="save">Save/Validate Template</button>
 			</div>
-		</div>
+		</div><!-- /editor-tools -->
 		
 		<div class="editor-content">
 			<div class="editor-toolbar">
@@ -46,6 +66,6 @@
 			</div>
 
 			<div class="editor-template"></div>
-		</div>
-	</div>
-</div>
+		</div><!-- /editor-content -->
+	</div><!-- /editor-wrapper -->
+</div><!-- /editor -->
