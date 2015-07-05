@@ -1,14 +1,18 @@
+var pathToDev = '/local/path/to/email-editor/';
+var pathToLocalServer = '/local/server/path/to/email-editor/';
 var gulp = require('gulp');
 
 gulp.task('watch', function(){
 	gulp.watch('./**', function(event){
-		var filePath = event.path.replace('/Users/santiago/Sites/_projects/email-editor/', '')
+		// file path relative to application dir
+		var filePath = event.path.replace(pathToDev, '');
+		// file path removing file name
 		var fileDir = filePath.replace(/[^\/]*$/, '');
-		
+				
 		console.log('File ' + filePath + ' was ' + event.type);
 
 		gulp.src(event.path)
-		.pipe(gulp.dest('/Applications/AMPPS/www/email-editor/' + fileDir));
+		.pipe(gulp.dest( pathToLocalServer + fileDir));
 	})
 })
 
