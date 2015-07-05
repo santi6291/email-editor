@@ -9,7 +9,7 @@
 		</div><!-- /navbar-left -->
 
 		<div class="navbar-header">
-			<h2 class="navbar-brand"><?=$_GET['template']?></h2>
+			<h2 class="navbar-brand"><?php echo $_GET['template']?></h2>
 		</div><!-- /navbar-header -->
 
 		<div class="navbar-right">

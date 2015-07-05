@@ -3,18 +3,16 @@
 	{{modelHeader title}}
 	<div class="panel-body">
 		
-		<div class="layout-action panel">
-			<div class="panel-body">
-				<div class="btn-group">
-					<button class="btn btn-default" data-defaults="save">
-						Save
-					</button>
-					<button class="btn btn-default" data-defaults="apply">
-						Apply and Save
-					</button>
-				</div>
-				<div class="response"></div>
+		<div class="layout-action">
+			<div class="btn-group">
+				<button class="btn btn-default" data-defaults="save">
+					Save
+				</button>
+				<button class="btn btn-default" data-defaults="apply">
+					Apply and Save
+				</button>
 			</div>
+			<div class="response"></div>
 		</div><!-- /layout-action -->
 
 		<div class="layout-defaultSettings list-group">
@@ -28,15 +26,15 @@
 				</div>
 			</div><!-- /layout-widthContainer -->
 			{{#each settings}}
-			{{> settingItem textType=@key settings=this}}
+				{{> settingItem this}}
 			{{/each}}
 		</div><!-- /layout-defaultSettings -->
 	</div><!-- /panel-body -->
 </div>
 <template id="settingItem">
-	<div class="tagType list-group-item" data-setting-target="{{textType}}">
+	<div class="tagType list-group-item" data-setting-target="{{@key}}">
 		
-		<h4>{{textType}}</h4>
+		<h4>{{@key}}</h4>
 		
 		{{#if font-size}}
 		<div class="styleType" data-style="font-size">
@@ -73,5 +71,5 @@
 			<input class="form-control" type="text" data-color="{{background-color}}" />
 		</div>
 		{{/if}}
-	</div>
+	</div><!--/ tagType -->
 </template>

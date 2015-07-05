@@ -48,6 +48,9 @@ class manager extends database{
 		$templateSuccess = $templateQuery->execute();
 		$userSuccess = $usersQuery->execute();
 		
+		$this->name = 'New template';
+		$this->newTemp();
+		
 		return array(
 			'success' => ( ($templateSuccess === true) || ($userSuccess === true) )? true : false,
 			'message' => ( ($templateSuccess === true) || ($userSuccess === true) )? 'Table \'templates\' and  \'users\' Created' : $con->error,

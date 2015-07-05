@@ -1,41 +1,40 @@
-<div class="save">
+<div class="save panel">
 	{{modelHeader title}}
 
-	<div class="options">
-		<button data-save="save">
-			Save
-		</button>
-		<button data-save="validate">
-			Validate
-		</button>
-	</div>
-	<div class="feedback">
-		{{#if errors}}
+	<div class="panel-body">
+		<div class="options">
+			<button data-save="save">Save</button>
+			<button data-save="validate">Validate
+			</button>
+		</div>
+		
+		
+		<div class="feedback hidden {{#unless errors}}well{{/unless}}">
 			{{#each errors}}
-				{{> validatorMessage messageid=messageid type=type message=message explanation=explanation}}
+				{{> validatorMessage this}}
 			{{/each}}
-		{{/if}}
-	</div>
-	<div class="responseCode">
-		<textarea></textarea>
+		</div>
+
+		<div class="responseCode hidden">
+			<textarea></textarea>
+		</div>	
 	</div>
 </div>
-
 <template id="validatorMessage">
-	<div class="error">
-		<div class="errorID">
+	<div class="error list-group">
+		<div class="errorID list-group-item">
 			<strong>Message ID:</strong> {{{messageid}}}
 		</div>
 
-		<div class="errorType">
+		<div class="errorType list-group-item">
 			<strong>Error Type:</strong> {{{type}}}
 		</div>
 
-		<div class="errorMsg">
+		<div class="errorMsg list-group-item">
 			<strong>Message :</strong> {{{message}}}
 		</div>
 
-		<div class="errorExplan">
+		<div class="errorExplan list-group-item">
 			<strong>Explanation :</strong> {{{explanation}}}
 		</div>
 	</div>

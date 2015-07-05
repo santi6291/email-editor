@@ -54,7 +54,7 @@ Manager.prototype.bindEvents = function() {
 Manager.prototype.events = {
 	// INSTALL / UNINSTALL TABLE
 	installer: function(managerRef, target){
-		// return;
+		return;
 		var Manager = managerRef;
 		var target = $(target);
 		$.post(Manager.path.handler, {

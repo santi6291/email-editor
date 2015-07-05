@@ -3,5 +3,3 @@ sftp-config.json
 data/templates
 resources/vendors/
 DB.php
-node_modules/
-gulpfile.js

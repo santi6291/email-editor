@@ -4,16 +4,13 @@
 	<div class="panel-body">
 		<ul class="revisions-list">
 			{{#each revisions}}
-			{{> revision id=id fileName=fileName title=title}}
+				{{> revision}}
 			{{/each}}
 		</ul>
 	</div>
 </div>
-
 <template id="revision">
 	<li class="revisons-listItem" data-revison-file="{{fileName}}">
-		<p>
-			{{title}}
-		</p>
+		<p>{{title}}</p>
 	</li>
 </template>

@@ -310,6 +310,17 @@ Editor.prototype.sidebarMode = {
 		if( $('.editor-modeView').hasClass('hidden') ){
 			$('.editor-modeView').removeClass('hidden');
 		}
+	},
+
+	pallet: function (editorRef) {
+		var Editor = editorRef;
+		
+		$('.editor-modeView').handlebars({
+			view: Editor.components['editor-color-pallet'].contents,
+			data: {
+				title: 'Modify Template Color pallet'
+			}
+		})
 	}
 }
 
@@ -351,7 +362,7 @@ Editor.prototype.events = {
 			// hide sidebar
 			$('.editor-modeView').addClass('hidden').html('');
 			// remove modification classes from components
-			$('.removeComponent, .editComponent').removeClass('removeComponent editComponent');
+			$('.removeComponent, .editComponent, .closeComponent').removeClass('removeComponent editComponent, .closeComponent');
 			// remove temp flag marker
 			$('.tempFlag').remove();
 			// make content editable
@@ -757,7 +768,8 @@ Editor.prototype.save = function() {
 			}, 'json');
 
 			$('.responseCode').find('textarea').val(fullFragment);
-			$('.feedback').html('<p>Changes saved.</p>')
+			$('.feedback').html('<p>Changes saved.</p>');
+			$('.responseCode, .feedback').removeClass('hidden');
 		}, 'json');
 	})
 }
@@ -765,8 +777,7 @@ Editor.prototype.save = function() {
 Editor.prototype.validate = function(callback) {
 	var Editor = this;
 	var fullFragment = fullFragment();
-
-	$('.feedback').html('<p>Validating code.</p>')
+	$('.feedback').removeClass('hidden').html('<p>Validating code.</p>');
 	
 	$.post(Editor.path.handler, {
 		action: 'validate',
@@ -798,11 +809,16 @@ Editor.prototype.validate = function(callback) {
 			$('.feedback').html('<p>Code is valid.</p>')
 			return true
 		} else {
-			
-			$('.editor-modeView').handlebars(Editor.components['editor-save'].contents, {
-				'title': 'save',
-				'errors': messages
+
+			$('.editor-modeView').handlebars({
+				'view': Editor.components['editor-save'].contents,
+				data: {
+					'title': 'save / validate template',
+					'errors': messages
+				}
 			})
+			$('.errorExplan').find('.helpwanted').remove();
+			$('.feedback').removeClass('hidden');
 			return false
 		}
 	}

@@ -53,7 +53,7 @@ class editor extends database{
 			$timeStamp = preg_replace('/(\.)\w+$/', '', $value);
 			
 			$templateData['versions'][] = array(
-				'title' => date('m.d.y - h:i:s a', $timeStamp),
+				'title' => date('m/d/y - h:i:s a', $timeStamp),
 				'fileName' => $value,
 			);
 		}
@@ -290,7 +290,11 @@ class editor extends database{
 			'editor-modify-component' => array(
 				'id' => 'editor-modify-component',
 				'contents' => file_get_contents(VIEWS . 'editor-modify-component.php'),
-			)
+			),
+			'editor-color-pallet' => array(
+				'id' => 'editor-color-pallet',
+				'contents' => file_get_contents(VIEWS . 'editor-color-pallet.php'),
+			),
 		); //end components array
 		
 		return $components;
