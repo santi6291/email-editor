@@ -52,19 +52,19 @@ Manager.prototype.events = {
 		eventType: 'click.installer',
 		selector: '[data-manager=installer]',
 		action: function(managerRef, target){
-			/*var Manager = managerRef;
-			$.post(Manager.path.handler, {
-				//function type install : uninstall
-				action: target.val().toLowerCase()
-			}, function (response){
+			// var Manager = managerRef;
+			// $.post(Manager.path.handler, {
+			// 	//function type install : uninstall
+			// 	action: target.val().toLowerCase()
+			// }, function (response){
 				
-				if ( response.success === true ) {
-					$('.listItem').remove();
-					Manager.list = {};
-				}
+			// 	if ( response.success === true ) {
+			// 		$('.listItem').remove();
+			// 		Manager.list = {};
+			// 	}
 
-				target.parent('.manager-installer').find('.feedback').html(response.message);
-			}, 'json');//post end*/
+			// 	target.parent('.manager-installer').find('.feedback').html(response.message);
+			// }, 'json');//post end
 		},
 	},
 

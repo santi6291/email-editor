@@ -15,7 +15,7 @@
 		<div class="navbar-right">
 			<ul class="nav navbar-nav">
 				<li>
-					<a href="/">Preview</a>
+					<a href="/" class="templatePreview" target="_blank">Preview</a>
 				</li>
 			</ul>
 		</div><!-- /navbar-right -->

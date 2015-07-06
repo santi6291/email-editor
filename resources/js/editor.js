@@ -34,7 +34,7 @@ var Editor = function() {
 
 Editor.prototype.init = function() {
 	var Editor = this;
-	
+
 	Editor.bindEvents();
 
 	getComponents(function(){
@@ -42,6 +42,12 @@ Editor.prototype.init = function() {
 		getTemplateData().done(function(){
 
 			getCurrentHtml(function(){
+				var templatePreview = [
+					'template=' + editor.template.title,
+					'id=' + Editor.template.id,
+					'version='+  Editor.template.versions[0].fileName.replace('.html', '')
+				];
+				$('.templatePreview').attr('href', '/template/?' + templatePreview.join('&'));
 				// new template start in modify mode
 				if ( Editor.template.versions.length == 1 ) {
 					Editor.sidebarMode.modify(Editor, 'layout');
@@ -356,6 +362,7 @@ Editor.prototype.events = {
 			}
 		}
 	},
+	
 	// close sidebar and clean up
 	closeSiderbar: {
 		eventType: 'click.closeSiderbar',
@@ -414,6 +421,7 @@ Editor.prototype.events = {
 			});
 		}
 	},
+	
 	formatTextSelect: {
 		eventType: 'change.formatText',
 		selector: 'select[data-editor-format]',
@@ -442,7 +450,7 @@ Editor.prototype.events = {
 			var parentNode = $(selectedText.anchorNode.parentNode).prop('nodeName').toLowerCase();
 			Editor.hintFormat(parentNode);
 		}
-	} ,
+	},
 
 	// open tool tip for a, img actions
 	tooltipFormat: {
@@ -587,7 +595,7 @@ Editor.prototype.events = {
 				Editor.applySettings();
 			}
 		}
-	},
+	}
 };
 
 Editor.prototype.applySettings = function() {
