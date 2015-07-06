@@ -362,7 +362,7 @@ Editor.prototype.events = {
 			// hide sidebar
 			$('.editor-modeView').addClass('hidden').html('');
 			// remove modification classes from components
-			$('.removeComponent, .editComponent, .closeComponent').removeClass('removeComponent editComponent, .closeComponent');
+			$('.removeComponent, .editComponent, .closeComponent').removeClass('removeComponent editComponent closeComponent');
 			// remove temp flag marker
 			$('.tempFlag').remove();
 			// make content editable

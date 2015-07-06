@@ -1,13 +1,13 @@
-<div class="modify">
+<div class="modifyComponent panel">
 	
 	{{modelHeader title}}
 
-	<div class="layout-editComponent">
+	<div class="layout-editComponent panel-body">
 		
 		<div class="styleType" data-style="valign">
-			<p>
+			<h4>
 				Verticle Align
-			</p>
+			</h4>
 			
 			<select>
 				{{valign styles.border.valign}}	
@@ -15,17 +15,17 @@
 		</div>
 
 		<div class="styleType" data-style="width">
-			<p>
+			<h4>
 				Width <small>in pixels</small>
-			</p>
+			</h4>
 
-			<input type="text" value="{{styles.width}}" />
+			<input type="number" value="{{styles.width}}" />
 		</div>
 
 		<div class="styleType" data-style="bgColor">
-			<p>
+			<h4>
 				Background Color
-			</p>
+			</h4>
 
 			<input type="text" data-color="{{styles.bgColor}}" />
 		</div>
