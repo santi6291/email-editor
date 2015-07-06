@@ -6,7 +6,7 @@ var Editor = function() {
 		savedTemplates: '/data/templates/',
 		viewsDir: '/data/views/',
 		images: '/resources/images/'
-	}
+	};
 	
 	Editor.template = {
 		title: App.GET.template,
@@ -24,13 +24,13 @@ var Editor = function() {
 		spectrum.maxSelectionSize = 0;
 		
 		_.each(options, function (optionValue, optionKey) {
-			spectrum[optionKey] = optionValue
+			spectrum[optionKey] = optionValue;
 		});
 	};
 	
 
 	Editor.init();
-}
+};
 
 Editor.prototype.init = function() {
 	var Editor = this;
@@ -45,7 +45,7 @@ Editor.prototype.init = function() {
 				// new template start in modify mode
 				if ( Editor.template.versions.length == 1 ) {
 					Editor.sidebarMode.modify(Editor, 'layout');
-				};
+				}
 			});
 		});
 	});//get Views
@@ -58,11 +58,11 @@ Editor.prototype.init = function() {
 
 		templateData.done(function(versionsJson){
 			Editor.template.versions = versionsJson.versions;
-			Editor.template.settings = versionsJson.defaultSettings
+			Editor.template.settings = versionsJson.defaultSettings;
 		});
 
 		return templateData;
-	};
+	}
 
 	// GET LATEST VERSION HTML
 	function getCurrentHtml(callback) {
@@ -78,18 +78,18 @@ Editor.prototype.init = function() {
 
 			$('.widthSelect').find('[value~=' + Editor.template.width + ']').attr('selected', 'true');
 			$('.editor').find('.editor-template').html(template);
-			$('.editor').find('.editMe').attr('contenteditable', 'true')
+			$('.editor').find('.editMe').attr('contenteditable', 'true');
 			if (typeof callback == 'function') {
-				callback()
-			};
+				callback();
+			}
 		});
-	};
+	}
 
 	function getComponents(callback){
 		$.getJSON(Editor.path.handler, {
 			action: 'getComponents'
 		}, function(components) {
-			Editor.components = components
+			Editor.components = components;
 			if ( typeof callback == 'function' ) {
 				callback();
 			}
@@ -142,10 +142,10 @@ Editor.prototype.previewSettings = function(args) {
 		case 'templateContainer':
 		case 'backgroundTable':
 			properTarget = '#' + args.target;
-		break
+		break;
 		default:
 			properTarget = args.target;
-		break
+		break;
 	}
 	
 	_.each(args.style, function (styleValue, styleType) {
@@ -162,8 +162,7 @@ Editor.prototype.previewSettings = function(args) {
 		previewStyles.html('.editor-template ' +properTarget + '{' + styleType + ':' + styleValue + ' !important}');
 		// append to body
 		$('body').append(previewStyles);
-	})
-
+	});
 };
 
 Editor.prototype.updateDefaultSettings = function() {
@@ -180,10 +179,15 @@ Editor.prototype.updateDefaultSettings = function() {
 
 Editor.prototype.bindEvents = function() {
 	var Editor = this;
-	
+	// todo use object to bind events
 	_.each(Editor.events, function(eventValue, eventKey){
-		eventValue(Editor);
-	})
+		
+		$(document).on(eventValue.eventType, eventValue.selector, function (e) {
+			e.preventDefault();
+			console.log(eventValue.action);
+			eventValue.action(Editor, $(this));
+		});
+	});
 };
 
 Editor.prototype.sidebarMode = {
@@ -249,7 +253,7 @@ Editor.prototype.sidebarMode = {
 		
 		var spectrumSettings = new Editor.spectrum();
 
-		$('.editor-modeView').find('[data-color]').spectrum(spectrumSettings)
+		$('.editor-modeView').find('[data-color]').spectrum(spectrumSettings);
 	},
 
 	revisions: function(editorRef){
@@ -273,7 +277,7 @@ Editor.prototype.sidebarMode = {
 			data: {
 				title: 'Save / Validate Template'
 			}
-		})
+		});
 
 		if( $('.editor-modeView').hasClass('hidden') ){
 			$('.editor-modeView').removeClass('hidden');
@@ -288,7 +292,7 @@ Editor.prototype.sidebarMode = {
 		var requestedComponents = _.filter(Editor.components, function(componentValue, componentKey){
 			var exp = new RegExp(componentsType, 'g');
 			return exp.test(componentKey);
-		})
+		});
 
 		target.handlebars({
 			view: view,
@@ -297,12 +301,12 @@ Editor.prototype.sidebarMode = {
 				listType: componentsType,
 				componentList: requestedComponents
 			}
-		})
+		});
 		
 		// todo get tables add editComponent class
-		$('[data-added-component]').addClass('removeComponent')
+		$('[data-added-component]').addClass('removeComponent');
 
-		if( $('.tempFlag').size() == 0){
+		if( $('.tempFlag').size() === 0){
 			$('.templateHeader, .templateContent, .templateBottom').append('{{tempFlag false}}');
 			$('.templateHeader, .templateContent, .templateBottom').handlebars();
 		}
@@ -320,20 +324,21 @@ Editor.prototype.sidebarMode = {
 			data: {
 				title: 'Modify Template Color pallet'
 			}
-		})
+		});
 	}
-}
+};
 
 Editor.prototype.events = {
 	// activate sidebar, get mode from data-editor-mode
-	activateSidebar: function(editorRef){
-		var Editor = editorRef;
-		$('button[data-editor-mode]').on('click.activateSidebar', function(e){
-			e.preventDefault();
-			var modeName = $(this).data('editor-mode');
+	activateSidebar:{
+		eventType: 'click.activateSidebar',
+		selector: 'button[data-editor-mode]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			var modeName = $(target).data('editor-mode');
 			
 			// prevent user from editing template
-			$('.editMe').removeAttr('contenteditable')
+			$('.editMe').removeAttr('contenteditable');
 			
 			$('.editor-modeView').removeClass('hidden');
 			
@@ -349,14 +354,14 @@ Editor.prototype.events = {
 				}
 				
 			}
-		});
+		}
 	},
 	// close sidebar and clean up
-	closeSiderbar: function(editorRef) {
-		var Editor = editorRef;
-
-		$(document).on('click.closeSiderbar', '.modelView-modelClose', function(e){
-			e.preventDefault();
+	closeSiderbar: {
+		eventType: 'click.closeSiderbar',
+		selector: '.modelView-modelClose',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
 			// destroy color picker
 			$('[data-color]').spectrum('destroy');
 			// hide sidebar
@@ -369,20 +374,20 @@ Editor.prototype.events = {
 			$('.editMe').attr('contenteditable', 'true');
 			// remove preview styles
 			$('.previewStyles').remove();
-		});
+		}
 	},
 	
-	settingChanged: function (editorRef) {
-		var Editor = editorRef;
-		$(document).on('change.settingChanged, keyup.settingChanged', '[data-style]:not([data-style=color]) input', function (e) {
-			e.preventDefault();
-			var target;
-			var styleType = $(this).parents('[data-style]').data('style');
-			var styleValue = $(this).val();
+	settingChanged:{
+		eventType: 'change.settingChanged, keyup.settingChanged',
+		selector: '[data-style]:not([data-style=color]) input',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			var styleType = $(target).parents('[data-style]').data('style');
+			var styleValue = $(target).val();
 			var previewArgs = {
-				target: $(this).parents('[data-setting-target]').data('setting-target'),
+				target: $(target).parents('[data-setting-target]').data('setting-target'),
 				style: {}
-			}
+			};
 			switch(styleType){
 				case 'line-height':
 					styleValue += '%';
@@ -391,176 +396,199 @@ Editor.prototype.events = {
 					styleValue += 'px';
 				break;
 			}
-			previewArgs.style[styleType] = styleValue
-			Editor.previewSettings(previewArgs)
-		});
+			previewArgs.style[styleType] = styleValue;
+			Editor.previewSettings(previewArgs);
+		}
 	},
 
 	// add requested text format to highlighted text
-	formatText: function(editorRef){
-		var Editor = editorRef;
-		
-		$('button[data-editor-format]').on('click.formatText', function(e){
-			e.preventDefault();
-			var textFormat = $(this).data('editor-format');
+	formatTextClick: {
+		eventType: 'click.formatText',
+		selector: 'button[data-editor-format]',
+		action: function(editorRef){
+			var Editor = editorRef;	
+			var textFormat = $(target).data('editor-format');
 			Editor.formatText({
 				formatType: textFormat,
 				returnSelection: false
-			})
-		});
-		
-		$('select[data-editor-format]').on('change.formatText', function (e) {
-			e.preventDefault()
-			var textFormat = $(this).val();
+			});
+		}
+	},
+	formatTextSelect: {
+		eventType: 'change.formatText',
+		selector: 'select[data-editor-format]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			var textFormat = $(target).val();
 			
-			$(this).attr('data-editor-format', textFormat);
+			$(target).attr('data-editor-format', textFormat);
 			
 			Editor.formatText({
 				formatType: textFormat,
 				returnSelection: false
 			});
-		})
+		}
 	},
 
 	// get format of clicked text
-	getFormat: function (editorRef) {
-		var Editor = editorRef;
-		$('.editor-template').on('mouseup', function (e) {
+	getFormat:{
+		eventType: 'mouseup',
+		selector: '.editor-template',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
 			var selectedText = Editor.formatText({
 				returnSelection: true
 			});
 			var parentNode = $(selectedText.anchorNode.parentNode).prop('nodeName').toLowerCase();
 			Editor.hintFormat(parentNode);
-		})
-	},
+		}
+	} ,
 
 	// open tool tip for a, img actions
-	tooltipFormat: function(editorRef){
-		var Editor = editorRef;
-		$('button[data-editor-insert]').on('click.tooltipFormat', function(e){
-			e.preventDefault()
-			var insetType = $(this).data('editor-insert');
-			console.log(insetType)
-		});
+	tooltipFormat: {
+		eventType: 'click.tooltipFormat',
+		selector: 'button[data-editor-insert]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;	
+			var insetType = $(target).data('editor-insert');
+			console.log(insetType);
+		}
 	},
 
 	// render components to modify template
-	showComponents: function(editorRef){
-		var Editor = editorRef;
-		$(document).on('click.showComponents', '.addComponent', function(e){
-			e.preventDefault();
+	showComponents: {
+		eventType: 'click.showComponents',
+		selector: '.addComponent',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
 			var activeSections = $('.activeSection');
-			var componentType = ( $(this).parent().hasClass('templateHeader') )? 'header' : 'body';
+			var componentType = ( $(target).parent().hasClass('templateHeader') )? 'header' : 'body';
 
 			activeSections.removeClass('activeSection');
 			activeSections.addClass('addComponent');
 
-			$(this).removeClass('addComponent');
-			$(this).addClass('activeSection')
+			$(target).removeClass('addComponent');
+			$(target).addClass('activeSection');
 
 			Editor.sidebarMode.modify(Editor, componentType);
-		});
-	},
+		}
+	}, 
 
 	// return to layout view
-	hideComponents: function(editorRef){
-		var Editor = editorRef;
-		$(document).on('click.hideComponents', '.activeSection', function(e){
-			e.preventDefault();
-			$(this).removeClass('activeSection')
-			$(this).addClass('addComponent');
+	hideComponents:{
+		eventType: 'click.hideComponents',
+		selector: '.activeSection',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+
+			$(target).removeClass('activeSection');
+			$(target).addClass('addComponent');
 
 			Editor.sidebarMode.modify(Editor, 'layout');
-		})	
+		}
 	},
 
 	// modify template width
-	widthSelect: function(editorRef){
-		var Editor = editorRef;
-		$(document).on('change.widthSelect', '.templateWidth', function(e){
-			e.preventDefault();
-			var newWidth = $(this).val()
+	widthSelect: {
+		eventType: 'change.widthSelect',
+		selector: '.templateWidth',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			var newWidth = $(target).val();
 			Editor.resizeTemplate(newWidth);
-		});
+		}
 	},
+
 	// change sidebars
-	layoutChange: function(editorRef){
-		var Editor = editorRef;
-		$(document).on('click.layoutChange', '[data-component]', function(){
-			var componentName = $(this).data('component');
-			Editor.changeLayout(componentName)
-		})
-	},
+	layoutChange: {
+		eventType: 'click.layoutChange',
+		selector: '[data-component]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			var componentName = $(target).data('component');
+			Editor.changeLayout(componentName);
+		}
+	}, 
 	
 	// save temaplte code
-	saveTemplate: function(editorRef){
-		var Editor = editorRef;
-		$(document).on('click.saveTemplate', '[data-save]', function(){
-			var saveAction = $(this).data('save');
+	saveTemplate: {
+		eventType: 'click.saveTemplate', 
+		selector: '[data-save]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			var saveAction = $(target).data('save');
 			Editor[saveAction]();
-		});
+		}
 	},
 
 	// change to selected revision 
-	revisionChange: function(editorRef){
-		var Editor = editorRef;
-		$(document).on('click.revisionChange', '[data-revison-file]', function(){
-			var revisonFile = $(this).data('revison-file');
+	revisionChange:{
+		eventType:  'click.revisionChange', 
+		selector: '[data-revison-file]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+
+			var revisonFile = $(target).data('revison-file');
 			var filePath = Editor.path.savedTemplates + Editor.template.id +  '/' + revisonFile;
 
 			$.get( filePath, function(fragment) {
 				$('.editor').find('.editor-template').html(fragment);
 				$('.editMe').attr('contenteditable', true);
 			});
-		});
+		}
 	},
+
 	// remove component from template
-	removeComponent: function (editorRef) {
-		var Editor = editorRef;
-		$(document).on('click.removeComponent', '.removeComponent', function (e) {
-			e.preventDefault();
-			$(this).remove();
-		});
+	removeComponent: {
+		eventType: 'click.removeComponent',
+		selector: '.removeComponent',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
+			$(target).remove();
+		}
 	},
 
 	// change component settings
-	editComponent: function (editorRef) {
-		var Editor = editorRef;
-
-		$(document).on('click.editComponent', '.editComponent', function (e) {
-			e.preventDefault();
+	editComponent: {
+		eventType: 'click.editComponent',
+		selector: '.editComponent',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
 			$('[data-color]').spectrum('destroy');
 			
 			$('.closeComponent').removeClass('closeComponent').addClass('editComponent');
-			$(this).removeClass('editComponent').addClass('closeComponent')
+			$(target).removeClass('editComponent').addClass('closeComponent');
 			
-			Editor.sidebarMode.editComponent(Editor, $(this));
-		});
+			Editor.sidebarMode.editComponent(Editor, $(target));
+		}
 	},
 	
 	// returnt from component settings to default settings
-	closeComponent: function (editorRef) {
-		var Editor = editorRef;
-		
-		$(document).on('click.closeComponent', '.closeComponent', function (e) {
+	closeComponent: {
+		eventType: 'click.closeComponent',
+		selector: '.closeComponent',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
 			$('[data-color]').spectrum('destroy');
 			$('.closeComponent').removeClass('closeComponent').addClass('editComponent');			
 			Editor.sidebarMode.defaults(Editor);
-		})
-	},
+		}
+	}, 
+
 	// update tempalte default settings
-	updateSettings: function (editorRef) {
-		var Editor = editorRef;
-		$(document).on('click.applySettings', '[data-defaults]', function (e) {
-			e.preventDefault();
+	updateSettings: {
+		eventType: 'click.applySettings',
+		selector: '[data-defaults]',
+		action: function (editorRef, target) {
+			var Editor = editorRef;
 			Editor.updateDefaultSettings();
 			
-			if( $(this).data('defaults') == 'apply' ){
+			if( $(target).data('defaults') == 'apply' ){
 				Editor.applySettings();
 			}
-		})
-	}
-}
+		}
+	},
+};
 
 Editor.prototype.applySettings = function() {
 	$('.previewStyles').each(function() {
@@ -595,7 +623,7 @@ Editor.prototype.hintFormat = function(nodeName) {
 Editor.prototype.formatText = function(args){
 	var Editor = this;
 	var formatType = args.formatType;
-	var returnSelection = args.returnSelection
+	var returnSelection = args.returnSelection;
 	var sel;
 	var range;
 	var styles = {
@@ -609,7 +637,7 @@ Editor.prototype.formatText = function(args){
 			'margin-left:0',
 			'text-align:left',
 
-			'color:' + Editor.template.settings.heading1['color'],
+			'color:' + Editor.template.settings.heading1.color,
 			'font-size:' + Editor.template.settings.heading1['font-size'] + 'px',
 			'line-height:' + Editor.template.settings.heading1['line-height'] + '%'
 		],
@@ -624,7 +652,7 @@ Editor.prototype.formatText = function(args){
 			'text-align:center',
 			'text-transform:uppercase',
 
-			'color:' + Editor.template.settings.heading2['color'],
+			'color:' + Editor.template.settings.heading2.color,
 			'font-size:' + Editor.template.settings.heading2['font-size'] + 'px',
 			'line-height:' + Editor.template.settings.heading2['line-height'] + '%'
 		],
@@ -640,7 +668,7 @@ Editor.prototype.formatText = function(args){
 			'text-align:left',
 			'text-transform: uppercase',
 
-			'color:' + Editor.template.settings.heading3['color'],
+			'color:' + Editor.template.settings.heading3.color,
 			'font-size:' + Editor.template.settings.heading3['font-size'] + 'px',
 			'line-height:' + Editor.template.settings.heading3['line-height'] + '%'
 		],
@@ -656,7 +684,7 @@ Editor.prototype.formatText = function(args){
 			'text-align:left',
 			'text-transform: uppercase',
 
-			'color:' + Editor.template.settings.heading4['color'],
+			'color:' + Editor.template.settings.heading4.color,
 			'font-size:' + Editor.template.settings.heading4['font-size'] + 'px',
 			'line-height:' + Editor.template.settings.heading4['line-height'] + '%'
 		],
@@ -671,14 +699,14 @@ Editor.prototype.formatText = function(args){
 			'margin-left:0',
 			'text-align:left',
 
-			'color:' + Editor.template.settings.heading5['color'],
+			'color:' + Editor.template.settings.heading5.color,
 			'font-size:' + Editor.template.settings.heading5['font-size'] + 'px',
 			'line-height:' + Editor.template.settings.heading5['line-height'] + '%',
 		],
 		
 		'a': [
 			'text-decoration: none;',
-			'color:' + Editor.template.settings.anchor['color'],
+			'color:' + Editor.template.settings.anchor.color,
 			'line-height:' + Editor.template.settings.anchor['line-height'] + '%',
 		],
 		
@@ -686,13 +714,13 @@ Editor.prototype.formatText = function(args){
 			'font-family: Arial',
 			'text-align: left',
 
-			'color:' + Editor.template.settings.paragraph['color'],
+			'color:' + Editor.template.settings.paragraph.color,
 			'font-size:' + Editor.template.settings.paragraph['font-size'] + 'px',
 			'line-height:' + Editor.template.settings.paragraph['line-height'] + '%',
 		]
 	};
 
-	return getSelected(formatType)
+	return getSelected(formatType);
 
 	function getSelected (formatType){
 		//node type
@@ -720,7 +748,7 @@ Editor.prototype.formatText = function(args){
 	}
 	
 	function addFormat (){
-		console.log(styles)
+		console.log(styles);
 		var formatStyles = (typeof styles[formatType] !== 'undefined')? styles[formatType].join(';') : '';
 		//create format node with selection text 
 		var replacementText = $('<' + formatType + ' style="' + formatStyles + '"/>').append(range.toString())[0];
@@ -745,14 +773,14 @@ Editor.prototype.formatText = function(args){
 		var newContent = parentNode[0].outerHTML.replace(removeNode[0].outerHTML, removeNode[0].innerHTML);
 		parentNode.html(newContent);
 	}
-}
+};
 
 Editor.prototype.save = function() {
 	var Editor = this;
 	
 	Editor.validate(function(validFragment, fullFragment){
 		if( !validFragment ){
-			return false
+			return false;
 		}
 
 		var fragmentData = Editor.cleanFragment();
@@ -771,22 +799,22 @@ Editor.prototype.save = function() {
 			$('.feedback').html('<p>Changes saved.</p>');
 			$('.responseCode, .feedback').removeClass('hidden');
 		}, 'json');
-	})
-}
+	});
+};
 
 Editor.prototype.validate = function(callback) {
 	var Editor = this;
-	var fullFragment = fullFragment();
+	var fullFragmentString = fullFragment();
 	$('.feedback').removeClass('hidden').html('<p>Validating code.</p>');
 	
 	$.post(Editor.path.handler, {
 		action: 'validate',
-		fragment: fullFragment,
+		fragment: fullFragmentString,
 	}, function(response) {
 		var validFragment = validatorResponse(response.message);
 		
 		if( (validFragment) && (typeof callback == 'function') ){
-			callback(validFragment, fullFragment);
+			callback(validFragment, fullFragmentString);
 		}
 	}, 'json');
 
@@ -797,17 +825,17 @@ Editor.prototype.validate = function(callback) {
 			'70', //self-close tag not close (br, img, etc).
 			'108',
 			'127' //alt tag
-		]
+		];
 
 		_.each(jsonResponse.messages, function(message, index){
 			if( ($.inArray(message.messageid, exemptions) == -1) && (typeof message.messageid != 'undefined') ){
-				messages.push(message)
+				messages.push(message);
 			}
 		});
 
-		if( messages.length == 0 ){
-			$('.feedback').html('<p>Code is valid.</p>')
-			return true
+		if( messages.length === 0 ){
+			$('.feedback').html('<p>Code is valid.</p>');
+			return true;
 		} else {
 
 			$('.editor-modeView').handlebars({
@@ -816,28 +844,28 @@ Editor.prototype.validate = function(callback) {
 					'title': 'save / validate template',
 					'errors': messages
 				}
-			})
+			});
 			$('.errorExplan').find('.helpwanted').remove();
 			$('.feedback').removeClass('hidden');
-			return false
+			return false;
 		}
 	}
 
 	function fullFragment() {
 		var fragment = Editor.cleanFragment();
-		var fullFragment = [
+		var fullFragmentArr = [
 			Editor.components['template-head'].contents,
 			fragment.html(),
 			Editor.components['template-footer'].contents
 		];
-		return fullFragment.join('\n');
+		return fullFragmentArr.join('\n');
 	}
 };
 
 Editor.prototype.cleanFragment = function() {
 	var fragment =  $('.editor-template');
 	fragment.find('[contenteditable]').removeAttr('contenteditable');
-	return fragment
+	return fragment;
 };
 
 // CHANGE TEMPLATE LAYOUT 
@@ -848,26 +876,26 @@ Editor.prototype.changeLayout = function(componentName) {
 	// modify layout depending on component type
 	switch(componentName){
 		case 'template-layout-sidebar-left':
-			var filledSide = $('.templateSidebar').eq(0);
-			var emptySide = $('.templateSidebar').eq(1);
+			var filledSideLeft = $('.templateSidebar').eq(0);
+			var emptySideRight = $('.templateSidebar').eq(1);
 			
-			filledSide.html(component.contents);
-			filledSide.removeClass('noSidebar');
+			filledSideLeft.html(component.contents);
+			filledSideLeft.removeClass('noSidebar');
 			
-			emptySide.html('');
-			emptySide.addClass('noSidebar');
+			emptySideRight.html('');
+			emptySideRight.addClass('noSidebar');
 			Editor.resizeTemplate(Editor.template.width);
 		break;
 
 		case 'template-layout-sidebar-right':
-			var filledSide = $('.templateSidebar').eq(1);
-			var emptySide = $('.templateSidebar').eq(0);
+			var filledSideRight = $('.templateSidebar').eq(1);
+			var emptySideLeft = $('.templateSidebar').eq(0);
 			
-			filledSide.html(component.contents);
-			filledSide.removeClass('noSidebar')
+			filledSideRight.html(component.contents);
+			filledSideRight.removeClass('noSidebar');
 			
-			emptySide.html('');
-			emptySide.addClass('noSidebar');
+			emptySideLeft.html('');
+			emptySideLeft.addClass('noSidebar');
 			Editor.resizeTemplate(Editor.template.width);
 		break;
 		
@@ -889,17 +917,17 @@ Editor.prototype.changeLayout = function(componentName) {
 		case 'template-header-cols-2-right':
 		case 'template-header-cols-3':
 			// header content
-			var content = $(component.contents);
+			var headerContent = $(component.contents);
 			var headerSection = $('.templateHeader');
 
 			// add edit component class
-			content.addClass('removeComponent');
-			content.attr('data-added-component', 'true')
+			headerContent.addClass('removeComponent');
+			headerContent.attr('data-added-component', 'true');
 
 			// remove temp tables
 			headerSection.find('.tempFlag').remove();
 			
-			headerSection.append(content, '{{tempFlag true}}');
+			headerSection.append(headerContent, '{{tempFlag true}}');
 			headerSection.removeClass('noheader');
 			headerSection.handlebars();
 			
@@ -910,20 +938,21 @@ Editor.prototype.changeLayout = function(componentName) {
 		case 'template-body-content-cols-2':
 		case 'template-body-content-cols-3':
 		case 'template-body-content-cols-4':
-			var content = $(component.contents);
+			var bodyContent = $(component.contents);
 			var activeComponent = $('.activeSection').parent();
-			activeComponent.removeClass('noBottom noContent')
+			activeComponent.removeClass('noBottom noContent');
 
 			// add edit component class
-			content.addClass('removeComponent');
-			content.attr('data-added-component', 'true')
+			bodyContent.addClass('removeComponent');
+			bodyContent.attr('data-added-component', 'true');
 			
-			$('.activeSection').before(content)
+			$('.activeSection').before(bodyContent);
 
 			Editor.resizeTemplate(Editor.template.width);
 		break;
 	}
-	$('.editMe').attr('contenteditable', 'true')
+	
+	$('.editMe').attr('contenteditable', 'true');
 };
 
 Editor.prototype.resizeTemplate = function(newWidth) {
@@ -933,24 +962,24 @@ Editor.prototype.resizeTemplate = function(newWidth) {
 	// if 2 sidebars precent make percentage 25%
 	var sidebarPercentage = (sidebarCount == 2)? 25 : ( (100 * Editor.template.sidebarWidth) / Editor.template.width );
 	// get siderbar width percentage
-	var sidebarWidth = Math.round( (newWidth * sidebarPercentage)/ 100 )
+	var sidebarWidth = Math.round( (newWidth * sidebarPercentage)/ 100 );
 	// leave at full or subtract siderbar width
 	var contentWidth = (newWidth - (sidebarWidth * sidebarCount));
 	
-	$('[template-width]').attr('width', newWidth)
-	$('[sidebar-width]').attr('width', sidebarWidth)
-	$('[content-width]').attr('width', contentWidth)
+	$('[template-width]').attr('width', newWidth);
+	$('[sidebar-width]').attr('width', sidebarWidth);
+	$('[content-width]').attr('width', contentWidth);
 
 	Editor.template.width = newWidth;
 	Editor.template.sidebarWidth = sidebarWidth;
 
 	$('.templateContent').find('[component-columns]').each(function(inex, element){
 		var colCount = $(element).attr('component-columns');
-		var colWidth = Math.round( (contentWidth/colCount) - 20 )
+		var colWidth = Math.round( (contentWidth/colCount) - 20 );
 		var innerCols = $(element).find('.innerColumn');
 		
-		$(element).attr('width', contentWidth)
-		innerCols.attr('width', colWidth)
+		$(element).attr('width', contentWidth);
+		innerCols.attr('width', colWidth);
 	});
 
 	$('.templateBottom').find('[component-columns]').each(function(index, element) {
@@ -963,4 +992,6 @@ Editor.prototype.resizeTemplate = function(newWidth) {
 		
 		innerCols.find('img').attr('src', 'http://placehold.it/' + colWidth + 'x' + colWidth);
 	});
-}
+
+	$('.templateHeader').find('[data-added-component]').attr('width', newWidth);
+};
